@@ -1,0 +1,3480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MangoGuards Unit Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+          body {
+            background: #111111;
+            color: #FFFFFF;
+            font-family: 'Inter', 'Segoe UI', 'Karla', sans-serif;
+            font-size: 14px;
+            overflow-x: hidden;
+            height: 100vh;
+        }          .custom-topbar {
+            background: #2A2A2A;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            border-bottom: 1px solid #3A3A3A;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            -webkit-app-region: no-drag;  /* Prevent window dragging */
+            user-select: none;
+            pointer-events: none;  /* Disable all mouse interactions with topbar */
+        }
+        
+        .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .mango-logo {
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            transition: transform 0.2s ease;
+        }
+        
+        .mango-logo:hover {
+            transform: scale(1.1);
+        }
+        
+        .topbar-title {
+            font-weight: 600;
+            font-size: 16px;
+            background: linear-gradient(45deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .topbar-controls {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+        
+        .control-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .control-btn.close:hover {
+            background: #ffffff77
+        }
+        
+        .control-btn.minimize:hover {
+            background: #ffffff77;
+        }
+          .container {
+            padding: 15px;
+            height: calc(100vh - 40px);
+            overflow-y: auto;
+        }        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 950px;
+            margin: 0 auto;
+            padding: 10px;
+        }        .slot {
+            background: #2A2A2A;
+            border: 1px solid #3A3A3A;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 180px;
+        }
+
+        .slot.disabled {
+            background: #1A1A1A;
+            border-color: #2A2A2A;
+            opacity: 0.6;
+        }
+
+        .slot.disabled::before {
+            background: #555 !important;
+        }
+
+        .slot.disabled select,
+.slot.disabled button:not(.slot-control-btn) {
+    opacity: 0.5;
+    pointer-events: none;  /* Only blocks non-control buttons */
+}
+
+/* Ensure slot control buttons remain interactive when slot is disabled */
+.slot.disabled .slot-control-btn {
+    opacity: 1;
+    pointer-events: auto;  /* Control buttons stay clickable */
+}
+
+        .slot-controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 4px;
+        }        .slot-control-btn {
+            width: 50px !important;
+            height: 20px !important;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 8px;
+            font-weight: bold;
+            padding: 2px 4px !important;
+            margin: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .clear-btn {
+            background: #dc3545;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #c82333;
+        }
+
+        .disable-btn {
+            background: #6c757d;
+            color: white;
+        }
+
+        .disable-btn:hover {
+            background: #5a6268;
+        }.disable-btn.enabled {
+            background: #ff6b35;
+        }
+
+        .disable-btn.enabled:hover {
+            background: #e55a2b;
+        }
+          .slot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: #ee6531;
+            border-radius: 16px 16px 0 0;
+        }
+          .slot:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+            border-color: #3A3A3A;
+        }        .slot h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 0.3px;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .slot label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 500;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            color: #a0a0a0;
+        }        .slot select, .slot input, .slot button {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid #3A3A3A;
+            border-radius: 6px;
+            background: #2A2A2A;
+            color: #fff;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+          .slot select:focus, .slot input:focus, .slot button:focus {
+            outline: none;
+            border-color: #ee6531;
+            box-shadow: 0 0 0 2px rgba(255, 166, 43, 0.2);
+        }
+        
+        .slot select:hover, .slot input:hover, .slot button:hover {
+            border-color: #f0622a;
+            background: #3A3A3A;
+        }.slot button {
+            background: #ee6531; /* Updated color */
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 6px;
+            padding: 8px 8px;
+            color: #ffffff;
+        }
+          .slot button:hover {
+            background: #d55a2a; /* Updated hover color */
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(238, 101, 49, 0.3); /* Updated color */
+        }
+        
+        .slot button:active {
+            transform: translateY(0);
+        }
+        
+        .coords-status {
+            font-size: 12px;
+            color: #10b981;
+            margin-top: 4px;
+        }
+        
+        .coords-status.not-set {
+            color: #ee6531;
+        }
+          .bottom-controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 32px;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+          .main-btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 140px;
+        }.save-btn {
+            background: #ee6531;
+            color: #ffffff;
+        }
+          .save-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }.save-with-screenshot-btn {
+            background: #ee6531;
+            color: #ffffff;
+        }
+        
+        .save-with-screenshot-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }
+
+        .position-btn {
+            background: #10b981;
+            color: #ffffff;
+        }
+        
+        .position-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .export-btn {
+            background: #ee6531;
+            color: #ffffff;
+        }
+          .export-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }
+
+        .refresh-btn {
+            background: #ee6531;
+            color: #ffffff;
+        }
+          .refresh-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }
+
+        /* Notification */        .notification {
+            position: fixed;
+            top: 20px;
+            right: 0px;
+            background: #ee6531;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+          .modal-content {
+            background: #2A2A2A;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #3A3A3A;
+            border-radius: 16px;
+            width: 300px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal h3 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+          .modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #3A3A3A;
+            border-radius: 8px;
+            background: #111111;
+            color: white;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }        .modal-btn.save {
+            background: #ee6531;
+            color: #ffffff;
+        }
+          .modal-btn.cancel {
+            background: #3A3A3A;
+            color: white;
+        }        /* Import Modal Styles */        .import-modal-content {
+            width: 500px !important;
+            height: 80vh !important;
+            max-height: 80vh !important;
+            margin: 5% auto !important;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .import-modal-content h3 {
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .import-modal-content p {
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+        .config-list {
+            display: grid;
+            gap: 10px;
+            margin: 10px 0;
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .import-modal-content .modal-buttons {
+            margin-top: 10px;
+            flex-shrink: 0;
+        }        .config-item {
+            padding: 15px;
+            background: #111111;
+            border: 1px solid #3A3A3A;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        .config-item:hover {
+            background: #333333;
+            border-color: #ee6531;
+        }
+
+        .config-name {
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .config-description {
+            font-size: 12px;
+            color: #a0a0a0;
+            margin-top: 4px;
+        }
+
+        .config-load-btn {
+            padding: 6px 12px;
+            background: #ee6531;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .config-load-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }        .show-units-btn {
+            padding: 4px 8px;
+            background: #ee6531;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .show-units-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+        }        .units-screenshot-inline {
+            margin-top: 15px;
+            padding: 10px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 1px solid #3a3a3a;
+            display: none;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .units-screenshot-inline.show {
+            display: block;
+        }        .units-screenshot-inline img {
+                width: 100%;
+    /* height: 250px; */
+    border-radius: 6px;
+    /* border: 2px solid #555; */
+    object-fit: contain;
+    object-position: center;
+    /* box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); */
+    transform: scale(2.5);
+        position: relative;
+    top: -20px;
+        }
+
+        .screenshot-label {
+            font-size: 11px;
+            color: #a0a0a0;
+            margin-bottom: 5px;
+            text-align: center;
+        }
+
+        .no-screenshot {
+            font-size: 11px;
+            color: #888;
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }        .import-btn {
+            background: #ee6531;
+            color: #ffffff;
+        }
+          .import-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }
+
+        /* Coordinate Modal Styles */
+        .coord-modal-content {
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #ee6531;
+            box-shadow: 0 0 0 2px rgba(238, 101, 49, 0.2);
+        }
+
+        .coord-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .coord-helper {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }        .helper-btn {
+            padding: 8px 16px;
+            background: #ee6531;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .helper-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(238, 101, 49, 0.3);
+        }
+
+        .helper-btn:active {
+            transform: translateY(0);
+        }        /* Coordinate Overlay */
+        .coord-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            display: none;
+            cursor: crosshair;
+            /* Ensure clicks can pass through properly */
+            pointer-events: auto;
+        }
+
+        .coord-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .coord-marker {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #ee6531;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(238, 101, 49, 0.8);
+            pointer-events: none; /* Don't block clicks */
+        }
+
+        .coord-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(26, 26, 26, 0.95);
+            border: 1px solid #3a3a3a;
+            border-radius: 8px;
+            padding: 15px;
+            color: #fff;
+            /* Ensure the info panel blocks clicks from reaching the overlay */
+            pointer-events: auto;
+            font-family: 'Segoe UI', sans-serif;
+            z-index: 10001;
+            backdrop-filter: blur(10px);
+        }
+
+        .coord-info h4 {
+            margin: 0 0 10px 0;
+            color: #ee6531;
+        }
+
+        .coord-display {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 5px 0;
+        }        .coord-instructions {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }
+
+        .marker-info {
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(238, 101, 49, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #ee6531;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .existing-markers {
+            margin: 5px 0;
+            font-size: 11px;
+            line-height: 1.4;
+        }        .existing-markers span {
+            margin-right: 8px;
+            padding: 2px 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }        .marker-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(58, 58, 58, 0.3);
+            border-radius: 8px;
+        }
+
+        .nav-btn {
+            padding: 8px 12px;
+            background: #3a3a3a;
+            border: 1px solid #555;
+            border-radius: 6px;
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: #ee6531;
+            border-color: #ee6531;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .marker-counter {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ee6531;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .marker-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(238, 101, 49, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #ee6531;
+        }
+
+        .marker-selector label {
+            color: #fff;
+            font-weight: 500;
+            font-size: 12px;
+        }
+
+        .marker-selector select {
+            padding: 4px 8px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            min-width: 120px;
+        }
+
+        .marker-selector select:focus {
+            outline: none;
+            border-color: #ee6531;
+        }
+
+        .save-coords-btn {
+            padding: 8px 16px;
+            background: #ee6531;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        .save-coords-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+        }        .save-coords-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }        .edit-mode-btn {
+            padding: 8px 16px;
+            background: #ee6531;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .edit-mode-btn:hover {
+            background: #d55a2a;
+            transform: translateY(-1px);
+        }        .edit-mode-btn.active {
+            background: #ee6531;
+        }
+
+        .edit-mode-btn.active:hover {
+            background: #d55a2a;
+        }
+
+        .map-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            z-index: 1;
+            opacity: 0.8;
+        }
+
+        .coord-close-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: rgba(238, 101, 49, 0.9);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 10002;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .coord-close-btn:hover {
+            background: rgba(238, 101, 49, 1);
+            transform: scale(1.1);
+        }        /* Tutorial Overlay */
+        .tutorial-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            pointer-events: auto;
+            align-items: center; /* For centering content if not positioned by JS */
+            justify-content: center; /* For centering content if not positioned by JS */
+        }
+        .tutorial-clone { /* New class for cloned elements */
+            position: absolute !important;
+            z-index: 2001 !important;
+            backdrop-filter: none !important;
+            pointer-events: none !important; /* Clones are for display only */
+            border-radius: 12px; /* Match slot border-radius */
+        }        .tutorial-content {
+            position: absolute;
+            background: #2A2A2A;
+            border: 2px solid #ee6531;
+            border-radius: 16px;
+            padding: 20px;
+            color: white;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            animation: tutorialPulse 2s infinite;
+            pointer-events: auto;
+        }
+        
+        .tutorial-content h3 {
+            margin-bottom: 15px;
+            color: #ee6531;
+            text-align: center;
+        }
+
+        .tutorial-content p {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .tutorial-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .tutorial-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .tutorial-btn.next {
+            background: #ee6531; /* Updated color */
+            color: white;
+        }
+
+        .tutorial-btn.prev {
+            background: #3A3A3A; /* Retained original color */
+            color: white;
+        }
+
+        .tutorial-btn.skip {
+            background: #dc3545; /* Retained original color */
+            color: white;
+        }
+
+        .tutorial-btn:hover {
+            background: #ee6531; /* Updated hover color */
+        }
+
+        .tutorial-progress {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 12px;
+            color: #a0a0a0;
+        }        .tutorial-highlight {
+            box-shadow: 0 0 0 3px rgba(238, 101, 49, 0.9), 0 0 15px rgba(238, 101, 49, 0.7) !important; /* Refined shadow */
+            position: relative !important;
+            z-index: 2001 !important; /* Adjusted z-index */
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            /* background: #2A2A2A !important; Removed background override */
+        }        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #2A2A2A;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ee6531;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f0622a;
+        }        /* Custom scrollbar for screenshot container */
+        .units-screenshot-inline::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .units-screenshot-inline::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            border-radius: 4px;
+        }
+
+        .units-screenshot-inline::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        .units-screenshot-inline::-webkit-scrollbar-thumb:hover {
+            background: #666;
+        }
+
+        .units-screenshot-inline::-webkit-scrollbar-corner {
+            background: #1a1a1a;
+        }        /* Marker animations */
+        @keyframes markerPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+        }        /* Upgrade Tooltip Styles */
+        .upgrade-tooltip {
+            display: none;
+            position: absolute;
+            z-index: 10003;
+            background: linear-gradient(135deg, #2A2A2A 0%, #1A1A1A 100%);
+            border: 1px solid #ee6531;
+            border-radius: 6px;
+            padding: 10px;
+            min-width: 140px;
+            max-width: 160px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            color: #ffffff;
+        }        .tooltip-close-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: none;
+            border: none;
+            color: #ee6531;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px;
+            line-height: 1;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+        }
+
+        .tooltip-close-btn:hover {
+            background: rgba(238, 101, 49, 0.2);
+        }
+
+        .tooltip-content {
+            margin-bottom: 8px;
+            padding-right: 16px;
+        }
+
+        .tooltip-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #ee6531;
+        }
+
+        .tooltip-select {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 11px;
+            background: #1A1A1A;
+            border: 1px solid #3A3A3A;
+            border-radius: 4px;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .tooltip-select:focus {
+            border-color: #ee6531;
+        }
+
+        .tooltip-select:hover {
+            border-color: #555;
+        }
+
+        .tooltip-save-btn {
+            width: 100%;
+            padding: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #ee6531 0%, #f0622a 100%);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tooltip-save-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        #upgradeModal {
+            z-index: 10003 !important; /* Ensure it's above the coordOverlay and its children */
+        }
+
+        /* Edit Mode Button Styles */
+        .edit-mode-btn {
+            transition: all 0.3s ease;
+        }
+          .edit-mode-btn.active {
+            background: #ee6531 !important;
+            transform: scale(1.05);
+        }
+        
+        .edit-mode-btn:hover {
+            background: #d55a2a !important;
+        }
+        
+        .edit-mode-btn.active:hover {
+            background: #d55a2a !important;
+        }
+    </style>
+</head>
+<body>
+  
+
+
+    <div class="container">
+        <div class="slots-grid" id="slotsGrid">
+            <!-- Slots will be generated dynamically -->
+        </div>        <div class="bottom-controls">
+            <button class="main-btn save-with-screenshot-btn" onclick="openSaveConfigModal()">Save Config</button>
+            <button class="main-btn export-btn" onclick="exportConfiguration()">Export Settings</button>
+            <button class="main-btn import-btn" onclick="openImportModal()">Import Config</button>
+            <button class="main-btn refresh-btn" onclick="refreshConfiguration()">Refresh</button>
+        </div>
+    </div>    <!-- Coordinate Selection Modal -->
+    <div id="coordModal" class="modal">
+        <div class="modal-content coord-modal-content">
+            <h3>Set Custom Coordinates</h3>
+            <p>Setting coordinates for <span id="modalSlotName"></span></p>
+            
+            <div class="form-group">
+                <label for="mapSelect">Map (for positioning reference):</label>
+                <select id="mapSelect">
+                    <option value="Marines Fort">Marines Fort</option>
+                    <option value="Hell City">Hell City</option>
+                    <option value="Snowy Capital">Snowy Capital</option>
+                    <option value="Leaf Village">Leaf Village</option>
+                    <option value="Wanderneich">Wanderneich</option>
+                    <option value="Central City">Central City</option>
+                    <option value="Giants District (Town)">Giants District (Town)</option>
+                    <option value="Flying Island">Flying Island</option>
+                    <option value="U-18">U-18</option>
+                    <option value="Flower Garden">Flower Garden</option>                    <option value="Ancient Dungeon">Ancient Dungeon</option>                    <option value="Shinjuku Crater">Shinjuku Crater</option>                    <option value="Valhalla Arena">Valhalla Arena</option>
+                    <option value="Frozen Planet">Frozen Planet</option>
+<option value="Devil Dungeon">Devil Dungeon</option>
+<option value="Essence Map">Essence Map</option>
+<option value="Hell Invasion">Hell Invasion</option>
+<option value="Holy Invasion">Holy Invasion</option>
+                  
+                </select>
+            </div>
+            
+            <div class="coord-inputs">
+                <div class="form-group">
+                    <label for="coordX">X Coordinate:</label>
+                    <input type="number" id="coordX" placeholder="X Coordinate" min="0" max="1000">
+                </div>
+                <div class="form-group">
+                    <label for="coordY">Y Coordinate:</label>
+                    <input type="number" id="coordY" placeholder="Y Coordinate" min="0" max="700">
+                </div>
+            </div>            <div class="coord-helper">
+            </div>              <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="document.getElementById('coordModal').style.display = 'none'">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Config Modal -->
+    <div id="importModal" class="modal">
+        <div class="modal-content import-modal-content">
+            <h3>Import Configuration</h3>
+            <p>Select a map configuration to load:</p>
+            <div id="configList" class="config-list">
+                <!-- Config files will be loaded here -->
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn cancel" onclick="closeImportModal()">Cancel</button>
+            </div>
+        </div>
+    </div>    <!-- Save Config Modal -->
+    <div id="saveConfigModal" class="modal">
+        <div class="modal-content">
+            <h3>Save Config</h3>
+            <p>Enter a name for your configuration. A screenshot of your units will be captured automatically.</p>
+              <div class="form-group">
+                <label for="configNameInput">Configuration Name:</label>
+                <input type="text" id="configNameInput" placeholder="Enter configuration name..." maxlength="50" onkeydown="if(event.key==='Enter') saveConfigWithScreenshot()">
+            </div>
+              <div class="modal-buttons">
+                <button class="modal-btn save" onclick="saveConfigWithScreenshot()">Save</button>
+                <button class="modal-btn cancel" onclick="closeSaveConfigModal()">Cancel</button>
+            </div>
+        </div>
+    </div>    <!-- Marker Upgrade Tooltip -->
+    <div id="upgradeTooltip" class="upgrade-tooltip">
+        <button class="tooltip-close-btn" onclick="closeUpgradeTooltip()">×</button>
+        <div class="tooltip-content">            <label for="markerUpgradeLevelTooltip" class="tooltip-label">Upgrade Level:</label>
+            <select id="markerUpgradeLevelTooltip" class="tooltip-select" onchange="handleUpgradeChange()">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="max">Max</option>
+            </select>
+            <label for="markerUpgradePriorityTooltip" class="tooltip-label" style="margin-top: 5px;">Priority:</label>
+            <select id="markerUpgradePriorityTooltip" class="tooltip-select" onchange="handleUpgradeChange()">
+                <option value="1">1 (Highest)</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5 (Lowest)</option>            </select>
+        </div>
+        <button onclick="saveMarkerUpgrade()" class="tooltip-save-btn">💾 Save Upgrade</button>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Tutorial Overlay -->
+    <div id="tutorialOverlay" class="tutorial-overlay">
+        <div id="tutorialContent" class="tutorial-content">            <div class="tutorial-progress">
+                <span id="tutorialStep">1</span> / <span id="tutorialTotal">7</span>
+            </div>
+            <h3 id="tutorialTitle">Welcome to Unit Manager!</h3>
+            <p id="tutorialText">This tutorial will guide you through all the features of the Unit Manager.</p>
+            <div class="tutorial-buttons">
+                <button id="tutorialPrev" class="tutorial-btn prev" onclick="previousTutorialStep()" style="display: none;">Previous</button>
+                <button id="tutorialNext" class="tutorial-btn next" onclick="nextTutorialStep()">Next</button>
+                <button id="tutorialSkip" class="tutorial-btn skip" onclick="skipTutorial()">Skip Tutorial</button>
+            </div>
+        </div>
+    </div>    <script>        let currentConfig = {};
+        let currentSlot = 1;
+        let currentEditSlot = 1; // Separate variable for editing context to avoid resetting other slot configurations
+        let lastEditedSlot = 1; // Track last edited slot to detect cross-slot editing
+        let autoSaveTimeout;
+        let tutorialStep = 0;
+        let tutorialActive = false;
+        let currentTutorialClone = null; // Added to track the current tutorial clone
+        let disabledSlots = new Set(); // Track disabled slots// Tutorial steps configuration
+        const tutorialSteps = [            {
+                title: "Welcome to Unit Manager!",
+                text: "This tutorial will guide you through all the features of the Unit Manager. You can manage 6 unit slots with various settings.",
+                target: null,
+                position: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
+            },            {
+                title: "Placements Setting",
+                text: "The placement dropdown controls how many units will be placed.",
+                target: "placement1",
+                position: { top: '15%', left: '60%' }
+            },            {
+                title: "Priority Setting",
+                text: "Priority determines the order units are placed. Lower numbers have higher priority (1 = highest priority, 6 = lowest priority).",
+                target: "priority1",
+                position: { top: '25%', left: '60%' }
+            },            {
+                title: "Auto Skill Setting",
+                text: "Auto Skill controls which skill the unit will automatically use. You can choose None, Skill 1, Skill 2, or Skill 3.",
+                target: "skill1",
+                position: { top: '35%', left: '60%' }
+            },            {
+                title: "Custom Coordinates",
+                text: "Click this button to set custom X and Y coordinates for where the unit should be placed on the battlefield. In the coordinate overlay, you can use Edit Mode to configure upgrade levels for each marker!",
+                target: "customCoordsBtn1",
+                position: { top: '35%', left: '55%' }
+            },            {
+                title: "Save and Export",
+                text: "Use these buttons to save your configuration, export settings to a file, or refresh the current settings. You're all set!",
+                target: ".bottom-controls",
+                position: { top: '70%', left: '10%', transform: 'translate(50%, -90%)' }
+           
+            }
+        ];        // Initialize the application
+        document.addEventListener('DOMContentLoaded', async function() {
+            generateSlots(); // Generate slots FIRST
+            await loadConfiguration(); // Then load and populate configuration
+            
+            // Initialize map dropdown with default game mode (Raids)
+            updateMapDropdown();
+            
+            // Auto-position inside ALS window on startup with retry logic
+            console.log('DOM loaded, starting auto-alignment sequence...');
+            
+            // Wait for pywebview API to be ready and then try alignment
+            setTimeout(async () => {
+                console.log('Checking if pywebview API is available...');
+                if (typeof pywebview === 'undefined' || !pywebview.api) {
+                    console.log('pywebview API not ready yet, waiting...');
+                    // Try again after more time
+                    setTimeout(async () => {
+                        await attemptAutoAlignment();
+                    }, 2000);
+                } else {
+                    console.log('pywebview API is ready, attempting alignment...');
+                    await attemptAutoAlignment();
+                }
+            }, 1000); // Wait 1 second for pywebview to be fully ready
+            
+            checkTutorial();
+        });
+        
+        // Helper function for auto-alignment attempts
+        async function attemptAutoAlignment() {
+            try {
+                console.log('Attempting to auto-position UI inside ALS progress area...');
+                const result = await pywebview.api.align_with_roblox();
+                if (result && result.success) {
+                    console.log('UI automatically positioned inside ALS progress area:', result.message);
+                    showNotification('Positioned inside ALS window', 'success');
+                } else {
+                    console.log('Auto-positioning failed:', result ? result.message : 'No result returned');
+                    // Retry once after another delay
+                    setTimeout(async () => {
+                        try {
+                            console.log('Retrying auto-positioning...');
+                            const retryResult = await pywebview.api.align_with_roblox();
+                            if (retryResult && retryResult.success) {
+                                console.log('Auto-positioning succeeded on retry:', retryResult.message);
+                                showNotification('Positioned inside ALS window', 'success');
+                            } else {
+                                console.log('Auto-positioning retry failed:', retryResult ? retryResult.message : 'No result returned');
+                                showNotification('Could not auto-position - ALS window not found', 'warning');
+                            }
+                        } catch (retryError) {
+                            console.log('Auto-positioning retry error:', retryError);
+                            showNotification('Auto-positioning failed', 'error');
+                        }
+                    }, 2000);
+                }
+            } catch (error) {
+                console.log('Auto-positioning on startup failed:', error);
+                showNotification('Auto-positioning error: ' + error.message, 'error');
+            }
+        }// Generate slot HTML dynamically
+        function generateSlots() {
+            const slotsGrid = document.getElementById('slotsGrid');
+            slotsGrid.innerHTML = ''; // Clear existing slots
+
+            for (let i = 1; i <= 6; i++) {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'slot';
+                slotDiv.id = `slotCard${i}`; // Added ID to each slot card
+                  slotDiv.innerHTML = `
+                    <div class="slot-controls">
+                        <button class="slot-control-btn clear-btn" onclick="clearSlot(${i})" title="Clear slot settings">Clear</button>
+                        <button class="slot-control-btn disable-btn" onclick="toggleSlotDisabled(${i})" title="Disable/Enable slot">Disable</button>
+                    </div>
+                    <h3 id="slotTitle${i}">SLOT ${i}</h3>                    <div class="form-group">
+                        <label for="placement${i}">Placements</label>
+                        <select id="placement${i}" onchange="updateConfig(${i}, 'placement', this.value)">
+                            ${Array.from({length: 5}, (_, k) => `<option value="${k+1}">${k+1}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="priority${i}">Priority</label>
+                        <select id="priority${i}" onchange="updateConfig(${i}, 'priority', this.value)">
+                            ${Array.from({length: 6}, (_, k) => `<option value="${k+1}">${k+1}</option>`).join('')}
+                        </select>
+                    </div>                    <div class="form-group">                        <label for="skill${i}">Auto Skill</label>                        <select id="skill${i}" onchange="updateConfig(${i}, 'skill', this.value)">
+                            <option value="none">None</option>
+                            <option value="ichigo">Ichigo</option>
+                            <option value="gilgamesh_nuke">Gilgamesh Nuke</option>
+                            <option value="idol_concert">Idol Concert</option>
+                            <option value="gojo_unlimited_void">Gojo: Unlimited Void</option>
+                        </select>
+                    </div>
+                    <div class="coords-status not-set" id="coords-status-${i}">Coordinates: Not Set</div>
+                    <button id="customCoordsBtn${i}" onclick="setCustomCoords(${i})">Custom Coords</button> <!-- Added ID to button -->
+                `;
+                slotsGrid.appendChild(slotDiv);
+            }
+        }        // Load configuration using webview API
+        async function loadConfiguration() {
+            try {
+                // Check if pywebview is available
+                if (typeof pywebview === 'undefined' || !pywebview.api) {
+                    console.warn('pywebview API not available yet');
+                    showNotification('API not ready yet, retrying...', 'warning');
+                    // Retry after a short delay
+                    setTimeout(loadConfiguration, 1000);
+                    return;
+                }
+                  currentConfig = await pywebview.api.get_config();
+                console.log('Loaded config:', currentConfig);
+                populateForm();
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                showNotification('Error loading configuration', 'error');
+            }
+        }
+
+        // Populate form with loaded configuration
+        function populateForm() {
+            // Clear disabled slots set before populating
+            disabledSlots.clear();
+            
+            console.log('Populating form with config:', currentConfig);
+            
+            for (let i = 1; i <= 6; i++) {
+                const slotKey = `slot${i}`;
+                const slot = currentConfig[slotKey] || {};
+                
+                console.log(`Populating slot ${i}:`, slot);
+
+                // Set placement
+                const placementSelect = document.getElementById(`placement${i}`);
+                if (placementSelect && slot.placement) {
+                    console.log(`Setting placement${i} to:`, slot.placement);
+                    placementSelect.value = slot.placement;
+                } else if (!placementSelect) {
+                    console.warn(`placement${i} element not found!`);
+                }
+
+                // Set priority
+                const prioritySelect = document.getElementById(`priority${i}`);
+                if (prioritySelect && slot.priority) {
+                    console.log(`Setting priority${i} to:`, slot.priority);
+                    prioritySelect.value = slot.priority;
+                } else if (!prioritySelect) {
+                    console.warn(`priority${i} element not found!`);
+                }                // Set skill
+                const skillSelect = document.getElementById(`skill${i}`);
+                if (skillSelect && slot.skill) {
+                    console.log(`Setting skill${i} to:`, slot.skill);
+                    skillSelect.value = slot.skill;
+                } else if (!skillSelect) {
+                    console.warn(`skill${i} element not found!`);
+                }
+
+                // Restore disabled state
+                if (slot.disabled === true) {
+                    disabledSlots.add(i);
+                    const slotCard = document.getElementById(`slotCard${i}`);
+                    const disableBtn = slotCard?.querySelector('.disable-btn');
+                    if (disableBtn) {
+                        disableBtn.textContent = 'Enable';
+                        disableBtn.className = 'slot-control-btn disable-btn enabled';
+                        disableBtn.title = 'Enable slot';
+                    }
+                }
+                
+                // Update visual state and coordinates status
+                updateSlotVisualState(i);
+                updateCoordsStatus(i);
+            }        }
+          // Update configuration when form changes
+        function updateConfig(slotNumber, field, value) {
+            const slotKey = `slot${slotNumber}`;
+            
+            if (!currentConfig[slotKey]) {
+                currentConfig[slotKey] = {
+                    placement: '1',
+                    priority: slotNumber.toString(),
+                    skill: 'none',
+                    coords: [{ x: 0, y: 0, set: false }]
+                };
+            }
+            
+            currentConfig[slotKey][field] = value;
+            
+            // If placement is being changed, adjust the coords array
+            if (field === 'placement') {
+                const newPlacement = parseInt(value);
+                const currentCoords = currentConfig[slotKey].coords || [];
+                
+                if (newPlacement < currentCoords.length) {
+                    // Trim excess coordinates when placement is reduced
+                    currentConfig[slotKey].coords = currentCoords.slice(0, newPlacement);
+                    console.log(`Trimmed coordinates for slot ${slotNumber} from ${currentCoords.length} to ${newPlacement}`);
+                } else if (newPlacement > currentCoords.length) {
+                    // Add new coordinate slots when placement is increased
+                    while (currentConfig[slotKey].coords.length < newPlacement) {
+                        currentConfig[slotKey].coords.push({ x: 0, y: 0, set: false });
+                    }
+                    console.log(`Extended coordinates for slot ${slotNumber} to ${newPlacement} markers`);
+                }
+                
+                // Update coordinates status to reflect the change
+                updateCoordsStatus(slotNumber);
+            }
+            
+            // Auto-save after 1 second of inactivity
+            clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                saveConfiguration(false);
+            }, 1000);
+        }        // Clear slot settings function
+        async function clearSlot(slotNumber) {
+            const slotKey = `slot${slotNumber}`;
+            
+            // Reset slot to default values in local config
+            currentConfig[slotKey] = {
+                placement: '1',
+                priority: slotNumber.toString(),
+                skill: 'none',
+                coords: [],
+                marker_upgrades: {}
+            };
+            
+            // Update UI elements
+            const placementSelect = document.getElementById(`placement${slotNumber}`);
+            const prioritySelect = document.getElementById(`priority${slotNumber}`);
+            const skillSelect = document.getElementById(`skill${slotNumber}`);
+            
+            if (placementSelect) placementSelect.value = '1';
+            if (prioritySelect) prioritySelect.value = slotNumber.toString();
+            if (skillSelect) skillSelect.value = 'none';
+              // Update coordinates status
+            updateCoordsStatus(slotNumber);
+              // Clear any disabled state and reset button appearance
+            disabledSlots.delete(slotNumber);
+            const slotCard = document.getElementById(`slotCard${slotNumber}`);
+            const disableBtn = slotCard?.querySelector('.disable-btn');
+            if (disableBtn) {
+                disableBtn.textContent = 'Disable';
+                disableBtn.className = 'slot-control-btn disable-btn';
+                disableBtn.title = 'Disable slot';
+            }
+            updateSlotVisualState(slotNumber);
+            
+            // FIXED: Remove this specific slot from config file without affecting others
+            try {
+                const result = await pywebview.api.clear_slot_from_config(slotNumber);
+                if (result.success) {
+                    showNotification(`Slot ${slotNumber} cleared successfully`, 'success');
+                } else {
+                    showNotification(`Error clearing slot ${slotNumber}: ${result.message}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error clearing slot from config:', error);
+                showNotification(`Error clearing slot ${slotNumber}`, 'error');
+            }
+            
+            showNotification(`Slot ${slotNumber} cleared successfully`, 'success');
+        }        // Toggle slot disabled state function
+        async function toggleSlotDisabled(slotNumber) {
+            const slotCard = document.getElementById(`slotCard${slotNumber}`);
+            const disableBtn = slotCard.querySelector('.disable-btn');            if (disabledSlots.has(slotNumber)) {
+                // Enable the slot
+                disabledSlots.delete(slotNumber);
+                disableBtn.textContent = 'Disable';
+                disableBtn.className = 'slot-control-btn disable-btn';
+                disableBtn.title = 'Disable slot';
+                showNotification(`Slot ${slotNumber} enabled`, 'success');            } else {
+                // Disable the slot - remove it from config file
+                disabledSlots.add(slotNumber);
+                disableBtn.textContent = 'Enable';
+                disableBtn.className = 'slot-control-btn disable-btn enabled';
+                disableBtn.title = 'Enable slot';
+                showNotification(`Slot ${slotNumber} disabled`, 'info');
+                
+                // FIXED: Remove disabled slot from config file to prevent it from being used
+                try {
+                    const result = await pywebview.api.remove_slot_from_config(slotNumber);
+                    if (result.success) {
+                        console.log(`Slot ${slotNumber} removed from config file`);
+                    } else {
+                        console.error(`Error removing slot ${slotNumber} from config:`, result.message);
+                    }
+                } catch (error) {
+                    console.error('Error removing slot from config:', error);
+                }
+            }
+            
+            updateSlotVisualState(slotNumber);
+            
+            // CRITICAL FIX: Don't call saveConfiguration which resets all slots!
+            // Instead, just update the local state and let the backend handle the disabled state separately
+            console.log(`Slot ${slotNumber} disabled state changed to: ${disabledSlots.has(slotNumber)}`);
+            
+            // Optional: If you need to persist disabled state, create a separate method that only saves disabled states
+            // For now, disabled state is only maintained in the UI session
+        }
+        
+
+        // Update slot visual state based on disabled status
+        function updateSlotVisualState(slotNumber) {
+            const slotCard = document.getElementById(`slotCard${slotNumber}`);
+            
+            if (disabledSlots.has(slotNumber)) {
+                slotCard.classList.add('disabled');
+            } else {
+                slotCard.classList.remove('disabled');
+            }
+        }
+
+        // Save configuration using webview API
+        async function saveConfiguration(showNotif = true) {
+            try {
+                const result = await pywebview.api.update_config(currentConfig);
+                if (showNotif) {
+                    showNotification(result.message, result.success ? 'success' : 'error');
+                }
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                if (showNotif) {
+                    showNotification('Error saving configuration', 'error');
+                }
+            }
+        }        // Export configuration
+        async function exportConfiguration() {
+            try {
+                const exportData = await pywebview.api.export_config();
+                const dataStr = JSON.stringify(exportData, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                
+                // Create download link
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'unit_manager_config.json';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showNotification('Configuration exported successfully', 'success');
+            } catch (error) {
+                console.error('Error exporting configuration:', error);
+                showNotification('Error exporting configuration', 'error');
+            }
+        }
+
+        // Refresh configuration
+        async function refreshConfiguration() {
+            try {
+                showNotification('Refreshing configuration...', 'info');
+                await loadConfiguration();
+                showNotification('Configuration refreshed successfully', 'success');
+            } catch (error) {
+                console.error('Error refreshing configuration:', error);
+                showNotification('Error refreshing configuration', 'error');
+            }
+        }        // Global variables for multi-marker system
+        let currentMarkerIndex = 0;
+        let maxMarkers = 1;
+        let slotMarkers = [];        let isEditMode = false;
+        let markerUpgrades = {}; // Store per-marker upgrade data: {slotNumber: {markerIndex: upgradeLevel}}
+        let tooltipOpener = null; // Stores the element that opened the tooltip
+          // Global marker system variables
+        let allSlotMarkers = []; // Store markers from all slots: [{x, y, slot_number, marker_index, set}]
+        let globalMarkerUpgrades = {}; // Store upgrades for all slots: {slot_number: {marker_index: upgrade_level}}
+        
+        // Tooltip context tracking
+        let isGlobalTooltip = false; // Track whether we're editing a global marker or current slot marker
+
+        // Event handler functions to prevent duplicate listeners
+        async function handleMapChange() {
+            console.log('Map changed to:', this.value);
+            await loadMapBackground(document.getElementById('coordOverlay'), this.value);
+        }
+
+        function preventEventPropagation(e) {
+            e.stopPropagation();
+        }// Set custom coordinates (alias function for button calls)
+        function setCustomCoords(slotNumber) {
+            console.log('setCustomCoords called with slot:', slotNumber);
+            return originalSetCustomCoords(slotNumber);
+        }
+
+        // Set custom coordinates (original function)
+        async function originalSetCustomCoords(slotNumber) {
+            console.log('originalSetCustomCoords called with slot:', slotNumber);
+            currentSlot = slotNumber;
+            
+            // First, get the current placement count from the dropdown/config
+            const slotKey = `slot${slotNumber}`;
+            const placement = currentConfig[slotKey]?.placement || '1';
+            maxMarkers = parseInt(placement);
+            console.log(`Setting up ${maxMarkers} markers for slot ${slotNumber} based on placement: ${placement}`);
+            
+            // Get existing slot markers from backend if available
+            try {
+                const markerResult = await pywebview.api.get_slot_markers(slotNumber);
+                if (markerResult.success && markerResult.markers) {
+                    // Use existing markers but ensure we have the right number based on current placement
+                    slotMarkers = markerResult.markers.slice(0, maxMarkers);
+                    // Fill remaining slots if placement count increased
+                    while (slotMarkers.length < maxMarkers) {
+                        slotMarkers.push({x: 0, y: 0, set: false});
+                    }
+                } else {
+                    // Create new markers array based on placement count
+                    slotMarkers = Array(maxMarkers).fill().map(() => ({x: 0, y: 0, set: false}));
+                }
+            } catch (error) {
+                console.error('Error getting slot markers:', error);
+                // Create new markers array based on placement count
+                slotMarkers = Array(maxMarkers).fill().map(() => ({x: 0, y: 0, set: false}));
+            }
+              // Start with the first unset marker, or marker 0 if all are set
+            currentMarkerIndex = 0;
+            for (let i = 0; i < slotMarkers.length; i++) {
+                // if (!slotMarkers[i].set) { // This logic was flawed, always start at 0 or let user pick
+                // currentMarkerIndex = i;
+                // break;
+                // }
+            }
+              // Load global markers and upgrades for cross-slot visibility
+            await loadAllMarkersFromBackend();
+            await loadAllMarkerUpgradesFromBackend();
+            
+            // Reset edit mode when opening overlay
+            isEditMode = false;
+              // Auto-open the coordinate overlay with default map instead of modal
+            showCoordOverlay();
+        }
+        
+        function updateCoordinateDisplay() {
+            // This function is no longer needed since we're bypassing the modal
+            // and going directly to the overlay. The overlay handles its own display.
+            return;
+        }
+        
+        // Removed previousMarker and nextMarker functions - auto-progression only        
+        // Removed marker status display - updateCoordinateStatus function
+          // Window positioning and coordinate helper functions
+        async function alignWithRoblox() {
+            try {
+                showNotification('Positioning inside ALS window...', 'info');
+                const result = await pywebview.api.align_with_roblox();
+                if (result.success) {
+                    showNotification('Window positioned inside ALS progress area', 'success');
+                } else {
+                    showNotification(result.message || 'Could not find ALS window', 'error');
+                }
+            } catch (error) {
+                console.error('Error positioning inside ALS window:', error);
+                showNotification('Error positioning window', 'error');
+            }        }async function showCoordOverlay() {
+            // Default to Marines Fort map
+            let selectedMap = 'Marines Fort';
+            
+            // Load upgrade data immediately when overlay opens to ensure it's available
+            console.log('Loading upgrade data before showing overlay...');
+            await loadAllMarkerUpgradesFromBackend();
+            
+            // Remove existing overlay to ensure clean state
+            let existingOverlay = document.getElementById('coordOverlay');
+            if (existingOverlay) {
+                existingOverlay.remove();
+            }// Create fresh overlay
+            const overlay = document.createElement('div');
+            overlay.id = 'coordOverlay';
+            overlay.className = 'coord-overlay';
+            overlay.style.cursor = 'crosshair';
+            overlay.tabIndex = 0; // Make it focusable
+            document.body.appendChild(overlay);
+            
+            // Add event listeners immediately without delay for better reliability
+            overlay.addEventListener('mousemove', updateCoordDisplay, { passive: true });
+            overlay.addEventListener('click', selectCoordinates, { capture: true });
+            document.addEventListener('keydown', handleOverlayKeydown);
+            
+            // Force focus on overlay to ensure it's interactive
+            overlay.focus();
+            
+            console.log('Overlay created and event listeners attached immediately');
+            
+            // Clear previous content
+            overlay.innerHTML = '';
+            
+            // Add coordinate info panel with multi-marker info and map dropdown
+            const coordInfo = document.createElement('div');
+            coordInfo.className = 'coord-info';
+            
+            // Build marker status for overlay
+            let markerStatus = '';
+            if (maxMarkers > 1) {
+                markerStatus = `<div class="marker-info">Setting marker ${currentMarkerIndex + 1} of ${maxMarkers} for Slot ${currentSlot}</div>`;
+                
+                // Show existing markers
+                let existingMarkers = '<div class="existing-markers">Existing markers: ';
+                for (let i = 0; i < maxMarkers; i++) {
+                    const marker = slotMarkers[i];
+                    if (marker && marker.set) {
+                        const color = i === currentMarkerIndex ? '#ff6b35' : '#4CAF50';
+                        existingMarkers += `<span style="color: ${color};">[${i + 1}: ${marker.x},${marker.y}]</span> `;
+                    } else {
+                        const color = i === currentMarkerIndex ? '#ff6b35' : '#999';
+                        existingMarkers += `<span style="color: ${color};">[${i + 1}: unset]</span> `;
+                    }
+                }
+                existingMarkers += '</div>';
+                markerStatus += existingMarkers;
+            } else {
+                markerStatus = `<div class="marker-info">Setting coordinates for Slot ${currentSlot}</div>`;
+            }
+              coordInfo.innerHTML = `
+                <h4>♟️ Unit Placement</h4>
+                ${markerStatus}
+                <div class="coord-display">X: <span id="mouseX">0</span></div>
+                <div class="coord-display">Y: <span id="mouseY">0</span></div>                <div class="form-group" style="margin-top: 15px;">
+                    <label for="overlayGameModeSelect" style="color: #fff; margin-bottom: 5px; display: block;">Game Mode:</label>                    <select id="overlayGameModeSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff; margin-bottom: 10px;" onchange="updateMapDropdown()">
+                        <option value="Raids">Raids</option>
+                        <option value="Dungeon">Dungeon</option>
+                        <option value="Survival">Survival</option>
+                        <option value="Legend Stages">Legend Stages</option>
+                        <option value="Essences">Essences</option>
+                        <option value="Portal">Portal</option>
+                    </select>
+                    <label for="overlayMapSelect" style="color: #fff; margin-bottom: 5px; display: block;">Map:</label>
+                    <select id="overlayMapSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff;">
+                        <!-- Maps will be populated based on selected game mode -->
+                    </select>
+                </div>
+                ${maxMarkers > 1 ? `
+                    <div class="marker-selector">
+                        <label for="markerSelect">Edit Marker:</label>
+                        <select id="markerSelect" onchange="switchToMarker(this.value)">
+                            ${Array.from({length: maxMarkers}, (_, i) => {
+                                const marker = slotMarkers[i];
+                                const status = marker && marker.set ? `(${marker.x}, ${marker.y})` : '(unset)';
+                                const selected = i === currentMarkerIndex ? 'selected' : '';
+                                return `<option value="${i}" ${selected}>Marker ${i + 1} ${status}</option>`;
+                            }).join('')}
+                        </select>
+                    </div>                ` : ''}
+                <!-- <button class="save-coords-btn" onclick="saveAndStayOpen()">Save Coordinates</button> Removed Save Coordinates Button -->
+                <button id="editModeBtn" class="edit-mode-btn" onclick="toggleEditMode()" style="margin-top: 10px; width: 100%; background: #4CAF50; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">⚙️ Edit Mode</button>
+                <div class="coord-instructions" style="margin-top: 10px;">
+                    <div id="overlayInfo">Move mouse to see coordinates<br>Click to place marker ${currentMarkerIndex + 1} of ${maxMarkers}<br>Press ESC to close</div>
+                </div>
+            `;
+            overlay.appendChild(coordInfo);
+            
+            // Set the selected map in the overlay dropdown
+            const overlayMapSelect = document.getElementById('overlayMapSelect');
+            overlayMapSelect.value = selectedMap;            // Add event listener to map dropdown to reload background when changed
+            overlayMapSelect.addEventListener('change', async function() {
+                selectedMap = this.value;
+                // Reload the map background
+                await loadMapBackground(overlay, selectedMap);
+                // Force refresh of all markers to ensure they're still visible
+                await loadAllMarkersFromBackend();
+                await loadAllMarkerUpgradesFromBackend();
+                addMarkerIndicators(overlay);
+            });
+            
+            // Prevent dropdown clicks from triggering coordinate selection
+            overlayMapSelect.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            
+            // Also prevent the entire coord-info panel from triggering coordinate selection
+            coordInfo.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+              // Load initial map background
+            await loadMapBackground(overlay, selectedMap);
+            
+            // Add close button
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'coord-close-btn';
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                background: rgba(238, 101, 49, 0.9);
+                border: none;
+                border-radius: 50%;
+                color: white;
+                font-size: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                z-index: 10002;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            closeBtn.onclick = hideCoordOverlay;
+            closeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+            });
+            overlay.appendChild(closeBtn);
+              // Force refresh of slot markers from backend to ensure current slot data is accurate
+            console.log('Refreshing slot markers for current slot:', currentSlot);
+            try {
+                const markerResult = await pywebview.api.get_slot_markers(currentSlot);
+                if (markerResult.success && markerResult.markers) {
+                    slotMarkers = markerResult.markers.slice(0, maxMarkers);
+                    // Fill remaining slots if placement count increased
+                    while (slotMarkers.length < maxMarkers) {
+                        slotMarkers.push({x: 0, y: 0, set: false});
+                    }
+                    console.log('Refreshed slot markers:', slotMarkers);
+                }
+            } catch (error) {
+                console.error('Error refreshing slot markers:', error);
+            }
+              // Load global markers and upgrades for cross-slot visibility
+            console.log('Loading global markers for cross-slot visibility...');
+            await loadAllMarkersFromBackend();
+            await loadAllMarkerUpgradesFromBackend();
+            
+            // Force immediate display of all markers
+            addMarkerIndicators(overlay);
+            
+            overlay.style.display = 'block';
+        }        // New function to load map background
+        async function loadMapBackground(overlay, selectedMap) {
+            console.log('Loading map background for:', selectedMap);
+            
+            // Remove existing map background or grid
+            const existingBg = overlay.querySelector('.map-background, .coord-grid');
+            if (existingBg) {
+                existingBg.remove();
+            }
+            
+            // Try to get map image
+            try {
+                console.log('Requesting map image for:', selectedMap);
+                const mapResult = await pywebview.api.get_map_image(selectedMap);
+                console.log('Map result:', mapResult);
+                
+                if (mapResult.success && mapResult.exists) {
+                    console.log('Map image found, displaying...');
+                    // Show map image using data URL
+                    const mapImage = document.createElement('img');
+                    mapImage.src = mapResult.data_url;
+                    mapImage.className = 'map-background';
+                    mapImage.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        z-index: -1;
+                        opacity: 0.7;
+                    `;
+                    overlay.appendChild(mapImage);
+                } else {
+                    console.log('Map image not found, trying default fallback...');
+                    // Try to load default.png as fallback
+                    try {
+                        const defaultResult = await pywebview.api.get_map_image('default');
+                        if (defaultResult.success && defaultResult.exists) {
+                            const mapImage = document.createElement('img');
+                            mapImage.src = defaultResult.data_url;
+                            mapImage.className = 'map-background';
+                            mapImage.style.cssText = `
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: contain;
+                                z-index: -1;
+                                opacity: 0.7;
+                            `;
+                            overlay.appendChild(mapImage);
+                        } else {
+                            // Show grid pattern if default.png also doesn't exist
+                            const grid = document.createElement('div');
+                            grid.className = 'coord-grid';
+                            grid.innerHTML = createGridPattern();
+                            overlay.appendChild(grid);
+                        }
+                    } catch (defaultError) {
+                        console.log('Could not load default.png, showing grid instead');
+                        // Show grid pattern
+                        const grid = document.createElement('div');
+                        grid.className = 'coord-grid';
+                        grid.innerHTML = createGridPattern();
+                        overlay.appendChild(grid);
+                    }
+                }
+            } catch (error) {
+                console.log('Could not load map image, trying default.png fallback');
+                // Try to load default.png as fallback
+                try {
+                    const defaultResult = await pywebview.api.get_map_image('default');
+                    if (defaultResult.success && defaultResult.exists) {
+                        const mapImage = document.createElement('img');
+                        mapImage.src = defaultResult.data_url;
+                        mapImage.className = 'map-background';
+                        mapImage.style.cssText = `
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: contain;
+                            z-index: -1;
+                            opacity: 0.7;
+                        `;
+                        overlay.appendChild(mapImage);
+                    } else {
+                        // Show grid pattern if default.png doesn't exist
+                        const grid = document.createElement('div');
+                        grid.className = 'coord-grid';
+                        grid.innerHTML = createGridPattern();
+                        overlay.appendChild(grid);
+                    }
+                } catch (defaultError) {
+                    console.log('Could not load default.png, showing grid instead');
+                    // Show grid pattern
+                    const grid = document.createElement('div');
+                    grid.className = 'coord-grid';
+                    grid.innerHTML = createGridPattern();
+                    overlay.appendChild(grid);
+                }
+            }
+            
+            // Always refresh markers after background changes to ensure they're still visible
+            await loadAllMarkersFromBackend();
+            await loadAllMarkerUpgradesFromBackend();
+            addMarkerIndicators(overlay);
+        }        function addMarkerIndicators(overlay, forceReload = false) {
+            // Clear existing markers first
+            const existingMarkers = overlay.querySelectorAll('.coord-marker, .coord-marker-label');
+            existingMarkers.forEach(marker => marker.remove());
+            
+            // Define slot colors for visual distinction
+            const slotColors = {
+                1: '#FF6B35', // Orange (primary)
+                2: '#4CAF50', // Green
+                3: '#2196F3', // Blue
+                4: '#9C27B0', // Purple
+                5: '#FF9800', // Amber
+                6: '#F44336'  // Red
+            };
+
+           
+            // Only reload if forced or if we don't have any global markers
+            if (forceReload || !allSlotMarkers || allSlotMarkers.length === 0) {
+                console.log('Reloading global markers...');
+                loadAllMarkersFromBackend().then(() => {
+                   
+                    console.log('Global markers reloaded, count:', allSlotMarkers?.length || 0);
+                    displayAllMarkers();
+                });
+            } else {
+                console.log('Using existing global markers, count:', allSlotMarkers?.length || 0);
+                displayAllMarkers();
+            }
+            
+            // Function to display all markers
+            function displayAllMarkers() {
+                // Clear existing markers again after reload
+                const existingMarkers = overlay.querySelectorAll('.coord-marker, .coord-marker-label');
+                existingMarkers.forEach(marker => marker.remove());
+                
+                // Global marker display mode - show all markers from all slots
+                if (allSlotMarkers && allSlotMarkers.length > 0) {
+                    console.log('Displaying global markers:', allSlotMarkers);
+                    for (let i = 0; i < allSlotMarkers.length; i++) {
+                    const marker = allSlotMarkers[i];
+                    if (marker && marker.set) {
+                        const markerDiv = document.createElement('div');
+                        markerDiv.className = 'coord-marker';
+                        markerDiv.dataset.markerIndex = marker.marker_index;
+                        markerDiv.dataset.slotNumber = marker.slot_number;
+                        
+                        const slotColor = slotColors[marker.slot_number] || '#999999';
+                        const isCurrentSlot = marker.slot_number === currentSlot;
+                        const size = isCurrentSlot ? '16px' : '14px';
+                          // Get upgrade level for this marker (handle both old and new formats)
+                        const upgradeData = globalMarkerUpgrades[marker.slot_number]?.[marker.marker_index];
+                        let upgradeLevel = 0;
+                        if (typeof upgradeData === 'object' && upgradeData !== null) {
+                            upgradeLevel = upgradeData.level || 0;
+                        } else {
+                            upgradeLevel = upgradeData || 0;
+                        }
+                        const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                        
+                        markerDiv.style.cssText = `
+                            position: absolute;
+                            left: ${marker.x - parseInt(size)/2}px;
+                            top: ${marker.y - parseInt(size)/2}px;
+                            width: ${size};
+                            height: ${size};
+                            background: ${slotColor};
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            z-index: 10001;
+                            pointer-events: ${isEditMode ? 'auto' : 'none'};
+                            cursor: ${isEditMode ? 'pointer' : 'default'};
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            font-size: 8px;
+                            color: white;
+                            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                        `;
+                        
+                        // Add upgrade level indicator inside marker
+                        if (upgradeText) {
+                            markerDiv.textContent = upgradeText;
+                        }                        // Add click handler for edit mode
+                        if (isEditMode) {
+                            markerDiv.addEventListener('click', function(e) {
+                                console.log('Global marker clicked:', marker.slot_number, marker.marker_index, 'at coordinates:', marker.x, marker.y);
+                                e.stopPropagation();
+                                e.preventDefault();
+                                openGlobalMarkerUpgradeTooltip(marker.slot_number, marker.marker_index, marker.x, marker.y, this);
+                            });
+                            
+                            // Add hover glow effect without scaling
+                            markerDiv.addEventListener('mouseenter', function() {
+                                this.style.boxShadow = '0 0 15px rgba(255, 107, 53, 0.8)';
+                            });
+                            
+                            markerDiv.addEventListener('mouseleave', function() {
+                                this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.5)';
+                            });
+                        }
+                        
+                        // Add mousemove handler to ensure coordinate display works when hovering over markers
+                        markerDiv.addEventListener('mousemove', updateCoordDisplay);
+                        
+                        // Add slot-based label (S1, S2, etc.)
+                        const markerLabel = document.createElement('div');
+                        markerLabel.className = 'coord-marker-label';
+                        markerLabel.textContent = `S${marker.slot_number}`;
+                        markerLabel.style.cssText = `
+                            position: absolute;
+                            left: ${marker.x + 10}px;
+                            top: ${marker.y - 20}px;
+                            color: ${slotColor};
+                            font-weight: bold;
+                            font-size: 12px;
+                            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                            pointer-events: none;
+                            z-index: 10001;
+                        `;
+                          overlay.appendChild(markerDiv);
+                        overlay.appendChild(markerLabel);
+                    }
+                }
+                
+                // Also display current slot markers if they don't overlap with global markers
+                displayCurrentSlotMarkers();
+            } else {
+                // No global markers found, display current slot markers only
+                console.log('No global markers found, displaying current slot markers');
+                displayCurrentSlotMarkers();
+            }
+            }
+            
+            // Function to display current slot markers
+            function displayCurrentSlotMarkers() {
+                for (let i = 0; i < slotMarkers.length; i++) {
+                    const marker = slotMarkers[i];
+                    if (marker && marker.set) {
+                        // Check if this marker is already displayed as a global marker
+                        const alreadyDisplayed = allSlotMarkers && allSlotMarkers.some(globalMarker => 
+                            globalMarker.slot_number === currentSlot && 
+                            globalMarker.marker_index === i
+                        );
+                        
+                        if (alreadyDisplayed) {
+                            console.log(`Skipping slot ${currentSlot} marker ${i} - already displayed globally`);
+                            continue;
+                        }
+                        
+                        const markerDiv = document.createElement('div');
+                        markerDiv.className = 'coord-marker';
+                        markerDiv.dataset.markerIndex = i;
+                        const isActive = i === currentMarkerIndex;
+                        const color = isActive ? '#ff6b35' : '#4CAF50';
+                        const size = isActive ? '16px' : '12px';
+
+                        // Get upgrade level for this marker (handle both old and new formats)
+                        const upgradeData = markerUpgrades[currentSlot]?.[i];
+                        let upgradeLevel = 0;
+                        if (typeof upgradeData === 'object' && upgradeData !== null) {
+                            upgradeLevel = upgradeData.level || 0;
+                        } else {
+                            upgradeLevel = upgradeData || 0;
+                        }
+                        const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                        
+                        markerDiv.style.cssText = `
+                            position: absolute;
+                            left: ${marker.x - parseInt(size)/2}px;
+                            top: ${marker.y - parseInt(size)/2}px;
+                            width: ${size};
+                            height: ${size};
+                            background: ${color};
+                            border: 2px solid white;
+                            border-radius: 50%;
+                            z-index: 10001;
+                            pointer-events: ${isEditMode ? 'auto' : 'none'};
+                            cursor: ${isEditMode ? 'pointer' : 'default'};
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: bold;
+                            font-size: 10px;
+                            color: white;
+                            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                        `;
+                        
+                        // Add upgrade level indicator inside marker
+                        if (upgradeText) {
+                            markerDiv.textContent = upgradeText;
+                        }
+
+                        // Add click handler for edit mode
+                        if (isEditMode) {
+                            markerDiv.addEventListener('click', function(e) {
+                                console.log('Marker clicked:', i, 'at coordinates:', marker.x, marker.y);
+                                e.stopPropagation();
+                                e.preventDefault();
+                                openMarkerUpgradeTooltip(i, marker.x, marker.y, this);
+                            });
+                            
+                            // Add hover glow effect without scaling
+                            markerDiv.addEventListener('mouseenter', function() {
+                                this.style.boxShadow = '0 0 15px rgba(255, 107, 53, 0.8)';
+                            });
+                            
+                            markerDiv.addEventListener('mouseleave', function() {
+                                this.style.boxShadow = '0 2px 8px rgba(0,0,0,0.5)';
+                            });
+                        }
+                        
+                        // Add mousemove handler to ensure coordinate display works when hovering over markers
+                        markerDiv.addEventListener('mousemove', updateCoordDisplay);
+                        
+                        // Add marker number label
+                        const markerLabel = document.createElement('div');
+                        markerLabel.className = 'coord-marker-label';
+                        markerLabel.textContent = (i + 1).toString();
+                        markerLabel.style.cssText = `
+                            position: absolute;
+                            left: ${marker.x + 10}px;
+                            top: ${marker.y - 20}px;
+                            color: ${color};
+                            font-weight: bold;
+                            font-size: 14px;
+                            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+                            pointer-events: none;
+                            z-index: 10001;
+                        `;
+                        
+                        overlay.appendChild(markerDiv);
+                        overlay.appendChild(markerLabel);
+                    }
+                }
+            }
+        }
+        
+
+        function createGridPattern() {
+            let gridHTML = '';
+            const gridSize = 50;
+            
+            // Create vertical lines
+            for (let x = 0; x <= window.innerWidth; x += gridSize) {
+                gridHTML += `<div style="position: absolute; left: ${x}px; top: 0; width: 1px; height: 100%; background: rgba(238, 101, 49, 0.2);"></div>`;
+            }
+            
+            // Create horizontal lines
+            for (let y = 0; y <= window.innerHeight; y += gridSize) {
+                gridHTML += `<div style="position: absolute; left: 0; top: ${y}px; width: 100%; height: 1px; background: rgba(238, 101, 49, 0.2);"></div>`;
+            }
+            
+            // Add coordinate markers every 100px
+            for (let x = 0; x <= window.innerWidth; x += 100) {
+                for (let y = 0; y <= window.innerHeight; y += 100) {
+                    gridHTML += `<div style="position: absolute; left: ${x-2}px; top: ${y-2}px; width: 4px; height: 4px; background: #ee6531; border-radius: 50%; pointer-events: none;"></div>`;
+                    if (x % 200 === 0 && y % 200 === 0) {
+                        gridHTML += `<div style="position: absolute; left: ${x+5}px; top: ${y-5}px; color: #ee6531; font-size: 12px; font-weight: bold; pointer-events: none;">${x},${y}</div>`;
+                    }
+                }
+            }
+            
+            return gridHTML;        }
+
+        function handleOverlayKeydown(event) {
+            // Handle ESC key to close the coordinate overlay
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                hideCoordOverlay();
+            }        }        function hideCoordOverlay() {
+            const overlay = document.getElementById('coordOverlay');
+            if (overlay) {
+                // Clean up all event listeners properly with matching options
+                overlay.removeEventListener('mousemove', updateCoordDisplay, { passive: true });
+                overlay.removeEventListener('click', selectCoordinates, { capture: true });
+                
+                // Remove the overlay completely to ensure clean state on next open
+                overlay.remove();
+            }
+            document.removeEventListener('keydown', handleOverlayKeydown);
+            
+            console.log('Overlay removed and event listeners cleaned up');
+        }function updateCoordDisplay(event) {
+            // Always calculate coordinates relative to the overlay element, regardless of what element triggered the event
+            const overlay = document.getElementById('coordOverlay');
+            const rect = overlay.getBoundingClientRect();
+            const x = Math.round(event.clientX - rect.left);
+            const y = Math.round(event.clientY - rect.top);
+            
+            const mouseXElement = document.getElementById('mouseX');
+            const mouseYElement = document.getElementById('mouseY');
+            
+            if (mouseXElement) mouseXElement.textContent = x;
+            if (mouseYElement) mouseYElement.textContent = y;        }        async function selectCoordinates(event) {
+            console.log('selectCoordinates called - Target:', event.target.tagName, 'Class:', event.target.className, 'ID:', event.target.id);
+            
+            // Don't place coordinates in edit mode
+            if (isEditMode) {
+                console.log('Ignoring click - edit mode is active');
+                return;
+            }
+            
+            // Allow coordinate selection on overlay, grid, map background, or any child that's not a control element
+            const isControlElement =        
+            event.target.tagName === 'BUTTON' || 
+                                   event.target.tagName === 'SELECT' || 
+                                   event.target.tagName === 'OPTION' ||
+                                   event.target.tagName === 'INPUT' ||
+                                   event.target.tagName === 'LABEL' ||
+                                   event.target.classList.contains('coord-info') ||
+                                   event.target.classList.contains('coord-display') ||
+                                   event.target.classList.contains('marker-selector') ||
+                                   event.target.classList.contains('save-coords-btn') ||
+                                   event.target.classList.contains('edit-mode-btn') ||
+                                   event.target.classList.contains('coord-close-btn') ||
+                                   event.target.closest('.coord-info');
+            
+            if (isControlElement) {
+                console.log('Ignoring click on control element:', event.target.tagName, event.target.className);
+                return; // Don't place coordinates when clicking on UI controls
+            }
+            
+            // Prevent the event from bubbling up to avoid cursor issues
+            event.preventDefault();
+            event.stopPropagation();
+            
+            // Calculate coordinates relative to the overlay element to match updateCoordDisplay
+            const overlay = document.getElementById('coordOverlay');
+            if (!overlay) {
+                console.error('Overlay not found!');
+                return;
+            }
+            
+            const rect = overlay.getBoundingClientRect();
+            const x = Math.round(event.clientX - rect.left);
+            const y = Math.round(event.clientY - rect.top);
+            
+            console.log('Placing coordinate at:', x, y, 'for slot:', currentSlot, 'marker:', currentMarkerIndex + 1);
+              // Save this marker to backend
+            try {
+                const result = await pywebview.api.set_coordinates(currentSlot, x, y, currentMarkerIndex);
+                if (result.success) {
+                    // Update the current marker in our local array
+                    slotMarkers[currentMarkerIndex] = {x: x, y: y, set: true};
+                    
+                    // Force refresh of all slot markers from backend to ensure consistency
+                    try {
+                        const refreshResult = await pywebview.api.get_slot_markers(currentSlot);
+                        if (refreshResult.success && refreshResult.markers) {
+                            slotMarkers = refreshResult.markers.slice(0, maxMarkers);
+                            while (slotMarkers.length < maxMarkers) {
+                                slotMarkers.push({x: 0, y: 0, set: false});
+                            }
+                            console.log('Markers refreshed after placement:', slotMarkers);
+                        }
+                    } catch (refreshError) {
+                        console.error('Error refreshing slot markers after placement:', refreshError);
+                    }                    // Also reload global markers to ensure cross-slot visibility works
+                    await loadAllMarkersFromBackend();
+                    await loadAllMarkerUpgradesFromBackend();
+                    
+                    // Refresh the overlay info and visual markers
+                    updateOverlayInfo();
+                    addMarkerIndicators(overlay);
+                    
+                    showNotification(`Marker ${currentMarkerIndex + 1} placed at (${x}, ${y})!`, 'success');
+                    console.log('Coordinate successfully saved and markers updated');
+                    
+                    // Don't auto-advance or close anymore - let user manually choose next marker or save
+                } else {
+                    console.error('Backend error saving coordinates:', result.message);
+                    showNotification('Error saving coordinates: ' + (result.message || 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                console.error('Exception saving coordinates:', error);
+                showNotification('Error saving coordinates', 'error');
+            }            // Integrated logic from former saveAndStayOpen function
+            try {
+                await updateCoordsStatus(currentSlot);
+                // Don't call loadConfiguration() here as it resets form data
+                // Just update the coordinate status without reloading the entire config
+                console.log('Coordinate placement completed for slot', currentSlot);
+            } catch (error) {
+                console.error('Error in post-coordinate save UI updates:', error);
+                showNotification('Error updating UI after saving coordinates', 'error');
+            }
+        }
+
+        // Function to switch to a specific marker for editing
+        function switchToMarker(markerIndex) {
+            currentMarkerIndex = parseInt(markerIndex);
+            updateOverlayInfo();
+            addMarkerIndicators(document.getElementById('coordOverlay'));
+            showNotification(`Now editing Marker ${currentMarkerIndex + 1}`, 'info');
+        }        // Update coordinates status display for a slot
+        async function updateCoordsStatus(slotNumber) {
+            try {
+                const coordsStatusElement = document.getElementById(`coords-status-${slotNumber}`);
+                if (!coordsStatusElement) {
+                    console.warn(`Coordinates status element not found for slot ${slotNumber}`);
+                    return;
+                }
+                
+                // Get slot markers from backend to check current status
+                const result = await pywebview.api.get_slot_markers(slotNumber);
+                if (result.success && result.markers) {
+                    const setMarkers = result.markers.filter(marker => marker && marker.set);
+                    const totalPlacement = parseInt(currentConfig[`slot${slotNumber}`]?.placement || '1');
+                    
+                    if (setMarkers.length > 0) {
+                        coordsStatusElement.textContent = `Coordinates: Set (${setMarkers.length}/${totalPlacement})`;
+                        coordsStatusElement.className = 'coords-status set';
+                        coordsStatusElement.style.color = '#4CAF50';
+                    } else {
+                        coordsStatusElement.textContent = 'Coordinates: Not Set';
+                        coordsStatusElement.className = 'coords-status not-set';
+                        coordsStatusElement.style.color = '#f44336';
+                    }
+                } else {
+                    coordsStatusElement.textContent = 'Coordinates: Not Set';
+                    coordsStatusElement.className = 'coords-status not-set';
+                    coordsStatusElement.style.color = '#f44336';
+                }
+            } catch (error) {
+                console.error('Error updating coordinates status:', error);
+            }
+        }        // Function to save coordinates and stay open
+        async function saveAndStayOpen() {
+            try {
+                // Update the main UI coordinate status
+                await updateCoordsStatus(currentSlot);
+                
+                // Don't reload configuration to avoid resetting form data
+                // The coordinate status update is sufficient
+                
+                showNotification(`Coordinates saved for Slot ${currentSlot}!`, 'success');
+            } catch (error) {
+                console.error('Error saving coordinates:', error);
+                showNotification('Error saving coordinates', 'error');
+            }
+        }
+          function updateOverlayInfo() {
+            const overlayInfo = document.getElementById('overlayInfo');
+            if (overlayInfo) {
+                if (isEditMode) {
+                    overlayInfo.innerHTML = `Edit Mode: Click markers to configure upgrades<br>Click empty space to place new markers<br>Press ESC to close`;
+                } else {
+                    overlayInfo.innerHTML = `Move mouse to see coordinates<br>Click to place marker ${currentMarkerIndex + 1} of ${maxMarkers}<br>Press ESC to close`;
+                }
+            }
+        }        // Edit Mode Functions
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            
+            // Update button appearance
+            const editModeBtn = document.getElementById('editModeBtn');
+            if (editModeBtn) {
+                editModeBtn.textContent = isEditMode ? '🚫 Exit Edit Mode' : '⚙️ Edit Mode';
+                editModeBtn.className = isEditMode ? 'edit-mode-btn active' : 'edit-mode-btn';
+            }
+            
+            // Update overlay info and markers - use existing cached data instead of reloading
+            updateOverlayInfo();
+            const overlay = document.getElementById('coordOverlay');
+            if (overlay) {
+                // Only force reload if we don't have any cached global markers
+                const forceReload = !allSlotMarkers || allSlotMarkers.length === 0;
+                addMarkerIndicators(overlay, forceReload);
+                
+                // Ensure all marker upgrade levels are visible after toggling edit mode
+                setTimeout(() => updateAllMarkerUpgradeLevels(), 100);
+            }
+            
+            // Update cursor style
+            if (overlay) {
+                overlay.style.cursor = isEditMode ? 'default' : 'crosshair';
+            }
+            
+            showNotification(isEditMode ? 'Edit Mode: Click markers to configure upgrades' : 'Placement Mode: Click to place markers', 'info');
+        }
+
+        let currentEditMarkerIndex = 0;
+        let currentEditMarkerX = 0;
+        let currentEditMarkerY = 0;        // Event listener for closing tooltip when clicking outside
+        function handleClickOutsideTooltip(event) {
+            const tooltip = document.getElementById('upgradeTooltip');
+            // Check if tooltip is visible, click is outside tooltip, and not on the opener element (marker)
+            if (tooltip && tooltip.style.display === 'block' && !tooltip.contains(event.target) && event.target !== tooltipOpener) {
+                closeUpgradeTooltip();
+            }
+        }        
+        
+        // New function to handle changes in upgrade dropdowns
+        async function handleUpgradeChange() {
+            await saveMarkerUpgrade();
+        }
+        
+        async function openMarkerUpgradeTooltip(markerIndex, markerX, markerY, openerDiv) {
+            console.log('Opening marker upgrade tooltip for marker:', markerIndex, 'at coordinates:', markerX, markerY);            // Load and apply vanguards_config.txt data
+            try {
+                console.log("Attempting to load vanguards_config.txt data...");
+                const vanguardResult = await pywebview.api.load_vanguards_config(); // Assumed new API
+                if (vanguardResult && vanguardResult.success && vanguardResult.data) {
+                    if (applyVanguardsConfigData(vanguardResult.data)) {
+                        // Don't force reload indicators here as it causes upgrade visuals to disappear
+                        // const overlay = document.getElementById('coordOverlay');
+                        // if (overlay) {
+                        //     addMarkerIndicators(overlay, true); // Force reload of indicators
+                        // }
+                        showNotification('Vanguards config loaded and applied.', 'success');
+                    } else {
+                        showNotification('Vanguards config data was empty or invalid.', 'warning');
+                    }
+                } else {
+                    showNotification('Could not load or apply Vanguards config.', 'warning');
+                    console.error('Failed to load vanguards_config:', vanguardResult ? vanguardResult.message : 'No result');
+                }
+            } catch (error) {
+                console.error('Error loading vanguards_config.txt:', error);
+                showNotification('Error loading Vanguards config.', 'error');
+            }
+            
+            currentEditMarkerIndex = markerIndex;
+            currentEditSlot = currentSlot; // Set edit context to current slot being edited
+            // currentSlot is implicitly used by saveMarkerUpgrade, ensure it's correct if this tooltip can edit other slots.
+            // For this function, currentSlot is the one being worked on.
+            tooltipOpener = openerDiv;
+
+            const tooltip = document.getElementById('upgradeTooltip');
+            const upgradeSelect = document.getElementById('markerUpgradeLevelTooltip');
+            const prioritySelect = document.getElementById('markerUpgradePriorityTooltip');            // Load current upgrade data from backend first to ensure we have the latest data
+            try {
+                const upgradeResult = await pywebview.api.get_marker_upgrades(currentSlot);
+                if (upgradeResult.success && upgradeResult.upgrades) {
+                    // Update local markerUpgrades with backend data
+                    if (!markerUpgrades[currentSlot]) {
+                        markerUpgrades[currentSlot] = {};
+                    }
+                    Object.assign(markerUpgrades[currentSlot], upgradeResult.upgrades);
+                    
+                    // Also update globalMarkerUpgrades
+                    if (!globalMarkerUpgrades[currentSlot]) {
+                        globalMarkerUpgrades[currentSlot] = {};
+                    }
+                    Object.assign(globalMarkerUpgrades[currentSlot], upgradeResult.upgrades);
+                    
+                    // Update all visible markers to ensure their upgrade levels remain visible
+                    setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
+                }
+            } catch (error) {
+                console.error('Error loading marker upgrades from backend:', error);
+            }
+
+            // Populate current upgrade level and priority from the updated data
+            const currentUpgradeData = (markerUpgrades[currentSlot] && markerUpgrades[currentSlot][markerIndex])
+                                   ? markerUpgrades[currentSlot][markerIndex]
+                                   : (globalMarkerUpgrades[currentSlot] ? globalMarkerUpgrades[currentSlot][markerIndex] : null);
+
+            if (currentUpgradeData) {
+                upgradeSelect.value = currentUpgradeData.level || '0';
+                prioritySelect.value = currentUpgradeData.priority || '1';
+            } else {
+                upgradeSelect.value = '0'; // Default if no data
+                prioritySelect.value = '1'; // Default priority
+            }
+            
+            // Position the tooltip
+            tooltip.style.display = 'block'; // Make it visible to measure its dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+
+            let offsetX = 20; // Horizontal offset from the marker's center
+            let tooltipX = markerX + offsetX;
+            // Vertically align tooltip center with marker's center, then adjust if needed
+            let tooltipY = markerY - (tooltipRect.height / 2); 
+
+            // Boundary checks to keep tooltip within viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Adjust X position
+            if (tooltipX + tooltipRect.width > viewportWidth - 5) { // If right edge is off-screen (5px margin)
+                tooltipX = markerX - tooltipRect.width - offsetX; // Position to the left of the marker
+            }
+            if (tooltipX < 5) { // If left edge is off-screen (5px margin)
+                tooltipX = 5; 
+            }
+
+            // Adjust Y position
+            if (tooltipY + tooltipRect.height > viewportHeight - 5) { // If bottom edge is off-screen
+                tooltipY = viewportHeight - tooltipRect.height - 5; 
+            }
+            if (tooltipY < 5) { // If top edge is off-screen
+                tooltipY = 5;
+            }
+
+            tooltip.style.left = tooltipX + 'px';
+            tooltip.style.top = tooltipY + 'px';
+            
+            // Add click outside listener (use capture phase to catch clicks early)
+            // Use a timeout to prevent the click that opened the tooltip from immediately closing it.
+            setTimeout(() => {
+                document.addEventListener('click', handleClickOutsideTooltip, true);
+            }, 0);
+        }        
+          async function saveMarkerUpgrade() { // Made async
+            const upgradeLevel = document.getElementById('markerUpgradeLevelTooltip').value;
+            const upgradePriority = document.getElementById('markerUpgradePriorityTooltip').value;
+            console.log(`Saving upgrade for slot ${currentEditSlot}, marker ${currentEditMarkerIndex}: level ${upgradeLevel}, priority ${upgradePriority}`);
+
+            // Update global marker upgrades (now includes both level and priority)
+            if (!globalMarkerUpgrades[currentEditSlot]) {
+                globalMarkerUpgrades[currentEditSlot] = {};
+            }
+            globalMarkerUpgrades[currentEditSlot][currentEditMarkerIndex] = {
+                level: upgradeLevel,
+                priority: parseInt(upgradePriority)
+            };
+
+            // Also update local markerUpgrades for compatibility
+            if (!markerUpgrades[currentEditSlot]) {
+                markerUpgrades[currentEditSlot] = {};
+            }
+            markerUpgrades[currentEditSlot][currentEditMarkerIndex] = {
+                level: upgradeLevel,
+                priority: parseInt(upgradePriority)
+            };              await saveMarkerUpgradesToBackend(); // This will save to the edit slot            // Don't redraw all markers while editing as it causes upgrade levels to disappear
+            // const overlay = document.getElementById('coordOverlay');
+            // if (overlay) {
+            //     addMarkerIndicators(overlay); // Redraw markers to show new upgrade level
+            // }
+            
+            // Update all visible markers' upgrade levels to keep them visible
+            await updateAllMarkerUpgradeLevels();
+            
+            // Also update the specific marker's display directly
+            if (tooltipOpener) {
+                const upgradeLevel = document.getElementById('markerUpgradeLevelTooltip').value;
+                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                tooltipOpener.textContent = upgradeText;
+            }
+              // closeUpgradeTooltip(); // Don't close automatically after auto-save
+            showNotification(`Slot ${currentEditSlot} Marker ${currentEditMarkerIndex + 1} upgrade auto-saved: Level ${upgradeLevel}, Priority ${upgradePriority}.`, 'success');
+        }        async function saveMarkerUpgradesToBackend() {
+            try {
+                const result = await pywebview.api.save_marker_upgrades(currentEditSlot, markerUpgrades[currentEditSlot] || {});
+                if (!result.success) {
+                    console.error('Error saving marker upgrades:', result.message);
+                }
+            } catch (error) {
+                console.error('Error saving marker upgrades:', error);
+            }
+        }        function closeUpgradeTooltip() {
+            const tooltip = document.getElementById('upgradeTooltip');
+            if (tooltip) {
+                tooltip.style.display = 'none';
+            }
+            tooltipOpener = null; // Clear the opener
+            document.removeEventListener('click', handleClickOutsideTooltip, true);
+            console.log('Upgrade tooltip closed.');
+            
+            // Ensure all marker upgrade levels are still visible after closing tooltip
+            setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
+        }        // Function to update all visible markers' upgrade levels without full redraw
+        async function updateAllMarkerUpgradeLevels(forceRefresh = false) {
+            const overlay = document.getElementById('coordOverlay');
+            if (!overlay) return;
+            
+            // Refresh global marker upgrades to ensure we have the latest data for all slots
+            // Force refresh when switching between different slots during editing
+            if (forceRefresh) {
+                try {
+                    const result = await pywebview.api.get_all_marker_upgrades();
+                    if (result.success && result.upgrades) {
+                        globalMarkerUpgrades = result.upgrades;
+                        console.log('Force refreshed all marker upgrades for cross-slot editing');
+                    }
+                } catch (error) {
+                    console.error('Error force refreshing all marker upgrades:', error);
+                }
+            } else {
+                try {
+                    const result = await pywebview.api.get_all_marker_upgrades();
+                    if (result.success && result.upgrades) {
+                        globalMarkerUpgrades = result.upgrades;
+                    }
+                } catch (error) {
+                    console.error('Error refreshing all marker upgrades:', error);
+                }
+            }
+            
+            const allMarkers = overlay.querySelectorAll('.coord-marker');
+            allMarkers.forEach(markerDiv => {
+                const markerIndex = parseInt(markerDiv.dataset.markerIndex);
+                const slotNumber = parseInt(markerDiv.dataset.slotNumber) || currentSlot;
+                
+                // Get upgrade level for this marker from global upgrades first, then fall back to current slot upgrades
+                let upgradeData = globalMarkerUpgrades[slotNumber]?.[markerIndex];
+                if (!upgradeData && slotNumber === currentSlot) {
+                    upgradeData = markerUpgrades[currentSlot]?.[markerIndex];
+                }
+                
+                let upgradeLevel = 0;
+                if (typeof upgradeData === 'object' && upgradeData !== null) {
+                    upgradeLevel = upgradeData.level || 0;
+                } else {
+                    upgradeLevel = upgradeData || 0;
+                }
+                
+                // Update the marker's text content to show upgrade level
+                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                markerDiv.textContent = upgradeText;
+            });
+            
+            console.log('Updated all marker upgrade levels to keep them visible');
+        }
+        
+        // Global marker tooltip function for cross-slot marker editing
+        async function openGlobalMarkerUpgradeTooltip(slotNumber, markerIndex, markerX, markerY, openerDiv) {
+            console.log('Opening global marker upgrade tooltip for slot:', slotNumber, 'marker:', markerIndex, 'at coordinates:', markerX, markerY);            // Load and apply vanguards_config.txt data
+            try {
+                console.log("Attempting to load vanguards_config.txt data for global edit...");
+                const vanguardResult = await pywebview.api.load_vanguards_config(); // Assumed new API
+                if (vanguardResult && vanguardResult.success && vanguardResult.data) {
+                     if(applyVanguardsConfigData(vanguardResult.data)) {
+                        // Don't force reload indicators here as it causes upgrade visuals to disappear
+                        // const overlay = document.getElementById('coordOverlay');
+                        // if (overlay) {
+                        //     addMarkerIndicators(overlay, true); // Force reload of indicators
+                        // }
+                        showNotification('Vanguards config loaded and applied.', 'success');
+                     } else {
+                        showNotification('Vanguards config data was empty or invalid.', 'warning');
+                     }
+                } else {
+                    showNotification('Could not load or apply Vanguards config.', 'warning');
+                     console.error('Failed to load vanguards_config:', vanguardResult ? vanguardResult.message : 'No result');
+                }
+            } catch (error) {
+                console.error('Error loading vanguards_config.txt:', error);
+                showNotification('Error loading Vanguards config.', 'error');
+            }
+              currentEditMarkerIndex = markerIndex;
+            currentEditSlot = slotNumber; // Use separate variable for editing context, don't change currentSlot
+            
+            // Detect cross-slot editing to force refresh marker levels
+            const isCrossSlotEdit = lastEditedSlot !== slotNumber;
+            lastEditedSlot = slotNumber;
+            
+            tooltipOpener = openerDiv;
+
+            const tooltip = document.getElementById('upgradeTooltip');
+            const upgradeSelect = document.getElementById('markerUpgradeLevelTooltip');
+            const prioritySelect = document.getElementById('markerUpgradePriorityTooltip');            // Load current upgrade data from backend first to ensure we have the latest data
+            try {
+                const upgradeResult = await pywebview.api.get_marker_upgrades(slotNumber);
+                if (upgradeResult.success && upgradeResult.upgrades) {
+                    // Update globalMarkerUpgrades with backend data
+                    if (!globalMarkerUpgrades[slotNumber]) {
+                        globalMarkerUpgrades[slotNumber] = {};
+                    }
+                    Object.assign(globalMarkerUpgrades[slotNumber], upgradeResult.upgrades);
+                    
+                    // Also update local markerUpgrades if this is the current slot
+                    if (slotNumber === currentSlot) {
+                        if (!markerUpgrades[slotNumber]) {
+                            markerUpgrades[slotNumber] = {};
+                        }
+                        Object.assign(markerUpgrades[slotNumber], upgradeResult.upgrades);
+                    }
+                    
+                    // Update all visible markers to ensure their upgrade levels remain visible
+                    setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
+                }
+            } catch (error) {
+                console.error('Error loading marker upgrades from backend:', error);
+            }
+
+            // Populate current upgrade level and priority from the updated global upgrades
+            const currentUpgradeData = globalMarkerUpgrades[slotNumber]?.[markerIndex];
+            if (currentUpgradeData) {
+                upgradeSelect.value = currentUpgradeData.level || '0';
+                prioritySelect.value = currentUpgradeData.priority || '1';
+            } else {
+                upgradeSelect.value = '0'; // Default if no data
+                prioritySelect.value = '1'; // Default priority
+            }
+
+            // Position the tooltip
+            tooltip.style.display = 'block'; // Make it visible to measure its dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+
+            let offsetX = 20; // Horizontal offset from the marker's center
+            let tooltipX = markerX + offsetX;
+            // Vertically align tooltip center with marker's center, then adjust if needed
+            let tooltipY = markerY - (tooltipRect.height / 2); 
+
+            // Boundary checks to keep tooltip within viewport
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            // Adjust X position
+            if (tooltipX + tooltipRect.width > viewportWidth - 5) { // If right edge is off-screen (5px margin)
+                tooltipX = markerX - tooltipRect.width - offsetX; // Position to the left of the marker
+            }
+            if (tooltipX < 5) { // If left edge is off-screen (5px margin)
+                tooltipX = 5; 
+            }
+
+            // Adjust Y position
+            if (tooltipY + tooltipRect.height > viewportHeight - 5) { // If bottom edge is off-screen
+                tooltipY = viewportHeight - tooltipRect.height - 5; 
+            }
+            if (tooltipY < 5) { // If top edge is off-screen
+                tooltipY = 5;
+            }
+
+            tooltip.style.left = tooltipX + 'px';
+            tooltip.style.top = tooltipY + 'px';
+            
+            // Add click outside listener (use capture phase to catch clicks early)
+            // Use a timeout to prevent the click that opened the tooltip from immediately closing it.
+            setTimeout(() => {
+                document.addEventListener('click', handleClickOutsideTooltip, true);
+            }, 0);
+        }
+
+        // New functions for global marker system & vanguards_config handling
+        function applyVanguardsConfigData(vanguardData) {
+            if (!vanguardData || Object.keys(vanguardData).length === 0) {
+                console.warn("No data received from vanguards_config or data is empty.");
+                return false; // Indicate failure or no action
+            }
+
+            console.log("Applying vanguards_config data:", vanguardData);
+            allSlotMarkers = []; // Clear existing global markers
+            globalMarkerUpgrades = {}; // Clear existing global upgrades
+
+            // Iterate through slots 1 to 6
+            for (let slotNum = 1; slotNum <= 6; slotNum++) {
+                const slotKey = `slot${slotNum}`;
+                const slotDataFromConfig = vanguardData[slotKey];
+
+                if (slotDataFromConfig) {
+                    // Update currentConfig with placement from vanguards_config
+                    if (slotDataFromConfig.placement !== undefined) {
+                        if (!currentConfig[slotKey]) currentConfig[slotKey] = {};
+                        currentConfig[slotKey].placement = String(slotDataFromConfig.placement);
+                    }
+
+                    // Initialize upgrades for this slot in globalMarkerUpgrades
+                    if (!globalMarkerUpgrades[slotNum]) globalMarkerUpgrades[slotNum] = {};
+
+                    if (slotDataFromConfig.markers && Array.isArray(slotDataFromConfig.markers)) {
+                        slotDataFromConfig.markers.forEach((marker, index) => {
+                            if (marker && marker.set) { // Only process set markers
+                                allSlotMarkers.push({
+                                    x: marker.x,
+                                    y: marker.y,
+                                    slot_number: slotNum,
+                                    marker_index: index,
+                                    set: true
+                                });
+                                globalMarkerUpgrades[slotNum][index] = {
+                                    level: marker.upgradeLevel !== undefined ? String(marker.upgradeLevel) : '0',
+                                    priority: marker.priority !== undefined ? parseInt(marker.priority) : 1
+                                };
+                            }
+                        });
+                    }
+                }
+            }
+
+            // Update current slot's specific data (slotMarkers, markerUpgrades, maxMarkers)
+            const currentSlotKey = `slot${currentSlot}`;
+            const currentSlotConfigFromVanguard = vanguardData[currentSlotKey];
+            const currentSlotPlacementFromConfig = currentConfig[currentSlotKey]?.placement;
+
+
+            maxMarkers = parseInt(currentSlotPlacementFromConfig || '1');
+            slotMarkers = Array(maxMarkers).fill(null).map(() => ({ x: 0, y: 0, set: false }));
+            
+            if (!markerUpgrades[currentSlot]) markerUpgrades[currentSlot] = {}; // Ensure initialized
+            // Clear current slot's markerUpgrades before repopulating from vanguard config or defaults
+            Object.keys(markerUpgrades[currentSlot]).forEach(key => delete markerUpgrades[currentSlot][key]);
+
+
+            if (currentSlotConfigFromVanguard && currentSlotConfigFromVanguard.markers && Array.isArray(currentSlotConfigFromVanguard.markers)) {
+                currentSlotConfigFromVanguard.markers.forEach((marker, index) => {
+                    if (index < maxMarkers && marker && marker.set) {
+                        slotMarkers[index] = { x: marker.x, y: marker.y, set: true };
+                        markerUpgrades[currentSlot][index] = {
+                            level: marker.upgradeLevel !== undefined ? String(marker.upgradeLevel) : '0',
+                            priority: marker.priority !== undefined ? parseInt(marker.priority) : 1
+                        };
+                    }
+                });
+            }
+            
+            // If loadConfiguration is called later, it will use the updated currentConfig
+            // to populate the main UI form elements.
+
+            console.log('Vanguards config applied. Updated allSlotMarkers:', allSlotMarkers.length);
+            console.log('Updated globalMarkerUpgrades:', globalMarkerUpgrades);
+            console.log(`Updated currentSlot (${currentSlot}) maxMarkers: ${maxMarkers}`);
+            console.log('Updated slotMarkers for current slot:', slotMarkers);
+            console.log('Updated markerUpgrades for current slot:', markerUpgrades[currentSlot]);
+            return true; // Indicate success
+        }
+        
+        async function loadAllMarkersFromBackend() {
+            try {
+                const result = await pywebview.api.get_all_slot_markers();
+                if (result.success && result.markers) {
+                    allSlotMarkers = result.markers;
+                    console.log('Loaded global markers:', allSlotMarkers);
+                }
+            } catch (error) {
+                console.error('Error loading all markers:', error);
+                allSlotMarkers = [];
+            }
+        }        async function loadAllMarkerUpgradesFromBackend() {
+            try {
+                const result = await pywebview.api.get_all_marker_upgrades();
+                if (result.success && result.upgrades) {
+                    globalMarkerUpgrades = result.upgrades;
+                    console.log('Loaded global marker upgrades:', globalMarkerUpgrades);
+                    // Update all visible markers' upgrade levels after loading
+                    setTimeout(() => updateAllMarkerUpgradeLevels(), 100);
+                }
+            } catch (error) {
+                console.error('Error loading all marker upgrades:', error);
+                globalMarkerUpgrades = {};
+            }
+        }// Global marker upgrade save function for cross-slot marker editing
+        async function saveGlobalMarkerUpgrade(slotNumber, markerIndex, upgradeLevel, upgradePriority) {
+            console.log(`Saving global upgrade for slot ${slotNumber}, marker ${markerIndex}: level ${upgradeLevel}, priority ${upgradePriority}`);
+            
+            try {
+                // Update global marker upgrades (now includes both level and priority)
+                if (!globalMarkerUpgrades[slotNumber]) {
+                    globalMarkerUpgrades[slotNumber] = {};
+                }
+                globalMarkerUpgrades[slotNumber][markerIndex] = {
+                    level: upgradeLevel,
+                    priority: upgradePriority
+                };
+
+                // Also update local markerUpgrades if this is the current slot
+                if (slotNumber === currentSlot) {
+                    if (!markerUpgrades[currentSlot]) {
+                        markerUpgrades[currentSlot] = {};
+                    }
+                    markerUpgrades[currentSlot][markerIndex] = {
+                        level: upgradeLevel,
+                        priority: upgradePriority
+                    };
+                }
+
+                // Save to backend using the specific slot
+                const result = await pywebview.api.save_marker_upgrades(slotNumber, globalMarkerUpgrades[slotNumber] || {});
+                if (!result.success) {
+                    console.error('Error saving global marker upgrades:', result.message);
+                    showNotification('Error saving marker upgrade', 'error');
+                    return false;
+                }                // Don't redraw all markers while editing as it causes upgrade levels to disappear  
+                // const overlay = document.getElementById('coordOverlay');
+                // if (overlay) {
+                //     addMarkerIndicators(overlay); // Redraw markers to show new upgrade level
+                // }
+                
+                // Update all visible markers' upgrade levels to keep them visible
+                await updateAllMarkerUpgradeLevels();
+                
+                // Also update the specific marker's display directly
+                if (tooltipOpener) {
+                    const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                    tooltipOpener.textContent = upgradeText;
+                }
+                
+                showNotification(`S${slotNumber} Marker ${markerIndex + 1} upgrade saved: Level ${upgradeLevel}, Priority ${upgradePriority}.`, 'success');
+                return true;
+            } catch (error) {
+                console.error('Error saving global marker upgrades:', error);
+                showNotification('Error saving marker upgrade', 'error');
+                return false;
+            }
+        }
+
+        // Save Config with Screenshot Functions
+        function openSaveConfigModal() {
+            document.getElementById('saveConfigModal').style.display = 'block';
+            document.getElementById('configNameInput').focus();
+        }
+
+        function closeSaveConfigModal() {
+            document.getElementById('saveConfigModal').style.display = 'none';
+            document.getElementById('configNameInput').value = '';
+        }
+
+        async function saveConfigWithScreenshot() {
+            const configName = document.getElementById('configNameInput').value.trim();
+            
+            if (!configName) {
+                showNotification('Please enter a configuration name', 'error');
+                return;
+            }
+            
+            try {
+                showNotification('Capturing screenshot and saving configuration...', 'info');
+                closeSaveConfigModal();
+                
+                const result = await pywebview.api.save_config_with_screenshot(configName);
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                } else {
+                    showNotification(result.message || 'Error saving configuration', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving config with screenshot:', error);
+                showNotification('Error saving configuration with screenshot', 'error');
+            }
+        }        async function toggleUnitsScreenshot(configFileName, configItemElement) {
+            const configName = configFileName.replace('.txt', '');
+            const screenshotContainer = document.getElementById(`screenshot-${configName}`);
+            
+            if (screenshotContainer.classList.contains('show')) {
+                // Hide screenshot
+                screenshotContainer.classList.remove('show');
+                return;
+            }
+            
+            // Show screenshot
+            try {
+                const screenshotImg = document.getElementById(`screenshot-img-${configName}`);
+                const noScreenshotDiv = screenshotContainer.querySelector('.no-screenshot');
+                
+                // Check if screenshot needs to be loaded (either first time or if previous load failed)
+                const needsLoading = !screenshotImg.src || 
+                                   screenshotImg.src === '' || 
+                                   screenshotImg.src === window.location.href ||
+                                   (!screenshotImg.src.includes('data:image') && screenshotImg.style.display === 'none');
+                
+                if (screenshotImg && needsLoading) {
+                    // Load or reload screenshot
+                    showNotification('Loading unit screenshot...', 'info');
+                    
+                    const result = await pywebview.api.get_config_screenshot(configFileName);
+                    
+                    if (result.success) {
+                        screenshotImg.src = `data:image/png;base64,${result.screenshot_data}`;
+                        screenshotImg.style.display = 'block';
+                        if (noScreenshotDiv) noScreenshotDiv.style.display = 'none';
+                    } else {
+                        if (noScreenshotDiv) {
+                            noScreenshotDiv.style.display = 'block';
+                            noScreenshotDiv.textContent = 'No unit screenshot available for this configuration';
+                        }
+                        screenshotImg.style.display = 'none';
+                    }
+                }
+                
+                screenshotContainer.classList.add('show');
+                
+            } catch (error) {
+                console.error('Error loading screenshot:', error);
+                showNotification('Error loading unit screenshot', 'error');
+                
+                // Show error state
+                const noScreenshotDiv = screenshotContainer.querySelector('.no-screenshot');
+                if (noScreenshotDiv) {
+                    noScreenshotDiv.style.display = 'block';
+                    noScreenshotDiv.textContent = 'Error loading unit screenshot';
+                }
+                const screenshotImg = document.getElementById(`screenshot-img-${configName}`);
+                if (screenshotImg) screenshotImg.style.display = 'none';
+                
+                screenshotContainer.classList.add('show');
+            }
+        }
+
+        // Import Configuration Functions
+        async function openImportModal() {
+            const modal = document.getElementById('importModal');
+            modal.style.display = 'block';
+            await populateConfigList();
+        }
+
+        function closeImportModal() {
+            const modal = document.getElementById('importModal');
+            modal.style.display = 'none';
+        }
+
+        async function populateConfigList() {
+            try {
+                const configList = document.getElementById('configList');
+                configList.innerHTML = '';
+                
+                const configs = await pywebview.api.get_config_list();
+                
+                if (configs.length === 0) {
+                    configList.innerHTML = '<p style="text-align: center; color: #888; padding: 20px;">No configurations found</p>';
+                    return;
+                }
+                
+                for (const configFile of configs) {
+                    const configName = configFile.replace('.txt', '');
+                    
+                    // Get metadata for this config
+                    let metadata = null;
+                    try {
+                        const metadataResult = await pywebview.api.get_config_metadata(configFile);
+                        if (metadataResult.success) {
+                            metadata = metadataResult.metadata;
+                        }
+                    } catch (error) {
+                        console.warn(`Could not load metadata for ${configFile}:`, error);
+                    }
+                      const configItem = document.createElement('div');
+                    configItem.className = 'config-item';
+                    
+                    // Format creation date if available
+                    let dateText = '';
+                    if (metadata && metadata.created_at) {
+                        const date = new Date(metadata.created_at);
+                        dateText = `Created: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+                    }
+                      configItem.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="config-name">${configName}</div>
+                                ${dateText ? `<div class="config-description">${dateText}</div>` : ''}
+                            </div>
+                            <div class="config-actions">                                ${metadata && metadata.has_screenshot ? 
+                                    `<button class="show-units-btn" onclick="toggleUnitsScreenshot('${configFile}', this)">Preview Units</button>` : 
+                                    ''
+                                }
+                                <button class="config-load-btn" onclick="loadConfigFromFile('${configFile}')">Load</button>
+                            </div>
+                        </div>
+                        ${metadata && metadata.has_screenshot ? 
+                            `<div class="units-screenshot-inline" id="screenshot-${configName}">
+                                <div class="screenshot-label" style="font-size: 12px; color: #a0a0a0; margin-bottom: 10px; text-align: center; font-weight: 500;">Units used in this configuration:</div>
+                                <img id="screenshot-img-${configName}" src="" alt="Units Screenshot" style="display: none;">
+                                <div class="no-screenshot" style="display: none; font-size: 12px; color: #888; text-align: center; padding: 30px; font-style: italic;">No unit screenshot available for this configuration</div>
+                            </div>` : 
+                            ''
+                        }
+                    `;
+                    
+                    configList.appendChild(configItem);
+                }
+                
+            } catch (error) {
+                console.error('Error loading config list:', error);
+                const configList = document.getElementById('configList');
+                configList.innerHTML = '<p style="text-align: center; color: #ff6b6b; padding: 20px;">Error loading configurations</p>';
+                showNotification('Error loading configurations', 'error');
+            }
+        }
+
+        async function loadConfigFromFile(configFileName) {
+            try {
+                showNotification('Loading configuration...', 'info');
+                
+                const result = await pywebview.api.load_config_file(configFileName);
+                
+                if (result.success) {
+                    closeImportModal();
+                    await loadConfiguration(); // Reload the current configuration
+                    showNotification(result.message, 'success');
+                } else {
+                    showNotification(result.message || 'Error loading configuration', 'error');
+                }            } catch (error) {
+                console.error('Error loading config file:', error);
+                showNotification('Error loading configuration file', 'error');
+            }
+        }
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            if (!notification) {
+                console.warn('Notification element not found');
+                return;
+            }
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Window positioning function for manual use
+        async function manualPositioning() {
+            return alignWithRoblox();
+        }
+
+        // Hierarchical map system - maps organized by game mode
+        const gameModes = {
+            "Raids": [
+                "Marines Fort",
+                "Hell City", 
+                "Snowy Capital",
+                "Leaf Village",
+                "Wanderneich",
+                "Central City",
+                "Giants District (Town)",
+                "Flying Island",
+                "U-18",
+                "Flower Garden",
+                "Ancient Dungeon",
+                "Shinjuku Crater",
+                "Valhalla Arena",
+                "Frozen Planet"
+            ],
+            "Dungeon": [
+                "Monarch Dungeon",
+                "Devil Dungeon"
+            ],            "Survival": [
+                "Hell Invasion",
+                "Holy Invasion",
+                "Villain Invasion"
+            ],            "Legend Stages": [
+                "Shibuya",
+                "Ruined Morioh", 
+                "Thriller Bark",
+                "Ryuudou Temple",
+                "Snowy Village",
+                "Rain Village",
+                "Oni Island",
+                "Unknown Planet",
+                "Oasis",
+                "Harge Forest",
+                "Babylon",
+                "Destroyed Shinjuku",
+                "Train Station"            ],
+            "Essences": [
+                "EssenceMap"
+            ],
+            "Portal": [
+                "Summer Laguna"
+            ]
+        };
+
+        // Update map dropdown based on selected game mode
+        function updateMapDropdown() {
+            const gameModeSelect = document.getElementById('overlayGameModeSelect');
+            const mapSelect = document.getElementById('overlayMapSelect');
+            
+            if (!gameModeSelect || !mapSelect) {
+                console.warn('Game mode or map select elements not found');
+                return;
+            }
+            
+            const selectedMode = gameModeSelect.value;
+            const maps = gameModes[selectedMode] || [];
+            
+            // Clear existing options
+            mapSelect.innerHTML = '';
+            
+            // Add new options based on selected game mode
+            maps.forEach(map => {
+                const option = document.createElement('option');
+                option.value = map;
+                option.textContent = map;
+                mapSelect.appendChild(option);
+            });
+            
+            // Set default selection to first map if available
+            if (maps.length > 0) {
+                mapSelect.value = maps[0];
+                // Trigger map background loading if this function exists
+                if (typeof loadMapBackground === 'function') {
+                    loadMapBackground(document.getElementById('coordOverlay'), maps[0]);
+                }
+            }            console.log(`Updated map dropdown for ${selectedMode} with ${maps.length} maps`);
+        }
+
+        // Tutorial functions
+        let currentTutorialStep = 0;        async function checkTutorial() {
+            try {
+                console.log('checkTutorial() called');
+                if (typeof pywebview !== 'undefined' && pywebview.api) {
+                    console.log('pywebview API is available, calling check_tutorial...');
+                    const tutorialCompleted = await pywebview.api.check_tutorial();
+                    console.log('Tutorial completed status:', tutorialCompleted);
+                    if (!tutorialCompleted) {
+                        console.log('Tutorial not completed, showing tutorial...');
+                        showTutorial();
+                    } else {
+                        console.log('Tutorial already completed, not showing');
+                    }
+                } else {
+                    console.log('pywebview API not available, showing tutorial anyway for testing');
+                    // For testing - show tutorial even without API
+                    showTutorial();
+                }
+            } catch (error) {
+                console.error('Error in checkTutorial:', error);
+                console.log('Error occurred, showing tutorial anyway for testing');
+                showTutorial();
+            }
+        }        function showTutorial() {
+            console.log('showTutorial() called');
+            const overlay = document.getElementById('tutorialOverlay');
+            console.log('Tutorial overlay element:', overlay);
+            if (overlay) {
+                console.log('Setting overlay display to flex');
+                overlay.style.display = 'flex';
+                currentTutorialStep = 0;
+                console.log('Calling updateTutorialContent()');
+                updateTutorialContent();
+                console.log('Tutorial should now be visible');
+            } else {
+                console.error('Tutorial overlay element not found!');
+            }
+        }
+
+        function hideTutorial() {
+            const overlay = document.getElementById('tutorialOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function nextTutorialStep() {
+            if (currentTutorialStep < tutorialSteps.length - 1) {
+                currentTutorialStep++;
+                updateTutorialContent();
+            } else {
+                completeTutorial();
+            }
+        }
+
+        function previousTutorialStep() {
+            if (currentTutorialStep > 0) {
+                currentTutorialStep--;
+                updateTutorialContent();
+            }
+        }        function skipTutorial() {
+            // Clear all highlights before completing tutorial
+            highlightTutorialTarget(null);
+            completeTutorial();
+        }async function completeTutorial() {
+            try {
+                if (typeof pywebview !== 'undefined' && pywebview.api) {
+                    await pywebview.api.complete_tutorial();
+                }
+            } catch (error) {
+                console.warn('Could not mark tutorial as completed:', error);
+            }
+            // Clear all highlights before hiding tutorial
+            highlightTutorialTarget(null);
+            hideTutorial();
+        }function updateTutorialContent() {
+            console.log('updateTutorialContent() called, step:', currentTutorialStep);
+            console.log('tutorialSteps array:', tutorialSteps);
+            const step = tutorialSteps[currentTutorialStep];
+            console.log('Current step data:', step);
+            
+            const titleElement = document.getElementById('tutorialTitle');
+            const textElement = document.getElementById('tutorialText');
+            const stepElement = document.getElementById('tutorialStep');
+            const totalElement = document.getElementById('tutorialTotal');
+            const prevBtn = document.getElementById('tutorialPrev');
+            const nextBtn = document.getElementById('tutorialNext');
+            
+            console.log('Title element:', titleElement);
+            console.log('Text element:', textElement);
+            console.log('Step element:', stepElement);
+            console.log('Total element:', totalElement);
+            console.log('Prev button:', prevBtn);
+            console.log('Next button:', nextBtn);
+            
+            if (step) {
+                if (titleElement) titleElement.textContent = step.title;
+                if (textElement) textElement.textContent = step.text || step.content;
+                if (stepElement) stepElement.textContent = currentTutorialStep + 1;
+                if (totalElement) totalElement.textContent = tutorialSteps.length;
+                
+                console.log('Updated tutorial content with step:', step.title);
+            } else {
+                console.error('Missing step data for step:', currentTutorialStep);
+            }
+            
+            // Update button visibility
+            if (prevBtn) {
+                prevBtn.style.display = currentTutorialStep > 0 ? 'inline-block' : 'none';
+            }
+              if (nextBtn) {
+                nextBtn.textContent = currentTutorialStep === tutorialSteps.length - 1 ? 'Finish' : 'Next';
+            }
+            
+            // Position tutorial content based on step position data
+            positionTutorialContent(step);
+            
+            // Highlight target element if specified
+            if (step && step.target) {
+                highlightTutorialTarget(step.target);
+            }
+        }        function positionTutorialContent(step) {
+            const tutorialContent = document.getElementById('tutorialContent');
+            if (!tutorialContent || !step || !step.position) {
+                // Reset to center if no position data
+                if (tutorialContent) {
+                    tutorialContent.style.position = 'absolute';
+                    tutorialContent.style.top = '50%';
+                    tutorialContent.style.left = '50%';
+                    tutorialContent.style.transform = 'translate(-50%, -50%)';
+                }
+                return;
+            }
+            
+            // Scroll to target element if it exists
+            if (step.target) {
+                const target = document.getElementById(step.target) || document.querySelector(step.target);
+                if (target) {
+                    // Smooth scroll to bring the target element into view
+                    target.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'center' 
+                    });
+                    
+                    // Wait a bit for scroll to complete before positioning tutorial
+                    setTimeout(() => {
+                        applyTutorialPosition(tutorialContent, step.position);
+                    }, 300);
+                    return;
+                }
+            }
+            
+            // Apply position immediately if no target to scroll to
+            applyTutorialPosition(tutorialContent, step.position);
+        }
+
+        function applyTutorialPosition(tutorialContent, position) {
+            tutorialContent.style.position = 'absolute';
+            
+            // Apply position styles
+            if (position.top) tutorialContent.style.top = position.top;
+            if (position.left) tutorialContent.style.left = position.left;
+            if (position.right) tutorialContent.style.right = position.right;
+            if (position.bottom) tutorialContent.style.bottom = position.bottom;
+            if (position.transform) tutorialContent.style.transform = position.transform;
+            
+            console.log('Positioned tutorial content:', position);
+        }function highlightTutorialTarget(selector) {
+            // Remove previous highlights
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+            
+            // Add highlight to current target if selector is provided
+            if (selector) {
+                const target = document.getElementById(selector) || document.querySelector(selector);
+                if (target) {
+                    target.classList.add('tutorial-highlight');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
