@@ -279,7 +279,7 @@ UpgradeUnit(x, y, upgradeLevel, delay := 100, unitslot := "") {
                 }
                 
                 ; Click on the unit to ensure it's selected
-                SimpleClick(x, y, 50)
+                BetterClick(x, y)
                 Sleep(500)
                 
                 ; Press upgrade key
@@ -332,12 +332,12 @@ GameStatus() {
     if (FileExist(categoryFile)) {
         try {
             gameCategory := FileRead(categoryFile)
-            gameCategory := Trim(gameCategory)  ; Remove any whitespace/newlines
+            gameCategory := Trim(gameCategory) 
         }
     }    if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, won)) {
         LogMessage("Game won!")
         UpdateWLDisplay("win")
-          ; Send webhook notification for win
+      
         try {
             global Wins, Losses, TotalRuns
             SendWebhookWithResult("won", Wins, Losses, TotalRuns)
@@ -357,10 +357,9 @@ GameStatus() {
             BetterClick(480, 460) 
 
         } else if (gameCategory == "Legend Stages") {
-            BetterClick(531, 462)  ; Clicks reset        } else if (gameCategory == "Portals") {
-            BetterClick(484, 464)  ; Clicks on the portal map
-            
-            ; Read portal settings from files
+            BetterClick(531, 462)       
+
+          
             selectedTier := "1" ; Default tier
             portalTierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
             if (FileExist(portalTierFile)) {
@@ -405,7 +404,7 @@ GameStatus() {
         } else if (gameCategory == "Dungeon") {
             BetterClick(480, 460) 
         } else if (gameCategory == "Essence") {
-            BetterClick(480, 460)   ; Clicks reset        } else if (gameCategory == "Survival") {
+              } else if (gameCategory == "Survival") {
             BetterClick(480, 460) 
         } else if (gameCategory == "Legend Stages") {
             BetterClick(480, 460)  ; Clicks reset
@@ -430,12 +429,21 @@ GameStatus() {
                     selectedElement := _pe
             }
             
-            ; Call HandlePortalMap with proper parameters (FirstTry = false since this is after a loss)
-            HandlePortalMap("Summer Laguna", selectedTier, selectedElement, false, false)
+            ; Call HandlePortalMap with proper parameters (FirstTry = false since this is after a loss)            HandlePortalMap("Summer Laguna", selectedTier, selectedElement, false, false)
         }
         return "lost"
-    } else if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, PortalButtonText)) {
+    } else if (gameCategory == "Portals" && FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, PortalButtonText)) {
         LogMessage("Portal reward button found! Selecting reward portals...")
+        LogMessage("Game won!")
+        UpdateWLDisplay("win")
+          ; Send webhook notification for win
+        try {
+            global Wins, Losses, TotalRuns
+            SendWebhookWithResult("won", Wins, Losses, TotalRuns)
+            LogMessage("Win webhook sent successfully")
+        } catch as e {
+            LogMessage("Failed to send win webhook: " . e.Message, "error")
+        }
         SelectRewardPortals()
         return "portal_reward"
     } else if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, Disconnected)) {
