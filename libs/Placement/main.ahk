@@ -95,7 +95,9 @@ LoadInUnits() {
     if (!FileExist(configFile)) {
         MsgBox("Config file not found: " . configFile)
         return false
-    }    try {
+    }
+    
+    try {
         fileContent := FileRead(configFile)
         lines := StrSplit(fileContent, "`n")
 
@@ -109,10 +111,10 @@ LoadInUnits() {
                 continue
 
             slotName := parts[1]
-            placement := +parts[2]
-            slotNumber := +parts[3]
+            placement := Integer(parts[2])  ; Use Integer() for better error handling
+            slotNumber := Integer(parts[3])  ; Use Integer() for better error handling
             unitName := parts[4]  ; Add unit name
-            priority := +parts[5]
+            priority := Integer(parts[5])  ; Use Integer() for better error handling
             autoSkill := parts[6]  ; Add auto skill field (was upgrade)
 
             coordsData := ""
@@ -122,52 +124,102 @@ LoadInUnits() {
                         coordsData .= ":"
                     coordsData .= p
                 }
-            }
-
-            coordinates := []
+            }            coordinates := []
             coordParts := StrSplit(coordsData, "|")
 
-            if (coordParts.Length >= 3) {
-                coordStr := coordParts[1]
-                upgradeData := coordParts[2]
-                upgradePriority := "1"
-                upgradeLevel := upgradeData
-
-                if InStr(upgradeData, ":") {
-                    upParts := StrSplit(upgradeData, ":")
-                    upgradeLevel := upParts[1]
-                    upgradePriority := upParts[2]
-                }
-
-                if InStr(coordStr, ";") {
-                    for each, coord in StrSplit(coordStr, ";") {
-                        if InStr(coord, ",") {
-                            coords := StrSplit(coord, ",")
-                            if coords.Length >= 2 {
-                                coordUpgrade := (upgradeLevel ~= "i)^max$") ? "max" : +upgradeLevel
-                                coordPrio := +upgradePriority
-                                coordinates.Push({x: +coords[1], y: +coords[2], upgrade: coordUpgrade, upgradePriority: coordPrio})
+            if (coordParts.Length >= 2) {
+                ; Handle the case where coordinates and upgrade data are mixed with semicolons
+                ; Format: 358,253|1:1;412,257|1:1;461,257|1:1;0,0|1:1;0,0|1:1|0
+                
+                if InStr(coordsData, ";") {
+                    ; Split by semicolons to get each coordinate+upgrade pair
+                    coordUpgradePairs := StrSplit(coordsData, ";")
+                    
+                    for i, pair in coordUpgradePairs {
+                        pair := Trim(pair)
+                        if (pair == "" || pair == "0" || pair == "0|0")
+                            continue
+                            
+                        ; Split each pair by pipe to separate coordinate from upgrade
+                        pairParts := StrSplit(pair, "|")
+                        if (pairParts.Length >= 2) {
+                            coordStr := Trim(pairParts[1])
+                            upgradeData := Trim(pairParts[2])
+                            
+                            ; Skip if coordinate is 0,0
+                            if (coordStr == "0,0" || coordStr == "0")
+                                continue
+                                
+                            if InStr(coordStr, ",") {
+                                coords := StrSplit(coordStr, ",")
+                                if coords.Length >= 2 {
+                                    try {
+                                        coordX := Integer(Trim(coords[1]))
+                                        coordY := Integer(Trim(coords[2]))
+                                        
+                                        ; Skip if coordinates are 0,0
+                                        if (coordX == 0 && coordY == 0)
+                                            continue
+                                        
+                                        ; Parse upgrade data
+                                        upgradeLevel := upgradeData
+                                        upgradePriority := "1"
+                                        
+                                        if InStr(upgradeData, ":") {
+                                            upParts := StrSplit(upgradeData, ":")
+                                            upgradeLevel := upParts[1]
+                                            upgradePriority := upParts[2]
+                                        }
+                                        
+                                        coordUpgrade := (upgradeLevel ~= "i)^max$") ? "max" : Integer(upgradeLevel)
+                                        coordPrio := Integer(upgradePriority)
+                                        coordinates.Push({x: coordX, y: coordY, upgrade: coordUpgrade, upgradePriority: coordPrio})
+                                        
+                                        LogMessage("Parsed coordinate: " . coordX . "," . coordY . " with upgrade " . coordUpgrade . " for " . slotName)
+                                    } catch Error as e {
+                                        LogMessage("Warning: Could not parse coordinate pair '" . pair . "' for " . slotName . ": " . e.Message)
+                                        continue
+                                    }
+                                }
                             }
                         }
                     }
                 } else {
-                    if InStr(coordStr, ",") {
+                    ; Handle single coordinate case: coordinate|upgrade
+                    coordStr := Trim(coordParts[1])
+                    upgradeData := Trim(coordParts[2])
+                    
+                    if (coordStr != "0,0" && coordStr != "0" && InStr(coordStr, ",")) {
                         coords := StrSplit(coordStr, ",")
                         if coords.Length >= 2 {
-                            coordUpgrade := (upgradeLevel ~= "i)^max$") ? "max" : +upgradeLevel
-                            coordPrio := +upgradePriority
-                            coordinates.Push({x: +coords[1], y: +coords[2], upgrade: coordUpgrade, upgradePriority: coordPrio})
+                            try {
+                                coordX := Integer(Trim(coords[1]))
+                                coordY := Integer(Trim(coords[2]))
+                                
+                                if (coordX != 0 || coordY != 0) {
+                                    ; Parse upgrade data
+                                    upgradeLevel := upgradeData
+                                    upgradePriority := "1"
+                                    
+                                    if InStr(upgradeData, ":") {
+                                        upParts := StrSplit(upgradeData, ":")
+                                        upgradeLevel := upParts[1]
+                                        upgradePriority := upParts[2]
+                                    }
+                                    
+                                    coordUpgrade := (upgradeLevel ~= "i)^max$") ? "max" : Integer(upgradeLevel)
+                                    coordPrio := Integer(upgradePriority)
+                                    coordinates.Push({x: coordX, y: coordY, upgrade: coordUpgrade, upgradePriority: coordPrio})
+                                }
+                            } catch Error as e {
+                                LogMessage("Warning: Could not parse single coordinate '" . coordStr . "' for " . slotName . ": " . e.Message)
+                            }
                         }
                     }
-                }            } else if (coordParts.Length == 2) {
-                coordStr := coordParts[1]
-                if InStr(coordStr, ",") {
-                    coords := StrSplit(coordStr, ",")
-                    if coords.Length >= 2 {
-                        coordinates.Push({x: +coords[1], y: +coords[2], upgrade: "0", upgradePriority: 1})
-                    }
                 }
-            }            unitSlots[slotName] := {
+            }
+
+            unitSlots[slotName] := {
                 placement: placement,
                 slotNumber: slotNumber,
                 unitName: unitName,
