@@ -31,21 +31,16 @@ global Survival
 Curses := ["Powerless", "Bankrupt", "Sluggish", "Weakness", "True Boss Fight", "No one leaves alive"]
 
 
-; Global coordinates for Roblox window detection (set by FixPositions function)
 global X1 := 0
 global Y1 := 0  
-global X2 := 1920  ; Default screen width fallback
-global Y2 := 1080  ; Default screen height fallback
+global X2 := 1920  
+global Y2 := 1080 
 
-; Global variables for auto-updater
 
-global REPO_OWNER := "injuriez"  ; Replace with actual GitHub username
-global REPO_NAME := "Mangoguards-ALS-AIO"         ; Replace with actual repository name  
-global CURRENT_VERSION := "v0.0.5"        ; Current version - update this when releasing new versions
 
-global REPO_OWNER := "LoudsisCool"  ; Replace with actual GitHub username
-global REPO_NAME := "YesYes"         ; Replace with actual repository name  
-global CURRENT_VERSION := "v1.0.5"        ; Replace with current version
+global REPO_OWNER := "injuriez"  
+global REPO_NAME := "Mangoguards-ALS-AIO"        
+global CURRENT_VERSION := "v0.0.5"       
 
 
 ; Global mango maps structure
@@ -53,28 +48,26 @@ global MangoMaps := Map()
 global MangoDropDown
 global DropDownList2
 
-; Note: Individual macro UI elements (DifficultyDropDown, CurseDropDown, etc.) 
-; are now managed by their respective macro classes
 
-myGui := Gui("+AlwaysOnTop -Caption", "Mango") ; Remove caption and keep on top
+myGui := Gui("+AlwaysOnTop -Caption", "Mango")
 myGui.BackColor := "0x111111"
 
 ; Initialize the modular mango system
 MangoManagerInitialize(myGui)
 
-; Updated GUI layout - expanded design for better Roblox fit
+
 ui := myGui.Add("Progress", "c0x7e4141 x0 y30 h700 w1000", 100)
 WinSetTransColor("0x7e4141 255", myGui)
 myGui.SetFont("s10", "Segoe UI")
 
 
-; Move Activity Log to fit in expanded layout
+
 ActivityLogGroupBox := myGui.Add("GroupBox", "x1010 y570 w450 h160 cFFFFFF", "📜 Activity Log")
 ActivityLogGroupBox.SetFont("s10 Bold", "Segoe UI")
 ActivityLogText := myGui.Add("Edit", "x1020 y590 w270 h120 +Multi +ReadOnly -E0x200 -Border -VScroll", "Macro Launched")
 ActivityLogText.SetFont("s9", "Segoe UI")
 ActivityLogText.Opt("+Background" . "0x111113" . " c" . "FFFFFF")
-; Keybinds section (left side)
+
 KeybindsGroupBox := myGui.Add("GroupBox", "x1010 y30 w220 h150 cFFFFFF", "⌨️ Keybinds")
 KeybindsGroupBox.SetFont("s10 Bold", "Segoe UI")
 KeybindsText := myGui.Add("Text", "x1020 y45 w200 h90 cFFFFFF", " F1 - Fix Roblox Position `n F2 - Start Macro `n F3 - Stop Macro `n F4 - Pause/Unpause `n F5 - Get Coordinates `n F6 - Test Movement")
