@@ -3,14 +3,13 @@
 
 ; Global variables for Legend Stages macro
 global LegendStagesMaps := ["Shibuya", "Ruined Morioh", "Thriller Bark", "Ryuudou Temple", "Snowy Village", "Rain Village", "Oni Island", "Unknown Planet", "Oasis", "Harge Forest", "Babylon", "Shinjuku", "Train Station"]
-global LegendStages := ["1", "2", "3"]
+global LegendStages := ["1", "2", "3", "4", "5", "6", "Infinite"]
 global LegendStageLabel := ""
 global LegendStageDropDown := ""
 
 LegendStagesSetupUI(gui, x, y) {
     global LegendStageLabel, LegendStageDropDown, LegendStages
-    
-    ; Setup UI elements specific to Legend Stages
+      ; Setup UI elements specific to Legend Stages
     LegendStageLabel := gui.Add("Text", "x" . x . " y" . y . " w80 h15 cFFFFFF", "Legend Stage:")
     LegendStageDropDown := gui.Add("DropDownList", "x" . x . " y" . (y + 20) . " w80 cFFFFFF -E0x200 +Theme", LegendStages)
     LegendStageDropDown.SetFont("s10 Bold", "Segoe UI")
@@ -27,7 +26,6 @@ LegendStagesShowUI() {
     LegendStageLabel.Visible := true
     LegendStageDropDown.Visible := true
     LegendStagesLoadSettings()
-    LogMessage("Legend Stages UI elements shown", "info")
 }
 
 LegendStagesHideUI() {
@@ -40,7 +38,7 @@ LegendStagesHideUI() {
 LegendStagesLoadSettings() {
     global LegendStageDropDown
     
-    settingsFile := A_ScriptDir . "\libs\settings\LegendStage.txt"
+    settingsFile := A_ScriptDir . "\libs\settings\legendstages\LegendStage.txt"
     if (FileExist(settingsFile)) {
         try {
             savedStage := FileRead(settingsFile)
@@ -53,7 +51,7 @@ LegendStagesLoadSettings() {
                     }
                 }            }
         } catch {
-            LogMessage("Error loading legend stage settings", "warning")
+            return
         }
     }
 }
@@ -64,7 +62,7 @@ LegendStagesSaveSettings(*) {
     if (LegendStageDropDown) {
         selectedStage := LegendStageDropDown.Text
         try {
-            FileOpen(A_ScriptDir . "\libs\settings\LegendStage.txt", "w", "UTF-8").Write(selectedStage)
+            FileOpen(A_ScriptDir . "\libs\settings\legendstages\LegendStage.txt", "w", "UTF-8").Write(selectedStage)
             LogMessage("Saved legend stage: " . selectedStage, "info")
         } catch {
             LogMessage("Error saving legend stage", "error")
@@ -276,33 +274,12 @@ StartLegendStagesMacro(selectedMap, selectedLegendStage) {
             break
         } else {
             LogMessage("Failed to enter legend stages selection. Retrying...", "warning")
+
+            CloseUI("Legend Stages")  ; Close any open UI to avoid interference
             
          
-            Sleep(500)
             
-            Sleep(2000)
             
-            BetterClick(40, 394)  ; Clicks teleport button
-            Sleep(300)
-            MouseMove(407, 297)  ; Hovers over the teleport menu
-            Sleep(1000)
-            BetterClick(492, 382)  ; Click on the Story & Infinity section (will need to adjust for legend stages)
-            Sleep(500)
-            BetterClick(642, 127)  ; Close the teleport menu
-            
-            MoveCamera()
-            Sleep(1000)
-            LogMessage("Camera movement completed, starting retry movement (holding A)...", "info")
-            Sleep(500)
-            
-            ; Ensure key is released before pressing
-            SendInput("{A up}")
-            Sleep(100)
-            SendInput("{A down}")
-            Sleep(5000)  ; Hold A key to walk forward
-            SendInput("{A up}")
-            
-            LogMessage("Retry movement completed", "info")
         }
     }
 }

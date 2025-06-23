@@ -1,6 +1,7 @@
 ; Mango Manager - Coordinates all macro types
 ; This file manages the different macro types and their interactions
 
+#Include Support\StuckUI.ahk
 #Include raids.ahk
 #Include dungeon.ahk
 #Include survival.ahk
@@ -8,6 +9,7 @@
 #Include bossrush.ahk
 #Include legendstages.ahk
 #Include Portals.ahk
+#Include story.ahk
 ; Global variables for manager
 global CurrentMacro := ""
 global MangoMaps := Map()
@@ -21,32 +23,32 @@ MangoManagerInitialize(gui) {
     MangoMaps["Essence"] := EssenceMaps
     MangoMaps["Boss Rush (WIP)"] := BossRushMaps
     MangoMaps["Legend Stages"] := LegendStagesMaps
+    MangoMaps["Story"] := StoryMaps
     ; For Portals, we only use "Summer Laguna" so create a simple array here
     MangoMaps["Portals"] := ["Summer Laguna"]
     
     ; Setup UI for all macro types
     MangoManagerSetupAllUI(gui)
     
-    LogMessage("MangoManager initialized with " . MangoMaps.Count . " macro types", "info")
 }
 
 MangoManagerSetupAllUI(gui) {
     ; Setup UI for each macro type at the same position (they'll be shown/hidden as needed)
     uiX := 1250
-    uiY := 255
-      SetupRaidsUI(gui, uiX, uiY)       ; Renamed from RaidsSetupUI
+    uiY := 255 
+    SetupRaidsUI(gui, uiX, uiY)       ; Renamed from RaidsSetupUI
     SetupDungeonUI(gui, uiX, uiY)     ; Renamed from DungeonSetupUI
     SetupSurvivalUI(gui, uiX, uiY)    ; Renamed from SurvivalSetupUI
     EssenceSetupUI(gui, uiX, uiY)
     BossRushSetupUI(gui, uiX, uiY)
     LegendStagesSetupUI(gui, uiX, uiY)
+    StorySetupUI(gui, uiX, uiY)
     SetupPortalsUI(gui, uiX, uiY)
 }
 
 MangoManagerSwitchToMacro(macroType) {
     global CurrentMacro
     
-    LogMessage("Switching to macro type: " . macroType, "info")
     
     ; Hide current macro UI
     if (CurrentMacro != "") {
@@ -56,12 +58,15 @@ MangoManagerSwitchToMacro(macroType) {
             case "Dungeon":
                 HideDungeonUI()         ; Renamed from DungeonHideUI
             case "Survival":
-                HideSurvivalUI()        ; Renamed from SurvivalHideUI            case "Essence":
+                HideSurvivalUI()        ; Renamed from SurvivalHideUI
+            case "Essence":
                 EssenceHideUI()
             case "Boss Rush (WIP)":
                 BossRushHideUI()
-            case "Legend Stages":
+            case "Legend/Story":
                 LegendStagesHideUI()
+            case "Story":
+                StoryHideUI()
             case "Portals":
                 HidePortalsUI()
         }
@@ -72,14 +77,16 @@ MangoManagerSwitchToMacro(macroType) {
         case "Raids":
             ShowRaidsUI()           ; Renamed from RaidsShowUI
         case "Dungeon":
-            ShowDungeonUI()         ; Renamed from DungeonShowUI
-        case "Survival":
+            ShowDungeonUI()         ; Renamed from DungeonShowUI        case "Survival":
             ShowSurvivalUI()        ; Renamed from SurvivalShowUI
         case "Essence":
             EssenceShowUI()
-        case "Boss Rush (WIP)":            BossRushShowUI()
-        case "Legend Stages":
+        case "Boss Rush (WIP)":
+            BossRushShowUI()
+        case "Legend/Story":
             LegendStagesShowUI()
+        case "Story":
+            StoryShowUI()
         case "Portals":
             ShowPortalsUI()
         default:
@@ -91,15 +98,13 @@ MangoManagerSwitchToMacro(macroType) {
     ; Clear PortalBlacklist.txt whenever user switches to Portals macro
     if (macroType = "Portals") {
         try {
-            blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+            blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
             FileOpen(blacklistFile, "w", "UTF-8").Write("")  ; Clear the file
-            LogMessage("Cleared PortalBlacklist.txt file when switching to Portals macro", "info")
         } catch as err {
             LogMessage("Error clearing PortalBlacklist.txt: " . err.Message, "warning")
         }
     }
     
-    LogMessage("Successfully switched to " . macroType . " macro", "info")
 }
 
 MangoManagerGetMaps(macroType) {
@@ -120,7 +125,7 @@ MangoManagerStartCurrentMacro() {
         selectedMap := Trim(FileRead(mapFile))
     }
     if (selectedMap == "") {
-        LogMessage("MangoManagerStartCurrentMacro: Map not selected or file empty.", "warning")
+        return
         ; It might be better to return or ensure map is always available before calling specific macros
     }
 
@@ -159,20 +164,18 @@ MangoManagerStartCurrentMacro() {
                 }            
             case "Boss Rush (WIP)":
                 selectedBossRush := "" ; Default, should be read from BossRush.txt
-                bossRushFile := A_ScriptDir . "\libs\settings\BossRush.txt" ; Corrected path
+                bossRushFile := A_ScriptDir . "\libs\settings\bossrush\BossRush.txt" ; Corrected path
                 if (FileExist(bossRushFile)) {
                     _br := Trim(FileRead(bossRushFile))
                     if (_br != "") 
                         selectedBossRush := _br
-                }
-                if (selectedMap != "" && selectedBossRush != "") {
+                }                if (selectedMap != "" && selectedBossRush != "") {
                     StartBossRushMacro(selectedMap, selectedBossRush)
                 } else {
                     LogMessage("Boss Rush: Map or Type not selected to start macro.", "error")
-                }        
-            case "Legend Stages":
+                }            case "Legend/Story":
                 selectedLegendStage := "1" ; Default
-                legendStageFile := A_ScriptDir . "\libs\settings\LegendStage.txt" ; Corrected path
+                legendStageFile := A_ScriptDir . "\libs\settings\legendstages\LegendStage.txt" ; Corrected path
                 if (FileExist(legendStageFile)) {
                     _ls := Trim(FileRead(legendStageFile))
                     if (_ls != "") 
@@ -181,9 +184,23 @@ MangoManagerStartCurrentMacro() {
                 if (selectedMap != "") {
                     StartLegendStagesMacro(selectedMap, selectedLegendStage)
                 } else {
-                    LogMessage("Legend Stages: Map not selected to start macro.", "error")
-                }            case "Portals":                ; Get portal tier setting (map is fixed to Summer Laguna)
-                portalTierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
+                    LogMessage("Legend/Story: Map not selected to start macro.", "error")
+                }
+            case "Story":                selectedStoryStage := "1" ; Default
+                storyStageFile := A_ScriptDir . "\libs\settings\story\Story.txt" ; Corrected path
+                if (FileExist(storyStageFile)) {
+                    _ss := Trim(FileRead(storyStageFile))
+                    if (_ss != "") 
+                        selectedStoryStage := _ss
+                }
+                if (selectedMap != "") {
+                    StartStoryMacro(selectedMap, selectedStoryStage)
+                } else {
+                    LogMessage("Story: Map not selected to start macro.", "error")
+                }
+            case "Portals":
+                ; Get portal tier setting (map is fixed to Summer Laguna)
+                portalTierFile := A_ScriptDir . "\libs\settings\portals\PortalTier.txt"
                 selectedTier := "1" ; Default tier
                 if (FileExist(portalTierFile)) {
                     _pt := Trim(FileRead(portalTierFile))
@@ -192,7 +209,7 @@ MangoManagerStartCurrentMacro() {
                 }
                 
                 ; Get portal element setting
-                portalElementFile := A_ScriptDir . "\libs\settings\PortalElement.txt"
+                portalElementFile := A_ScriptDir . "\libs\settings\portals\PortalElement.txt"
                 selectedElement := "Fire" ; Default element
                 if (FileExist(portalElementFile)) {
                     _pe := Trim(FileRead(portalElementFile))
@@ -207,17 +224,13 @@ MangoManagerStartCurrentMacro() {
         LogMessage("No macro selected to start", "warning")
     }
 }
-; This is a shared function for all macro types
-; The LookForMap implementation in manager.ahk should be used as the main implementation
-; while macro-specific implementations should call this one
+
 MangoLookForMap(MapName, selectedDifficulty := "", selectedLegendStage := "") {
-    ; Search the entire Roblox window for map detection
-    ; Get the actual Roblox window dimensions with screen coordinates
-    global X1, Y1, X2, Y2  ; Declare as global to update the global variables
+
+    global X1, Y1, X2, Y2  
     RobloxWindow := "ahk_exe RobloxPlayerBeta.exe"
     if WinExist(RobloxWindow) {
         WinGetPos(&RblxX, &RblxY, &RblxW, &RblxH, RobloxWindow)
-        ; Use full Roblox window coordinates for FindText (screen coordinates)
         X1 := RblxX
         Y1 := RblxY  
         X2 := RblxX + RblxW
@@ -230,7 +243,7 @@ MangoLookForMap(MapName, selectedDifficulty := "", selectedLegendStage := "") {
         Y2 := 1080
         LogMessage("Roblox window not found, using fallback coordinates", "warning")
     }
-      ; Determine which category the map belongs to
+    ; Determine which category the map belongs to
     global MangoMaps
     selectedCategory := ""
     
@@ -243,7 +256,19 @@ MangoLookForMap(MapName, selectedDifficulty := "", selectedLegendStage := "") {
         }
         if (selectedCategory != "")
             break
-    }    ; Handle different categories
+    }
+    
+    ; Load story stage setting if needed
+    selectedStoryStage := "1" ; Default
+    if (selectedCategory == "Story") {
+        storyStageFile := A_ScriptDir . "\libs\settings\story\Story.txt"
+        if (FileExist(storyStageFile)) {
+            _ss := Trim(FileRead(storyStageFile))
+            if (_ss != "") 
+                selectedStoryStage := _ss
+        }    }
+    
+    ; Handle different categories
     switch (selectedCategory) {
         case "Raids":
             HandleRaidMap(MapName)
@@ -255,6 +280,8 @@ MangoLookForMap(MapName, selectedDifficulty := "", selectedLegendStage := "") {
             HandleSurvivalMap(MapName)
         case "Legend Stages":
             HandleLegendStagesMap(MapName, selectedLegendStage)
+        case "Story":
+            HandleStoryMap(MapName, selectedStoryStage)
         default:
             LogMessage("Unknown map category for: " . MapName, "error")
     }
@@ -266,8 +293,7 @@ MangoManagerStopCurrentMacro() {
       if (CurrentMacro != "") {
         switch CurrentMacro {
             case "Raids":
-                StopRaidsMacro()         ; Correct name from raids.ahk
-            case "Dungeon":
+                StopRaidsMacro()         ; Correct name from raids.ahk            case "Dungeon":
                 StopDungeonMacro()
             case "Survival":
                 StopSurvivalMacro()     ; Assuming this is the correct name
@@ -277,6 +303,8 @@ MangoManagerStopCurrentMacro() {
                 BossRushStopMacro()
             case "Legend Stages":
                 LegendStagesStopMacro() ; Correct name from legendstages.ahk
+            case "Story":
+                StopStoryMacro()
             case "Portals":
                 StopPortalsMacro()
         }
@@ -289,10 +317,10 @@ MangoManagerLoadAllSettings() {
     ; Load settings for all macro types
     LoadNumberSelection()         ; Renamed from RaidsLoadSettings
     LoadDungeonCurseSelection()   ; Renamed from DungeonLoadSettings
-    LoadSurvivalCurseSelection()  ; Renamed from SurvivalLoadSettings
-    EssenceLoadSettings()
+    LoadSurvivalCurseSelection()  ; Renamed from SurvivalLoadSettings    EssenceLoadSettings()
     BossRushLoadSettings()
     LegendStagesLoadSettings()
+    StoryLoadSettings()
     PortalTierLoadSettings()      ; Load portal tier settings
     PortalElementLoadSettings()   ; Load portal element settings
     PortalBlacklistLoadSettings() ; Load portal blacklist settings

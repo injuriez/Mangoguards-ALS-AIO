@@ -1,8 +1,8 @@
 ; Dungeon Macro Configuration
 ; This file contains all dungeon-specific setup and functionality
 
-; Dungeon Maps
-DungeonMaps := ["Monarch Dungeon", "Devil Dungeon"]
+; Dungeon Maps - declared as global for manager access
+global DungeonMaps := ["Monarch Dungeon", "Devil Dungeon"]
 
 ; Dungeon Curses
 DungeonCurses := ["Dull", "Nullify", "Blitz", "Regeneration", "Bankrupt", "Sluggish", "Endurance", "Weakened", "Equilibrium", "godless"]
@@ -138,7 +138,7 @@ UpdateDungeonCurseDropdownDisplay() {
 LoadDungeonCurseSelection() {
     global DungeonSelectedCurses
     
-    settingsFile := A_ScriptDir . "\libs\settings\Curse.txt"
+    settingsFile := A_ScriptDir . "\libs\settings\dungeon\Curse.txt"
     if (FileExist(settingsFile)) {
         try {
             savedCurses := FileRead(settingsFile)
@@ -171,7 +171,7 @@ SaveDungeonCurseSelection() {
     }
     
     try {
-        FileOpen(A_ScriptDir . "\libs\settings\Curse.txt", "w", "UTF-8").Write(curseText)
+        FileOpen(A_ScriptDir . "\libs\settings\dungeon\Curse.txt", "w", "UTF-8").Write(curseText)
         LogMessage("Saved dungeon curses: " . curseText, "info")
     } catch {
         LogMessage("Error saving dungeon curses", "error")
@@ -221,35 +221,7 @@ StartDungeonMacro(selectedMap) {
             break
         } else {
             LogMessage("Failed to detect dungeon selection screen, retrying...", "warning")
-            Sleep(2000)
-                       ; Retry the same sequence using DungeonText
-            BetterClick(810, 165) ;closes ui from other stuff
-            Sleep(500)
-            BetterClick(793, 165) ;closes ui from other stuff
-            Sleep(500)
-            BetterClick(837, 507) ;closes ui from other stuff
-
-            Sleep(1000)
-            BetterClick(40, 394)
-            Sleep(300)
-            MouseMove(407, 297)
-            SendInput("{WheelDown 2}")
-            
-            Sleep(1000)
-            BetterClick(501, 418)
-            Sleep(500)
-            BetterClick(642, 127)
-              ; Retry walking movement
-               MoveCamera()
-            Sleep(1000)
-            SendInput("{w down}")
-            Sleep(1000)  ; Extended retry W movement duration to make it very visible
-            SendInput("{w up}")
-            Sleep(1000)
-            SendInput("{a down}")
-            Sleep(2938)
-            SendInput("{a up}")
-            
+            CloseUI("Dungeons")
             ; Continue loop to check DungeonText again
         }
     }

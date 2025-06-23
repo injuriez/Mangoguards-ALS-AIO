@@ -5,6 +5,7 @@
 #Include ..\mangos\raids.ahk
 #Include ..\mangos\dungeon.ahk
 #Include ..\mangos\Portals.ahk
+#Include ..\mangos\story.ahk
 global configFile := A_ScriptDir . "\libs\UIPARTS\vanguards_config.txt"
 global unitSlots := Map()
 global robloxX1 := 0, robloxY1 := 0, robloxX2 := 0, robloxY2 := 0
@@ -386,7 +387,9 @@ GameStatus() {
             gameCategory := FileRead(categoryFile)
             gameCategory := Trim(gameCategory) 
         }
-    }    if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, won)) {
+    }
+    
+    if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, won)) {
         LogMessage("Game won!")
         UpdateWLDisplay("win")
       
@@ -397,41 +400,21 @@ GameStatus() {
         } catch as e {
             LogMessage("Failed to send win webhook: " . e.Message, "error")
         }
-        
-        if (gameCategory == "Raids") {
+          if (gameCategory == "Raids") {
             BetterClick(531, 462)  ; Clicks reset
         } else if (gameCategory == "Dungeon") {
-            BetterClick(480, 460) 
+            BetterClick(480, 460)
         } else if (gameCategory == "Essence") {
 
             BetterClick(480, 460)   ; Clicks reset
-        }else if (gameCategory == "Survival") {
+        } else if (gameCategory == "Survival") {
             BetterClick(480, 460) 
-
         } else if (gameCategory == "Legend Stages") {
             BetterClick(531, 462)       
-
-          
-            selectedTier := "1" ; Default tier
-            portalTierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
-            if (FileExist(portalTierFile)) {
-                _pt := Trim(FileRead(portalTierFile))
-                if (_pt != "") 
-                    selectedTier := _pt
-            }
-            
-            ; Get portal element setting
-            selectedElement := "Fire" ; Default element
-            portalElementFile := A_ScriptDir . "\libs\settings\PortalElement.txt"
-            if (FileExist(portalElementFile)) {
-                _pe := Trim(FileRead(portalElementFile))
-                if (_pe != "") 
-                    selectedElement := _pe
-            }
-            
-            ; Call HandlePortalMap with proper parameters
-            HandlePortalMap("Summer Laguna", selectedTier, selectedElement, false, false)
+        } else if (gameCategory == "Story") {
+            BetterClick(531, 462)
         }
+        
         if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, RetryText)) {
             LogMessage("Retrying game...")
             BetterClick(X, Y)  ; Clicks retry
@@ -450,14 +433,13 @@ GameStatus() {
             LogMessage("Loss webhook sent successfully")
         } catch as e {
             LogMessage("Failed to send loss webhook: " . e.Message, "error")
-        }
-          if (gameCategory == "Raids") {
-            BetterClick(482, 460)  ; Clicks reset
-        } else if (gameCategory == "Dungeon") {
-            BetterClick(480, 460) 
+        }          if (gameCategory == "Raids") {
+            BetterClick(482, 460)  ; Clicks reset        } else if (gameCategory == "Dungeon") {
+            BetterClick(480, 460)
         } else if (gameCategory == "Essence") {
-              } else if (gameCategory == "Survival") {
-            BetterClick(480, 460) 
+            BetterClick(480, 460)
+        } else if (gameCategory == "Survival") {
+            BetterClick(480, 460)
         } else if (gameCategory == "Legend Stages") {
             BetterClick(480, 460)  ; Clicks reset
         } else if (gameCategory == "Portals") {
@@ -465,7 +447,7 @@ GameStatus() {
             
             ; Read portal settings from files
             selectedTier := "1" ; Default tier
-            portalTierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
+            portalTierFile := A_ScriptDir . "\libs\settings\portals\PortalTier.txt"
             if (FileExist(portalTierFile)) {
                 _pt := Trim(FileRead(portalTierFile))
                 if (_pt != "") 
@@ -474,15 +456,19 @@ GameStatus() {
             
             ; Get portal element setting
             selectedElement := "Fire" ; Default element
-            portalElementFile := A_ScriptDir . "\libs\settings\PortalElement.txt"
+            portalElementFile := A_ScriptDir . "\libs\settings\portals\PortalElement.txt"
             if (FileExist(portalElementFile)) {
                 _pe := Trim(FileRead(portalElementFile))
                 if (_pe != "") 
                     selectedElement := _pe
             }
             
-            ; Call HandlePortalMap with proper parameters (FirstTry = false since this is after a loss)            HandlePortalMap("Summer Laguna", selectedTier, selectedElement, false, false)
+            ; Call HandlePortalMap with proper parameters (FirstTry = false since this is after a loss)
+            HandlePortalMap("Summer Laguna", selectedTier, selectedElement, false, false)
+        } else if (gameCategory == "Story") {
+            BetterClick(480, 460)  ; Clicks reset
         }
+        
         return "lost"
     } else if (gameCategory == "Portals" && FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, PortalButtonText)) {
         LogMessage("Portal reward button found! Selecting reward portals...")
@@ -501,17 +487,18 @@ GameStatus() {
     } else if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, Disconnected)) {
         LogMessage("Game Has Been Disconnected, Retrying...")
             UpdateWLDisplay("disconnect")  ; Add this line to count the disconnect
-
         BetterClick(790, 162) ; closes the update logs so it doesn't interfere with the mango
         ; load in all the configs again
         Difficulty := FileRead(A_ScriptDir . "\libs\settings\Difficulty.txt")
-        Map := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
-          if (gameCategory == "Raids") {
-            StartRaidMacro(Map)
+        MapName := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
+        if (gameCategory == "Raids") {
+            StartRaidMacro(MapName)
         } else if (gameCategory == "Dungeon") {
-            StartDungeonMacro(Map)
+            StartDungeonMacro(MapName)
         } else if (gameCategory == "Essence") {
-            EssenceStartMacro(Map, Difficulty)
+            EssenceStartMacro(MapName, Difficulty)
+        } else if (gameCategory == "Story") {
+            StartStoryMacro(MapName, "1")
         }
 
         return "disconnected"
@@ -702,6 +689,8 @@ UpgradeUnits() {
 
 MainTerminal() {
     global SkipStartButton
+
+    Story := FileRead(A_ScriptDir . "\libs\settings\story\Story.txt")
     ; First Step LETS check if we got disconnected from the game (little safety measure)
     Disconnected := "|<>*103$70.00000000000000000000000000000S00000DUy007w07001z7w00ts0z006Csk033U7Q00MP300AC0Mk01VgDz3kzzVny66kzyz3zy7zyMP3zz0Dzk7ztVg83s0s20Q3q6kU703001U7MP20A080E40RVw8EkUU1Vklq7kXV70C6C07MC2C4Q0sMM0Rk0M0k0U1Vlzn01U30206107C0C0S0A0Q60QS3sbw9sHsw3kzzXyzzzzzzy0zaDVztzntzk00Ms0000000001XU0000000007y0000000000Dk0000000000A00000000000000000002"
     Loaded2 := "|<>*121$34.000000000000000001k0000Dz01s1VY04U46Tzn0Ekzy6DV208Ty6E0nzu9ADDzVW4wTyDAPtzzzzzzzzzzzzzzzzzzzzzzzzzzzzzU"
@@ -728,6 +717,7 @@ MainTerminal() {
                 Maps := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
                 
                 categoryFile := A_ScriptDir . "\libs\settings\Category.txt"
+                
                 gameCategory := ""
                 if (FileExist(categoryFile)) {
                     try {
@@ -753,9 +743,8 @@ MainTerminal() {
             
             ; Small delay to prevent excessive CPU usage
             Sleep(100)
-        }
-    } else {
-             loop {
+        }    } else {
+        loop {
             if FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, Loaded) {
                 if (!LoadInUnits()) {
                     LogMessage("Failed to load units config - aborting placement")
@@ -775,7 +764,7 @@ MainTerminal() {
                     ZoomTech(false)
                 } else if gameCategory == "Survival" {
                     SkipStartButton := "true"
-                    SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\Survival.txt")
+                    SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\survival\Survival.txt")
                     SurvivalMap := Trim(SurvivalMap)
                     if (SurvivalMap == "Hell Invasion") {
                         SendInput("{W Down}") 
@@ -793,19 +782,22 @@ MainTerminal() {
                         Sleep(7000)  ; Wait for the game to start
                         BetterClick(498, 564, "Right") ; Clicks the start button again
                         Sleep(2000)  ; Wait for the game to start
-                        ChangeMovement("false") ; changes back to WASD movement
-                    } else if (SurvivalMap == "Holy Invasion") {
+                        ChangeMovement("false") ; changes back to WASD movement                    } else if (SurvivalMap == "Holy Invasion") {
                         ZoomTech(false)
-
-                    }
-                      } else if gameCategory == "Legend Stages" {
+                    }                } else if gameCategory == "Legend Stages" {
                     SkipStartButton := "true"
                     ZoomTech(false)
                 } else if (gameCategory == "Portals") {
                     SkipStartButton := "false"
                     ZoomTech(false)
-                }
-                BetterClick(449, 594) ; Clicks start
+                } else if (gameCategory == "Story") {
+                    SkipStartButton := "true"
+                    ; Read the map setting for Story
+                    Maps := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
+                    ; Pass Maps variable directly to StoryMovement without trimming
+                    StoryMovement(Maps)
+                    ZoomTech(false)
+                }                BetterClick(449, 594) ; Clicks start
                 break
             } else if (FindText(&X, &Y, 494-150000, 674-150000, 494+150000, 674+150000, 0, 0, Loaded2)) {
                 if (!LoadInUnits()) {
@@ -826,7 +818,7 @@ MainTerminal() {
                     ZoomTech(false)
                 } else if gameCategory == "Survival" {
                     SkipStartButton := "true"
-                    SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\Survival.txt")
+                    SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\survival\Survival.txt")
                     SurvivalMap := Trim(SurvivalMap)
                     if (SurvivalMap == "Hell Invasion") {
                         SendInput("{W Down}") 
@@ -848,18 +840,23 @@ MainTerminal() {
                     } else if (SurvivalMap == "Holy Invasion") {
                         ZoomTech(false)
 
-                    } 
-                    
-                } else if gameCategory == "Legend Stages" {
+                    }                } else if gameCategory == "Legend Stages" {
                     SkipStartButton := "true"
                     ZoomTech(false)
                 } else if (gameCategory == "Portals") {
                     SkipStartButton := "false"
                     ZoomTech(false)
+                } else if (gameCategory == "Story") {
+                    SkipStartButton := "true"
+                    ; Read the map setting for Story
+                    Maps := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
+                    ; Pass Maps variable directly to StoryMovement without trimming
+                    StoryMovement(Maps)
+                    ZoomTech(false)
                 }
                 BetterClick(449, 594) ; Clicks start
                 break
-            } 
+            }
             
             
             else if (FindText(&X, &Y, robloxX1, robloxY1, robloxX2, robloxY2, 0, 0, Disconnected)) {
@@ -879,13 +876,14 @@ MainTerminal() {
                         gameCategory := Trim(gameCategory)  ; Remove any whitespace/newlines
                     }
                 }
-                
-                if (gameCategory == "Raids") {
+                  if (gameCategory == "Raids") {
                     StartRaidMacro(Maps)
                 } else if (gameCategory == "Dungeon") {
                     StartDungeonMacro(Maps)
                 } else if (gameCategory == "Essence") {
                     EssenceStartMacro(Maps, Difficulty)
+                } else if (gameCategory == "Story") {
+                    StartStoryMacro(Maps, "1")
                 }
                 return
             } else {
@@ -914,12 +912,28 @@ MainTerminal() {
         Sleep(1000)  ; Keep the script running to allow for further actions
         gameResult := GameStatus()
         if (gameResult == "won" || gameResult == "lost") {
-            LogMessage("Game ended with result: " . gameResult . ". Restarting MainTerminal in 3 seconds...")
+            LogMessage("Game ended with result: " . gameResult )
             Sleep(3000)  ; Wait 3 seconds before restarting
             MainTerminal()  ; Restart the terminal
             return  ; Exit current instance
+        } else if (Story == "Infinite") {
+            static lastMoveTime := A_TickCount
+            
+            ; If 10 seconds passed since last movement, do random movement
+            if (A_TickCount - lastMoveTime > 10000) {
+                ; Get random coordinates within Roblox window
+                randX := Random(robloxX1 + 50, robloxX2 - 50)
+                randY := Random(robloxY1 + 50, robloxY2 - 50)
+                
+                ; Move mouse slightly to prevent disconnect
+                MouseMove(randX, randY)
+                wiggle()  ; Use the existing wiggle function
+                
+                LogMessage("Performing anti-disconnect mouse movement")
+                lastMoveTime := A_TickCount  ; Reset timer
+            }
         }
-    }
+    } 
 }
 
 ; Upgrade pattern definitions for visual verification

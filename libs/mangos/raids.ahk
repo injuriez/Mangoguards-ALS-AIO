@@ -1,8 +1,8 @@
 ; Raids Macro Configuration
 ; This file contains all raid-specific setup and functionality
 
-; Raids Maps
-RaidsMaps := ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderneich", "Central City", "Giants District (Town)", "Flying Island", "U-18", "Flower Garden", "Ancient Dungeon", "Shinjuku Crater", "Valhalla Arena", "Frozen Planet"]
+; Raids Maps - declared as global for manager access
+global RaidsMaps := ["Marines Fort", "Hell City", "Snowy Capital", "Leaf Village", "Wanderneich", "Central City", "Giants District (Town)", "Flying Island", "U-18", "Flower Garden", "Ancient Dungeon", "Shinjuku Crater", "Valhalla Arena", "Frozen Planet"]
 
 ; Raids UI Elements (will be created by main ALS.ahk)
 global StageLabel
@@ -28,7 +28,6 @@ ShowRaidsUI() {
     StageLabel.Visible := true
     NumberDropDown.Visible := true
     LoadNumberSelection()
-    LogMessage("Raids UI elements shown", "info")
 }
 
 ; Hide Raids UI
@@ -43,10 +42,9 @@ SaveNumberSelection(*) {
     global NumberDropDown
     if (NumberDropDown) {
         try {
-            FileOpen(A_ScriptDir . "\libs\settings\Number.txt", "w", "UTF-8").Write(NumberDropDown.Text)
-            LogMessage("Saved raid stage: " . NumberDropDown.Text, "info")
+            FileOpen(A_ScriptDir . "\libs\settings\raids\Number.txt", "w", "UTF-8").Write(NumberDropDown.Text)
         } catch {
-            LogMessage("Error saving raid stage", "error")
+            ; Error saving raid stage
         }
     }
 }
@@ -54,7 +52,7 @@ SaveNumberSelection(*) {
 ; Load saved number selection for raids
 LoadNumberSelection() {
     global NumberDropDown
-    numberFile := A_ScriptDir . "\libs\settings\Number.txt"
+    numberFile := A_ScriptDir . "\libs\settings\raids\Number.txt"
     if (FileExist(numberFile)) {
         try {
             savedNumber := FileRead(numberFile)
@@ -62,7 +60,6 @@ LoadNumberSelection() {
             for index, value in ["1", "2", "3", "4", "5", "6"] {
                 if (value == savedNumber) {
                     NumberDropDown.Choose(index)
-                    LogMessage("Loaded saved raid stage: " . savedNumber, "info")
                     break
                 }
             }
@@ -81,11 +78,8 @@ StartRaidMacro(selectedMap) {
     global X1, Y1, X2, Y2, SelectText
     SelectText := "|<>*134$58.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzxztzzzk7zzXz3zzz07zyDwDzzw0Dzszkzzzk0zzzz3zzz7XzyTYDzzwSD2Ms0kDzlss0XU20zz0302A08nzw0A8MlkVzzk1llX720zz0376AQQ3zwSA8MkVy7zlsk1XU68Tz7XU6C0M3zyzDaNyNkTzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzU"
 
-    LogMessage("Starting Raid macro for: " . selectedMap, "info")
-    
     Sleep(2000)
     BetterClick(40, 394)  ; Clicks teleport button 
-    LogMessage("Scrolling down in teleport menu...", "info")
     Sleep(1000)
     BetterClick(666, 296)  ; scroll bar
     Sleep(1000)  ; Wait for menu to fully appear
@@ -99,7 +93,6 @@ StartRaidMacro(selectedMap) {
     Sleep(500)
     
     ; Move to raid area with improved reliability
-    LogMessage("Moving to raid area (holding A key)...", "info")
     
     ; Ensure all keys are released first
     SendInput("{A up}")
@@ -110,56 +103,22 @@ StartRaidMacro(selectedMap) {
     Sleep(5000)  ; Hold A key to walk forward
     SendInput("{A up}")
     
-    LogMessage("Movement completed, checking for raid selection screen...", "info")
-    
     ; Wait for raid selection screen
     loop {
         if (ok := FindText(&X, &Y, X1, Y1, X2, Y2, 0, 0, SelectText)) {
-            LogMessage("Successfully entered the raid selection!", "info")
             MangoLookForMap(selectedMap)
             break
         } else {
-            LogMessage("Failed to enter raid selection. Retrying...", "warning")
-            
-        
             Sleep(500)
-            
             Sleep(2000)
             ; Retry the same sequence with improved scrolling
-            BetterClick(40, 394)
-            Sleep(300)
-            MouseMove(407, 297)
-            Sleep(500)
-            
-            LogMessage("Retry: Scrolling down in teleport menu...", "info")
-            SendInput("{WheelDown}")
-            Sleep(200)
-            SendInput("{WheelDown}")
-            Sleep(200)
-            SendInput("{WheelDown}")  ; Extra scroll for reliability
-            Sleep(1000)
-            
-            BetterClick(501, 418)
-            Sleep(500)
-            BetterClick(642, 127)
-            
-            MoveCamera()
-            LogMessage("Retry: Starting movement (holding A)...", "info")
-            ; Ensure key is released before pressing
-            SendInput("{A up}")
-            Sleep(100)
-            SendInput("{A down}")
-            Sleep(6000)  ; Slightly longer hold time for retry
-            SendInput("{A up}")
-            
-            LogMessage("Retry movement completed", "info")
+            closeUI("Raids")
         }
     }
 }
 
 ; Stop Raids macro
 StopRaidsMacro() {
-    LogMessage("Stopping Raids macro", "info")
     ; Add raid stop logic here
 }
 
@@ -249,8 +208,7 @@ HandleRaidMap(MapName){
             Sleep(500)
             BetterClick(235, 435)
             SetupMap(MapName)
-            
-        default:
-            LogMessage("Unknown raid map: " . MapName, "error")
+              default:
+            ; Unknown raid map
     }
 }

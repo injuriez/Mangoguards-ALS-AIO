@@ -18,11 +18,10 @@ BossRushHideUI() {
 }
 
 BossRushLoadSettings() {
-    settingsFile := A_ScriptDir . "\libs\settings\BossRush.txt"
+    settingsFile := A_ScriptDir . "\libs\settings\bossrush\BossRush.txt"
     if (FileExist(settingsFile)) {
         try {
             savedBossRush := FileRead(settingsFile)
-            LogMessage("Loaded boss rush setting: " . savedBossRush, "info")
             ; Boss Rush selection is handled in main dropdown
         } catch {
             LogMessage("Error loading boss rush settings", "warning")
@@ -32,7 +31,7 @@ BossRushLoadSettings() {
 
 BossRushSaveSettings(selectedRush) {
     try {
-        FileOpen(A_ScriptDir . "\libs\settings\BossRush.txt", "w", "UTF-8").Write(selectedRush)
+        FileOpen(A_ScriptDir . "\libs\settings\bossrush\BossRush.txt", "w", "UTF-8").Write(selectedRush)
         LogMessage("Saved boss rush: " . selectedRush, "info")
     } catch {
         LogMessage("Error saving boss rush", "error")

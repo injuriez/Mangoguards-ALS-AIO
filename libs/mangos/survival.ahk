@@ -1,8 +1,8 @@
 ; Survival Macro Configuration
 ; This file contains all survival-specific setup and functionality
 
-; Survival Maps
-SurvivalMaps := ["Hell Invasion", "Holy Invasion", "Villan Invasion"]
+; Survival Maps - declared as global for manager access
+global SurvivalMaps := ["Hell Invasion", "Holy Invasion", "Villan Invasion"]
 
 ; Define SurvivalText for FindText usage
 global SurvivalText := "|<>*142$93.0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000k0000000000000000000001k00000000000000001U000007k000000000000003t000DzVU0000000000000DUD07zXk0000000000001nkn0Dzlz0000000000003ztn0nwTzU000000000007ztn0lwTz0000000000000DDlkTbnw0000000000001zT7kTblU0000000000003zD7UDbk00000000000007y77UTzU000000000000Dw3DUD7U000000000001znDnUn3k000000000003zlCDUnDU000000000007zkQTblU0000000000000D0CT7k00000000000001U0Dzk000000000000030077000000000000000000000000000000000000000000000000000000"
@@ -146,21 +146,19 @@ UpdateSurvivalCurseDropdownDisplay() {
     
     isUpdating := false
     
-    LogMessage("Survival curse dropdown updated with " . newOptions.Length . " options", "info")
 }
 
 ; Load survival curse selection
 LoadSurvivalCurseSelection() {
     global SurvivalSelectedCurses
     
-    settingsFile := A_ScriptDir . "\libs\settings\SurvivalCurse.txt"
+    settingsFile := A_ScriptDir . "\libs\settings\survival\SurvivalCurse.txt"
     if (FileExist(settingsFile)) {
         try {
             savedCurses := FileRead(settingsFile)
             if (savedCurses != "") {
                 SurvivalSelectedCurses := StrSplit(savedCurses, "|")
                 UpdateSurvivalCurseDropdownDisplay()
-                LogMessage("Loaded " . SurvivalSelectedCurses.Length . " survival curses", "info")
             }
         } catch {
             SurvivalSelectedCurses := []
@@ -186,7 +184,7 @@ SaveSurvivalCurseSelection() {
     }
     
     try {
-        FileOpen(A_ScriptDir . "\libs\settings\SurvivalCurse.txt", "w", "UTF-8").Write(curseText)
+        FileOpen(A_ScriptDir . "\libs\settings\survival\SurvivalCurse.txt", "w", "UTF-8").Write(curseText)
         LogMessage("Saved survival curses: " . curseText, "info")
     } catch {
         LogMessage("Error saving survival curses", "error")
@@ -248,50 +246,10 @@ StartSurvivalMacro(selectedMap) {
             break
         } else {
             LogMessage("Failed to enter survival selection. Retrying...", "warning")
+            CloseUI("Survival")
             
-            ; Ensure all keys are released before retry
-          
-            Sleep(500)
             
-            Sleep(2000)
-            ; Retry the same sequence
-            BetterClick(810, 165) ;closes ui from other stuff
-            Sleep(500)
-            BetterClick(793, 165) ;closes ui from other stuff
-            Sleep(500)
-            BetterClick(837, 507) ;closes ui from other stuff
-
-            Sleep(1000)
-            BetterClick(40, 394)
-            Sleep(300)
-            MouseMove(407, 297)
-            BetterClick(717, 354)  ; Click on the scroll bar
-            SendInput("{WheelDown 2}")
-        
-            Sleep(1000)
-            BetterClick(501, 418)
-            Sleep(500)
-            BetterClick(642, 127)
             
-            ; Retry walking movement with window focus check
-            if !WinActive("Roblox") {
-                WinActivate("Roblox")
-                Sleep(1000)
-            }
-
-            MoveCamera()
-            Sleep(1000)
-            LogMessage("Camera movement completed, starting retry movement (holding D)...", "info")
-            Sleep(1000)
-            
-            ; Ensure key is released before pressing
-            SendInput("{D up}")
-            Sleep(100)
-            SendInput("{D down}")
-            Sleep(2938)         
-            SendInput("{D up}")
-            
-            LogMessage("Retry movement completed", "info")
         }
     }
 }

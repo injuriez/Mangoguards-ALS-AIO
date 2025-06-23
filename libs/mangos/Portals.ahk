@@ -94,7 +94,7 @@ PortalTierLoadSettings() {
     global TierDropDown
     
     ; Load the tier selection for portals
-    tierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
+    tierFile := A_ScriptDir . "\libs\settings\portals\PortalTier.txt"
     if (FileExist(tierFile)) {
         try {
             savedTier := FileRead(tierFile)
@@ -108,7 +108,7 @@ PortalTierLoadSettings() {
                 }
             }
         } catch {
-            LogMessage("Error loading portal tier settings", "warning")
+            return
         }
     }
 }
@@ -118,7 +118,7 @@ PortalTierSaveSettings(*) {
       if (TierDropDown) {
         selectedTier := TierDropDown.Text
         try {
-            FileOpen(A_ScriptDir . "\libs\settings\PortalTier.txt", "w", "UTF-8").Write(selectedTier)
+            FileOpen(A_ScriptDir . "\libs\settings\portals\PortalTier.txt", "w", "UTF-8").Write(selectedTier)
         } catch {
             LogMessage("Error saving portal tier", "error")
         }
@@ -129,7 +129,7 @@ PortalElementLoadSettings() {
     global ElementDropDown
     
     ; Load the element selection for portals
-    elementFile := A_ScriptDir . "\libs\settings\PortalElement.txt"
+    elementFile := A_ScriptDir . "\libs\settings\portals\PortalElement.txt"
     if (FileExist(elementFile)) {
         try {
             savedElement := FileRead(elementFile)
@@ -142,7 +142,7 @@ PortalElementLoadSettings() {
                 }
             }
         } catch {
-            LogMessage("Error loading portal element settings", "warning")
+            return
         }
     } else {
         ; Default to Fire if no setting exists
@@ -155,7 +155,7 @@ PortalElementSaveSettings(*) {
       if (ElementDropDown) {
         selectedElement := ElementDropDown.Text
         try {
-            FileOpen(A_ScriptDir . "\libs\settings\PortalElement.txt", "w", "UTF-8").Write(selectedElement)
+            FileOpen(A_ScriptDir . "\libs\settings\portals\PortalElement.txt", "w", "UTF-8").Write(selectedElement)
         } catch {
             LogMessage("Error saving portal element", "error")
         }
@@ -166,14 +166,12 @@ PortalBlacklistLoadSettings() {
     global BlacklistDropDown, SelectedBlacklist, BlacklistDisplayText, PortalBlacklist
     
     ; Load the blacklist selection for portals
-    blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+    blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
     
-    LogMessage("DEBUG: Loading blacklist from file: " . blacklistFile, "debug")
     
     if (FileExist(blacklistFile)) {
         try {
             fileContent := Trim(FileRead(blacklistFile))
-            LogMessage("DEBUG: Raw file contents: '" . fileContent . "' (length: " . StrLen(fileContent) . ")", "debug")
             
             ; Initialize all items as unchecked
             BlacklistDisplayText := []
@@ -235,7 +233,7 @@ PortalBlacklistLoadSettings() {
                 }
             }
         } catch {
-            LogMessage("Error loading portal blacklist settings, using default", "warning")
+          
             ; Default to "None"
             SelectedBlacklist := ["None"]
             BlacklistDisplayText := []
@@ -278,7 +276,7 @@ PortalBlacklistSaveSettings(*) {
     global BlacklistDisplayText, PortalBlacklist
     
     try {
-        blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+        blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
         FileOpen(blacklistFile, "w", "UTF-8").Write("")
         
         currentSelections := []
@@ -316,7 +314,7 @@ PortalBlacklistSaveSettings(*) {
 
 ; Direct function to read blacklist from file without UI interference
 GetCurrentBlacklistFilters() {
-    blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+    blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
     
     if (!FileExist(blacklistFile)) {
         return ["None"]
@@ -618,10 +616,9 @@ HandlePortalMap(portalMap, portalTier, portalElement := "Fire", hasNone := false
                         }
                         
                         Sleep(300)  ; Wait for portal details to load
-                        
-                        ; Clear the blacklist file first, then populate it with current UI selections
+                          ; Clear the blacklist file first, then populate it with current UI selections
                         blacklistedModifiers := []
-                        blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+                        blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
                           ; Clear the file first
                         try {
                             FileOpen(blacklistFile, "w", "UTF-8").Write("")
@@ -852,10 +849,9 @@ SelectRewardPortals() {
     ]
 
     LogMessage("Selecting reward portal from 3 options...", "info")
-    
-    ; Get the current blacklist to avoid selecting blacklisted portals
+      ; Get the current blacklist to avoid selecting blacklisted portals
     blacklistedModifiers := []
-    blacklistFile := A_ScriptDir . "\libs\settings\PortalBlacklist.txt"
+    blacklistFile := A_ScriptDir . "\libs\settings\portals\PortalBlacklist.txt"
     if (FileExist(blacklistFile)) {
         try {
             fileContent := Trim(FileRead(blacklistFile))
@@ -1111,9 +1107,8 @@ SearchForPortal() {
     ; Click the specified coordinates for in-game portal searching
     BetterClick(484, 464)
     LogMessage("Clicked portal search button at (534, 547)", "info")
-    
-    ; Get current portal settings
-    portalTierFile := A_ScriptDir . "\libs\settings\PortalTier.txt"
+      ; Get current portal settings
+    portalTierFile := A_ScriptDir . "\libs\settings\portals\PortalTier.txt"
     selectedTier := "1" ; Default tier
     if (FileExist(portalTierFile)) {
         _pt := Trim(FileRead(portalTierFile))
@@ -1122,7 +1117,7 @@ SearchForPortal() {
     }
     
     ; Get portal element setting
-    portalElementFile := A_ScriptDir . "\libs\settings\PortalElement.txt"
+    portalElementFile := A_ScriptDir . "\libs\settings\portals\PortalElement.txt"
     selectedElement := "Fire" ; Default element
     if (FileExist(portalElementFile)) {
         _pe := Trim(FileRead(portalElementFile))

@@ -30,9 +30,7 @@ ZoomTech(start := true) {
     MouseMove(currentX, currentY)
     
     Sleep(500)
-    if start {
-        BetterClick(361, 542)
-    }
+   
 }
 
 Scroll(times, direction, delay) {

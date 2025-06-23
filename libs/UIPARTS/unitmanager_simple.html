@@ -221,6 +221,27 @@
             color: #fff;
             font-size: 11px;
             transition: all 0.2s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Improve dropdown appearance and prevent off-screen issues */
+        .slot select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23ffffff" d="M2 0L0 2h4zM2 5L0 3h4z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 8px;
+            padding-right: 24px;
+        }
+
+        .slot select option {
+            background: #2A2A2A;
+            color: #fff;
+            padding: 4px;
         }
           .slot select:focus, .slot input:focus, .slot button:focus {
             outline: none;
@@ -647,9 +668,7 @@
             transform: translate(-50%, -50%);
             box-shadow: 0 0 10px rgba(238, 101, 49, 0.8);
             pointer-events: none; /* Don't block clicks */
-        }
-
-        .coord-info {
+        }        .coord-info {
             position: fixed;
             top: 20px;
             left: 20px;
@@ -663,6 +682,91 @@
             font-family: 'Segoe UI', sans-serif;
             z-index: 10001;
             backdrop-filter: blur(10px);
+            max-width: 300px;
+            max-height: 80vh;
+            overflow-y: auto;
+            /* Ensure panel stays within viewport bounds */
+            max-width: min(300px, calc(100vw - 40px));
+            box-sizing: border-box;
+        }
+
+        /* Responsive positioning for smaller screens */
+        @media (max-width: 768px) {
+            .coord-info {
+                left: 10px;
+                right: 10px;
+                max-width: calc(100vw - 20px);
+                top: 10px;
+            }
+        }
+
+        @media (max-height: 600px) {
+            .coord-info {
+                max-height: 90vh;
+                font-size: 12px;
+            }
+        }        /* Custom dropdown styling to prevent off-screen issues */
+        .coord-info select {
+            background: #1a1a1a !important;
+            border: 1px solid #3a3a3a !important;
+            border-radius: 4px !important;
+            color: #fff !important;
+            padding: 6px !important;
+            width: 100% !important;
+            position: relative !important;
+            z-index: 10003 !important;
+            cursor: pointer !important;
+            font-size: 13px !important;
+            /* Force dropdown to stay within viewport */
+            max-height: 150px !important;
+            /* Ensure dropdown stays in bounds */
+            box-sizing: border-box !important;
+        }
+
+        .coord-info select:focus {
+            border-color: #ee6531 !important;
+            outline: none !important;
+            box-shadow: 0 0 0 2px rgba(238, 101, 49, 0.2) !important;
+        }
+
+        .coord-info select option {
+            background: #1a1a1a !important;
+            color: #fff !important;
+            padding: 6px !important;
+            font-size: 12px !important;
+            border: none !important;
+            line-height: 1.2 !important;
+            max-height: 25px !important;
+            /* Prevent text overflow */
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+
+        .coord-info select option:hover,
+        .coord-info select option:checked,
+        .coord-info select option:focus {
+            background: #ee6531 !important;
+            color: #fff !important;
+        }        /* Force dropdown size constraint to prevent off-screen */
+        .coord-info select[size] {
+            size: 8 !important;
+            max-height: 200px !important;
+            overflow-y: auto !important;
+        }
+
+        /* Additional global dropdown fix */
+        select {
+            max-height: 200px !important;
+        }
+
+        /* Specific fix for overlay dropdowns */
+        #overlayMapSelect,
+        #overlayGameModeSelect {
+            max-height: 150px !important;
+            overflow-y: auto !important;
+            /* Force the dropdown to be constrained */
+            size: auto !important;
         }
 
         .coord-info h4 {
@@ -678,9 +782,7 @@
             margin-top: 10px;
             font-size: 12px;
             color: #a0a0a0;
-        }
-
-        .marker-info {
+        }        .marker-info {
             margin: 8px 0;
             padding: 8px;
             background: rgba(238, 101, 49, 0.1);
@@ -688,19 +790,37 @@
             border-left: 3px solid #ee6531;
             font-size: 13px;
             font-weight: bold;
+        }        .marker-compact {
+            margin: 8px 0;
+            padding: 6px;
+            background: rgba(238, 101, 49, 0.1);
+            border-radius: 4px;
+            border-left: 3px solid #ee6531;
+            max-width: 200px;
         }
 
-        .existing-markers {
-            margin: 5px 0;
+        .marker-status {
             font-size: 11px;
-            line-height: 1.4;
-        }        .existing-markers span {
-            margin-right: 8px;
-            padding: 2px 4px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .marker-list {
+            font-size: 9px;
+            margin-bottom: 6px;
+            opacity: 0.8;
+            line-height: 1.3;
+        }
+
+        .marker-list span {
+            margin-right: 4px;
+            margin-bottom: 2px;
+            padding: 1px 2px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
+            border-radius: 2px;
             font-family: 'Courier New', monospace;
-        }        .marker-navigation {
+            display: inline-block;
+        }.marker-navigation {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -738,33 +858,18 @@
             color: #ee6531;
             min-width: 50px;
             text-align: center;
-        }
-
-        .marker-selector {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-            padding: 8px;
-            background: rgba(238, 101, 49, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid #ee6531;
-        }
-
-        .marker-selector label {
-            color: #fff;
-            font-weight: 500;
-            font-size: 12px;
+        }        .marker-selector {
+            width: 100%;
         }
 
         .marker-selector select {
-            padding: 4px 8px;
+            width: 100%;
+            padding: 3px 6px;
             background: #1a1a1a;
             border: 1px solid #3a3a3a;
-            border-radius: 4px;
+            border-radius: 3px;
             color: #fff;
-            font-size: 12px;
-            min-width: 120px;
+            font-size: 10px;
         }
 
         .marker-selector select:focus {
@@ -851,8 +956,7 @@
         .coord-close-btn:hover {
             background: rgba(238, 101, 49, 1);
             transform: scale(1.1);
-        }        /* Tutorial Overlay */
-        .tutorial-overlay {
+        }        /* Tutorial Overlay */        .tutorial-overlay {
             display: none;
             position: fixed;
             top: 0;
@@ -860,6 +964,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.7);
+            z-index: 500; /* High z-index to ensure it appears above all other content */
             pointer-events: auto;
             align-items: center; /* For centering content if not positioned by JS */
             justify-content: center; /* For centering content if not positioned by JS */
@@ -881,6 +986,7 @@
             max-width: 400px;
             animation: tutorialPulse 2s infinite;
             pointer-events: auto;
+            z-index: 10001; /* Higher than overlay to ensure it's on top */
         }
         
         .tutorial-content h3 {
@@ -1225,49 +1331,473 @@
                 <button id="tutorialNext" class="tutorial-btn next" onclick="nextTutorialStep()">Next</button>
                 <button id="tutorialSkip" class="tutorial-btn skip" onclick="skipTutorial()">Skip Tutorial</button>
             </div>
-        </div>
-    </div>    <script>        let currentConfig = {};
+        </div>    </div>
+    
+    <script>
+        let currentConfig = {};
         let currentSlot = 1;
         let currentEditSlot = 1; // Separate variable for editing context to avoid resetting other slot configurations
         let lastEditedSlot = 1; // Track last edited slot to detect cross-slot editing
         let autoSaveTimeout;
+        
         let tutorialStep = 0;
         let tutorialActive = false;
         let currentTutorialClone = null; // Added to track the current tutorial clone
-        let disabledSlots = new Set(); // Track disabled slots// Tutorial steps configuration
-        const tutorialSteps = [            {
+        let disabledSlots = new Set(); // Track disabled slots        // Global variables for multi-marker system
+        let currentMarkerIndex = 0;
+        let maxMarkers = 1;
+        let slotMarkers = [];
+        let isEditMode = false;
+        let tooltipOpener = null; // Stores the element that opened the tooltip
+        let clearingSlots = new Set(); // Track slots currently being cleared to prevent double-clicks
+        
+        // UNIFIED DATA STRUCTURE - Single source of truth for all marker upgrades
+        let markerUpgrades = {}; // Format: {slotNumber: {markerIndex: {level: string, priority: number}}}
+        let allSlotMarkers = []; // Store markers from all slots: [{x, y, slot_number, marker_index, set}]        // Editing context
+        let currentEditMarkerIndex = 0;
+        let currentTutorialStep = 0;
+        let lastSelectedMap = localStorage.getItem('unitManager_lastSelectedMap') || 'Marines Fort'; // Remember the last selected map with persistence
+
+        // Tutorial steps configuration
+        const tutorialSteps = [
+            {
                 title: "Welcome to Unit Manager!",
                 text: "This tutorial will guide you through all the features of the Unit Manager. You can manage 6 unit slots with various settings.",
                 target: null,
                 position: { top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }
-            },            {
+            },
+            {
                 title: "Placements Setting",
                 text: "The placement dropdown controls how many units will be placed.",
                 target: "placement1",
                 position: { top: '15%', left: '60%' }
-            },            {
+            },
+            {
                 title: "Priority Setting",
                 text: "Priority determines the order units are placed. Lower numbers have higher priority (1 = highest priority, 6 = lowest priority).",
                 target: "priority1",
                 position: { top: '25%', left: '60%' }
-            },            {
+            },
+            {
                 title: "Auto Skill Setting",
                 text: "Auto Skill controls which skill the unit will automatically use. You can choose None, Skill 1, Skill 2, or Skill 3.",
                 target: "skill1",
                 position: { top: '35%', left: '60%' }
-            },            {
+            },
+            {
                 title: "Custom Coordinates",
                 text: "Click this button to set custom X and Y coordinates for where the unit should be placed on the battlefield. In the coordinate overlay, you can use Edit Mode to configure upgrade levels for each marker!",
                 target: "customCoordsBtn1",
                 position: { top: '35%', left: '55%' }
-            },            {
+            },
+            {
                 title: "Save and Export",
                 text: "Use these buttons to save your configuration, export settings to a file, or refresh the current settings. You're all set!",
                 target: ".bottom-controls",
                 position: { top: '70%', left: '10%', transform: 'translate(50%, -90%)' }
-           
             }
-        ];        // Initialize the application
+        ];
+
+        // Hierarchical map system - maps organized by game mode
+        const gameModes = {
+            "Raids": [
+                "Marines Fort",
+                "Hell City", 
+                "Snowy Capital",
+                "Leaf Village",
+                "Wanderneich",
+                "Central City",
+                "Giants District (Town)",
+                "Flying Island",
+                "U-18",
+                "Flower Garden",
+                "Ancient Dungeon",
+                "Shinjuku Crater",
+                "Valhalla Arena",
+                "Frozen Planet"
+            ],
+            "Dungeon": [
+                "Monarch Dungeon",
+                "Devil Dungeon"
+            ],            "Survival": [
+                "Hell Invasion",
+                "Holy Invasion",
+                "Villian Invasion"
+            ],"Legend/Story": [
+                "Shibuya",
+                "Morioh", 
+                "Thriller Bark",
+                "Ryuudou Temple",
+                "Snowy Village",
+                "Rain Village",
+                "Oni Island",
+                "Unknown Planet",
+                "Oasis",
+                "Harge Forest",
+                "Babylon",
+                "Destroyed Shinjuku",
+                "Train Station",
+                "Giants District",
+                "Dragon Heaven",
+                "Soul Society",
+                "Abandoned Cathedral",
+                "Demon Skull Village",
+                "FireFighters Base",
+                "Hollow Night Palace",
+                "Hog Town"
+            ],
+            "Essences": [
+                "EssenceMap"
+            ],
+            "Portal": [
+                "Summer Laguna"
+            ]
+        };        // Notification function - defined early so it's available everywhere
+        function showNotification(message, type = 'info') {
+            const notification = document.getElementById('notification');
+            if (!notification) {
+                console.warn('Notification element not found');
+                return;
+            }
+            
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 4000);
+        }
+
+        // Tutorial functions - defined early so they're available everywhere
+        async function checkTutorial() {
+            try {
+                console.log('checkTutorial() called');
+                if (typeof pywebview !== 'undefined' && pywebview.api) {
+                    console.log('pywebview API is available, calling check_tutorial...');
+                    const tutorialCompleted = await pywebview.api.check_tutorial();
+                    console.log('Tutorial completed status:', tutorialCompleted);
+                    if (!tutorialCompleted) {
+                        console.log('Tutorial not completed, showing tutorial...');
+                        showTutorial();
+                    } else {
+                        console.log('Tutorial already completed, not showing');
+                    }
+                } else {
+                    console.log('pywebview API not available, showing tutorial anyway for testing');
+                    // For testing - show tutorial even without API
+                    showTutorial();
+                }
+            } catch (error) {
+                console.error('Error in checkTutorial:', error);
+                console.log('Error occurred, showing tutorial anyway for testing');
+                showTutorial();
+            }
+        }        function showTutorial() {
+            console.log('showTutorial() called');
+            const overlay = document.getElementById('tutorialOverlay');
+            console.log('Tutorial overlay element:', overlay);
+            if (overlay) {
+                console.log('Setting overlay display to flex');
+                overlay.style.display = 'flex';
+                currentTutorialStep = 0;
+                console.log('Calling updateTutorialContent()');
+                updateTutorialContent();
+                console.log('Tutorial should now be visible');
+            } else {
+                console.error('Tutorial overlay element not found!');
+            }
+        }
+
+        function hideTutorial() {
+            const overlay = document.getElementById('tutorialOverlay');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+        }
+
+        function nextTutorialStep() {
+            if (currentTutorialStep < tutorialSteps.length - 1) {
+                currentTutorialStep++;
+                updateTutorialContent();
+            } else {
+                completeTutorial();
+            }
+        }
+
+        function previousTutorialStep() {
+            if (currentTutorialStep > 0) {
+                currentTutorialStep--;
+                updateTutorialContent();
+            }
+        }
+
+        function skipTutorial() {
+            // Clear all highlights before completing tutorial
+            highlightTutorialTarget(null);
+            completeTutorial();
+        }
+
+        async function completeTutorial() {
+            try {
+                if (typeof pywebview !== 'undefined' && pywebview.api) {
+                    await pywebview.api.complete_tutorial();
+                }
+            } catch (error) {
+                console.warn('Could not mark tutorial as completed:', error);
+            }
+            // Clear all highlights before hiding tutorial
+            highlightTutorialTarget(null);
+            hideTutorial();
+        }
+
+        function updateTutorialContent() {
+            console.log('updateTutorialContent() called, step:', currentTutorialStep);
+            console.log('tutorialSteps array:', tutorialSteps);
+            const step = tutorialSteps[currentTutorialStep];
+            console.log('Current step data:', step);
+            
+            const titleElement = document.getElementById('tutorialTitle');
+            const textElement = document.getElementById('tutorialText');
+            const stepElement = document.getElementById('tutorialStep');
+            const totalElement = document.getElementById('tutorialTotal');
+            const prevBtn = document.getElementById('tutorialPrev');
+            const nextBtn = document.getElementById('tutorialNext');
+            
+            console.log('Title element:', titleElement);
+            console.log('Text element:', textElement);
+            console.log('Step element:', stepElement);
+            console.log('Total element:', totalElement);
+            console.log('Prev button:', prevBtn);
+            console.log('Next button:', nextBtn);
+            
+            if (step) {
+                if (titleElement) titleElement.textContent = step.title;
+                if (textElement) textElement.textContent = step.text || step.content;
+                if (stepElement) stepElement.textContent = currentTutorialStep + 1;
+                if (totalElement) totalElement.textContent = tutorialSteps.length;
+                
+                console.log('Updated tutorial content with step:', step.title);
+            } else {
+                console.error('Missing step data for step:', currentTutorialStep);
+            }
+            
+            // Update button visibility
+            if (prevBtn) {
+                prevBtn.style.display = currentTutorialStep > 0 ? 'inline-block' : 'none';
+            }
+              
+            if (nextBtn) {
+                nextBtn.textContent = currentTutorialStep === tutorialSteps.length - 1 ? 'Finish' : 'Next';
+            }
+            
+            // Position tutorial content based on step position data
+            positionTutorialContent(step);
+            
+            // Highlight target element if specified
+            if (step && step.target) {
+                highlightTutorialTarget(step.target);
+            }
+        }
+
+        function positionTutorialContent(step) {
+            const tutorialContent = document.getElementById('tutorialContent');
+            if (!tutorialContent || !step || !step.position) {
+                // Reset to center if no position data
+                if (tutorialContent) {
+                    tutorialContent.style.position = 'absolute';
+                    tutorialContent.style.top = '50%';
+                    tutorialContent.style.left = '50%';
+                    tutorialContent.style.transform = 'translate(-50%, -50%)';
+                }
+                return;
+            }
+            
+            // Scroll to target element if it exists
+            if (step.target) {
+                const target = document.getElementById(step.target) || document.querySelector(step.target);
+                if (target) {
+                    // Smooth scroll to bring the target element into view
+                    target.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center',
+                        inline: 'center' 
+                    });
+                    
+                    // Wait a bit for scroll to complete before positioning tutorial
+                    setTimeout(() => {
+                        applyTutorialPosition(tutorialContent, step.position);
+                    }, 300);
+                    return;
+                }
+            }
+            
+            // Apply position immediately if no target to scroll to
+            applyTutorialPosition(tutorialContent, step.position);
+        }
+
+        function applyTutorialPosition(tutorialContent, position) {
+            tutorialContent.style.position = 'absolute';
+            
+            // Apply position styles
+            if (position.top) tutorialContent.style.top = position.top;
+            if (position.left) tutorialContent.style.left = position.left;
+            if (position.right) tutorialContent.style.right = position.right;
+            if (position.bottom) tutorialContent.style.bottom = position.bottom;
+            if (position.transform) tutorialContent.style.transform = position.transform;
+            
+            console.log('Positioned tutorial content:', position);
+        }
+
+        function highlightTutorialTarget(selector) {
+            // Remove previous highlights
+            document.querySelectorAll('.tutorial-highlight').forEach(el => {
+                el.classList.remove('tutorial-highlight');
+            });
+              
+            // Add highlight to current target if selector is provided
+            if (selector) {
+                const target = document.getElementById(selector) || document.querySelector(selector);
+                if (target) {
+                    target.classList.add('tutorial-highlight');
+                }
+            }
+        }
+
+        // Load markers and upgrades functions - defined early
+        async function loadAllMarkersFromBackend() {
+            try {
+                const result = await pywebview.api.get_all_slot_markers();
+                if (result.success && result.markers) {
+                    allSlotMarkers = result.markers;
+                    console.log('Loaded global markers:', allSlotMarkers);
+                }
+            } catch (error) {
+                console.error('Error loading all markers:', error);
+                allSlotMarkers = [];
+            }
+        }
+
+        async function loadAllMarkerUpgradesFromBackend() {
+            try {
+                const result = await pywebview.api.get_all_marker_upgrades();
+                if (result.success && result.upgrades) {
+                    // Update the unified markerUpgrades structure with all slot data
+                    Object.keys(result.upgrades).forEach(slotNumber => {
+                        markerUpgrades[slotNumber] = result.upgrades[slotNumber];
+                    });
+                    console.log('Loaded and unified marker upgrades:', markerUpgrades);
+                    // Update all visible markers' upgrade levels after loading
+                    setTimeout(() => updateAllMarkerUpgradeLevels(), 100);
+                }
+            } catch (error) {
+                console.error('Error loading all marker upgrades:', error);
+            }
+        }        // Function to update all visible markers' upgrade levels without full redraw
+        function updateAllMarkerUpgradeLevels() {
+            const overlay = document.getElementById('coordOverlay');
+            if (!overlay) return;
+            
+            const allMarkers = overlay.querySelectorAll('.coord-marker');
+            allMarkers.forEach(markerDiv => {
+                const markerIndex = parseInt(markerDiv.dataset.markerIndex);
+                const slotNumber = parseInt(markerDiv.dataset.slotNumber);
+                
+                // Skip markers without proper slot information to avoid cross-contamination
+                if (isNaN(slotNumber) || isNaN(markerIndex)) {
+                    console.warn('Marker missing slot or index data:', markerDiv.dataset);
+                    return;
+                }
+                
+                // Get upgrade level for this marker from unified markerUpgrades
+                const upgradeData = markerUpgrades[slotNumber]?.[markerIndex];
+                let upgradeLevel = 0;
+                
+                if (upgradeData && typeof upgradeData === 'object') {
+                    upgradeLevel = upgradeData.level || 0;
+                } else if (upgradeData) {
+                    // Handle old format (just a number)
+                    upgradeLevel = upgradeData;
+                }
+                  // Update the marker's text content to show upgrade level
+                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                markerDiv.textContent = upgradeText;
+                
+                // Debug log to track upgrade level updates
+                if (upgradeText) {
+                    console.log(`Updated marker slot ${slotNumber}, index ${markerIndex} with upgrade level: ${upgradeText}`);
+                }
+            });
+            console.log('Updated all marker upgrade levels to keep them visible');
+        }        // Handle game mode change and automatically load new map background
+        async function handleGameModeChange() {
+            updateMapDropdown(); // This will set the first map of the new game mode
+            
+            // Get the newly selected map and update the background
+            const overlayMapSelect = document.getElementById('overlayMapSelect');
+            const overlay = document.getElementById('coordOverlay');
+            
+            if (overlayMapSelect && overlay) {
+                const newMap = overlayMapSelect.value;
+                lastSelectedMap = newMap;
+                localStorage.setItem('unitManager_lastSelectedMap', newMap);
+                
+                console.log('Game mode changed, loading new map:', newMap);
+                
+                // Load the new map background
+                await loadMapBackground(overlay, newMap);
+                await loadAllMarkersFromBackend();
+                await loadAllMarkerUpgradesFromBackend();
+                addMarkerIndicators(overlay);
+            }
+        }
+
+        // Function to update map dropdown based on selected game mode
+        function updateMapDropdown(preserveSelection = false) {
+            const gameModeSelect = document.getElementById('overlayGameModeSelect');
+            const mapSelect = document.getElementById('overlayMapSelect');
+            
+            if (!gameModeSelect || !mapSelect) {
+                console.warn('Game mode or map select elements not found');
+                return;
+            }
+            
+            const selectedMode = gameModeSelect.value;
+            const maps = gameModes[selectedMode] || [];
+            
+            // Store the currently selected map before clearing
+            const currentlySelectedMap = mapSelect.value;
+            
+            // Clear existing options
+            mapSelect.innerHTML = '';
+            
+            // Add new options based on selected game mode
+            maps.forEach(map => {
+                const option = document.createElement('option');
+                option.value = map;
+                option.textContent = map;
+                mapSelect.appendChild(option);
+            });              // Set default selection - when switching game modes, always use first map
+            if (maps.length > 0) {
+                let mapToSelect = maps[0]; // Default to first map of the new game mode
+                
+                // Only keep the previous map if we're preserving selection AND it exists in this mode
+                if (preserveSelection && lastSelectedMap && maps.includes(lastSelectedMap)) {
+                    mapToSelect = lastSelectedMap;
+                } else if (preserveSelection && currentlySelectedMap && maps.includes(currentlySelectedMap)) {
+                    mapToSelect = currentlySelectedMap;
+                }
+                
+                mapSelect.value = mapToSelect;
+                
+                // Only update the saved preference if not preserving selection
+                if (!preserveSelection) {
+                    lastSelectedMap = mapToSelect;
+                    localStorage.setItem('unitManager_lastSelectedMap', mapToSelect);
+                }
+            }
+            console.log(`Updated map dropdown for ${selectedMode} with ${maps.length} maps, selected: ${mapSelect.value}`);
+        }// Initialize the application
         document.addEventListener('DOMContentLoaded', async function() {
             generateSlots(); // Generate slots FIRST
             await loadConfiguration(); // Then load and populate configuration
@@ -1345,15 +1875,24 @@
                     <h3 id="slotTitle${i}">SLOT ${i}</h3>                    <div class="form-group">
                         <label for="placement${i}">Placements</label>
                         <select id="placement${i}" onchange="updateConfig(${i}, 'placement', this.value)">
-                            ${Array.from({length: 5}, (_, k) => `<option value="${k+1}">${k+1}</option>`).join('')}
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="priority${i}">Priority</label>
                         <select id="priority${i}" onchange="updateConfig(${i}, 'priority', this.value)">
-                            ${Array.from({length: 6}, (_, k) => `<option value="${k+1}">${k+1}</option>`).join('')}
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
                         </select>
-                    </div>                    <div class="form-group">                        <label for="skill${i}">Auto Skill</label>                        <select id="skill${i}" onchange="updateConfig(${i}, 'skill', this.value)">
+                    </div><div class="form-group">                        <label for="skill${i}">Auto Skill</label>                        <select id="skill${i}" onchange="updateConfig(${i}, 'skill', this.value)">
                             <option value="none">None</option>
                             <option value="ichigo">Ichigo</option>
                             <option value="gilgamesh_nuke">Gilgamesh Nuke</option>
@@ -1483,53 +2022,96 @@
             }, 1000);
         }        // Clear slot settings function
         async function clearSlot(slotNumber) {
-            const slotKey = `slot${slotNumber}`;
+            console.log('Clearing slot:', slotNumber);
             
-            // Reset slot to default values in local config
-            currentConfig[slotKey] = {
-                placement: '1',
-                priority: slotNumber.toString(),
-                skill: 'none',
-                coords: [],
-                marker_upgrades: {}
-            };
-            
-            // Update UI elements
-            const placementSelect = document.getElementById(`placement${slotNumber}`);
-            const prioritySelect = document.getElementById(`priority${slotNumber}`);
-            const skillSelect = document.getElementById(`skill${slotNumber}`);
-            
-            if (placementSelect) placementSelect.value = '1';
-            if (prioritySelect) prioritySelect.value = slotNumber.toString();
-            if (skillSelect) skillSelect.value = 'none';
-              // Update coordinates status
-            updateCoordsStatus(slotNumber);
-              // Clear any disabled state and reset button appearance
-            disabledSlots.delete(slotNumber);
-            const slotCard = document.getElementById(`slotCard${slotNumber}`);
-            const disableBtn = slotCard?.querySelector('.disable-btn');
-            if (disableBtn) {
-                disableBtn.textContent = 'Disable';
-                disableBtn.className = 'slot-control-btn disable-btn';
-                disableBtn.title = 'Disable slot';
+            // Prevent double-clicking by checking if this slot is already being cleared
+            if (clearingSlots.has(slotNumber)) {
+                console.log('Slot', slotNumber, 'is already being cleared, ignoring duplicate request');
+                return;
             }
-            updateSlotVisualState(slotNumber);
             
-            // FIXED: Remove this specific slot from config file without affecting others
+            // Mark this slot as being cleared
+            clearingSlots.add(slotNumber);
+            
             try {
+                // Prevent any pending auto-save operations that might interfere
+                clearTimeout(autoSaveTimeout);
+                
+                const slotKey = `slot${slotNumber}`;
+                  // Reset slot to default values in local config
+                currentConfig[slotKey] = {
+                    placement: '1',
+                    priority: slotNumber.toString(),
+                    skill: 'none',
+                    coords: [],
+                    marker_upgrades: {}
+                };
+                
+                // Clear from unified marker upgrades structure
+                if (markerUpgrades[slotNumber]) {
+                    delete markerUpgrades[slotNumber];
+                    console.log(`Cleared marker upgrades for slot ${slotNumber}`);
+                }
+                
+                // Update UI elements immediately
+                const placementSelect = document.getElementById(`placement${slotNumber}`);
+                const prioritySelect = document.getElementById(`priority${slotNumber}`);
+                const skillSelect = document.getElementById(`skill${slotNumber}`);
+                
+                if (placementSelect) placementSelect.value = '1';
+                if (prioritySelect) prioritySelect.value = slotNumber.toString();
+                if (skillSelect) skillSelect.value = 'none';
+                  // Update coordinates status immediately (force visual update)
+                const coordsStatusElement = document.getElementById(`coords-status-${slotNumber}`);
+                if (coordsStatusElement) {
+                    coordsStatusElement.textContent = 'Coordinates: Not Set';
+                    coordsStatusElement.className = 'coords-status not-set';
+                    coordsStatusElement.style.color = '#f44336';
+                }
+                  // Also update coordinates status with backend check (async) - with delay to ensure backend is updated
+                setTimeout(() => updateCoordsStatus(slotNumber), 200);
+                
+                // Clear any disabled state and reset button appearance
+                disabledSlots.delete(slotNumber);
+                const slotCard = document.getElementById(`slotCard${slotNumber}`);
+                const disableBtn = slotCard?.querySelector('.disable-btn');                if (disableBtn) {
+                    disableBtn.textContent = 'Disable';
+                    disableBtn.className = 'slot-control-btn disable-btn';
+                    disableBtn.title = 'Disable slot';
+                }
+                updateSlotVisualState(slotNumber);
+                  // Add brief visual feedback to show the slot was cleared
+                const slotCardElement = document.getElementById(`slotCard${slotNumber}`);
+                if (slotCardElement) {
+                    slotCardElement.style.transition = 'all 0.3s ease';
+                    slotCardElement.style.transform = 'scale(0.98)';
+                    slotCardElement.style.boxShadow = '0 2px 8px rgba(76, 175, 80, 0.3)';
+                    
+                    setTimeout(() => {
+                        slotCardElement.style.transform = '';
+                        slotCardElement.style.boxShadow = '';
+                    }, 300);
+                }
+                
+                // Clear from backend
                 const result = await pywebview.api.clear_slot_from_config(slotNumber);
                 if (result.success) {
+                    console.log(`Slot ${slotNumber} cleared successfully from backend`);
                     showNotification(`Slot ${slotNumber} cleared successfully`, 'success');
                 } else {
+                    console.error(`Failed to clear slot ${slotNumber} from backend:`, result.message);
                     showNotification(`Error clearing slot ${slotNumber}: ${result.message}`, 'error');
                 }
             } catch (error) {
-                console.error('Error clearing slot from config:', error);
+                console.error('Error clearing slot:', error);
                 showNotification(`Error clearing slot ${slotNumber}`, 'error');
+            } finally {
+                // Always remove the slot from the clearing set when done
+                clearingSlots.delete(slotNumber);
             }
-            
-            showNotification(`Slot ${slotNumber} cleared successfully`, 'success');
-        }        // Toggle slot disabled state function
+        }
+
+        // Toggle slot disabled state function
         async function toggleSlotDisabled(slotNumber) {
             const slotCard = document.getElementById(`slotCard${slotNumber}`);
             const disableBtn = slotCard.querySelector('.disable-btn');            if (disabledSlots.has(slotNumber)) {
@@ -1568,9 +2150,7 @@
             // Optional: If you need to persist disabled state, create a separate method that only saves disabled states
             // For now, disabled state is only maintained in the UI session
         }
-        
-
-        // Update slot visual state based on disabled status
+            // Update slot visual state based on disabled status
         function updateSlotVisualState(slotNumber) {
             const slotCard = document.getElementById(`slotCard${slotNumber}`);
             
@@ -1578,6 +2158,9 @@
                 slotCard.classList.add('disabled');
             } else {
                 slotCard.classList.remove('disabled');
+                // When re-enabling, ensure the slot looks normal
+                slotCard.style.opacity = '';
+                slotCard.style.background = '';
             }
         }
 
@@ -1626,20 +2209,8 @@
                 showNotification('Configuration refreshed successfully', 'success');
             } catch (error) {
                 console.error('Error refreshing configuration:', error);
-                showNotification('Error refreshing configuration', 'error');
-            }
-        }        // Global variables for multi-marker system
-        let currentMarkerIndex = 0;
-        let maxMarkers = 1;
-        let slotMarkers = [];        let isEditMode = false;
-        let markerUpgrades = {}; // Store per-marker upgrade data: {slotNumber: {markerIndex: upgradeLevel}}
-        let tooltipOpener = null; // Stores the element that opened the tooltip
-          // Global marker system variables
-        let allSlotMarkers = []; // Store markers from all slots: [{x, y, slot_number, marker_index, set}]
-        let globalMarkerUpgrades = {}; // Store upgrades for all slots: {slot_number: {marker_index: upgrade_level}}
-        
-        // Tooltip context tracking
-        let isGlobalTooltip = false; // Track whether we're editing a global marker or current slot marker
+                showNotification('Error refreshing configuration', 'error');            }
+        }
 
         // Event handler functions to prevent duplicate listeners
         async function handleMapChange() {
@@ -1725,8 +2296,10 @@
                 console.error('Error positioning inside ALS window:', error);
                 showNotification('Error positioning window', 'error');
             }        }async function showCoordOverlay() {
-            // Default to Marines Fort map
-            let selectedMap = 'Marines Fort';
+            // ALWAYS load the saved map from localStorage first
+            lastSelectedMap = localStorage.getItem('unitManager_lastSelectedMap') || 'Marines Fort';
+            let selectedMap = lastSelectedMap;
+            console.log('Opening overlay with saved map:', selectedMap);
             
             // Load upgrade data immediately when overlay opens to ensure it's available
             console.log('Loading upgrade data before showing overlay...');
@@ -1760,26 +2333,32 @@
             // Add coordinate info panel with multi-marker info and map dropdown
             const coordInfo = document.createElement('div');
             coordInfo.className = 'coord-info';
-            
-            // Build marker status for overlay
+              // Build marker status for overlay
             let markerStatus = '';
             if (maxMarkers > 1) {
-                markerStatus = `<div class="marker-info">Setting marker ${currentMarkerIndex + 1} of ${maxMarkers} for Slot ${currentSlot}</div>`;
-                
-                // Show existing markers
-                let existingMarkers = '<div class="existing-markers">Existing markers: ';
+                // Compact multi-marker UI
+                let markerList = '';
                 for (let i = 0; i < maxMarkers; i++) {
                     const marker = slotMarkers[i];
-                    if (marker && marker.set) {
-                        const color = i === currentMarkerIndex ? '#ff6b35' : '#4CAF50';
-                        existingMarkers += `<span style="color: ${color};">[${i + 1}: ${marker.x},${marker.y}]</span> `;
-                    } else {
-                        const color = i === currentMarkerIndex ? '#ff6b35' : '#999';
-                        existingMarkers += `<span style="color: ${color};">[${i + 1}: unset]</span> `;
-                    }
+                    const color = i === currentMarkerIndex ? '#ff6b35' : (marker && marker.set ? '#4CAF50' : '#999');
+                    const coords = marker && marker.set ? `${marker.x},${marker.y}` : 'unset';
+                    markerList += `<span style="color: ${color};">${i + 1}:${coords}</span>`;
                 }
-                existingMarkers += '</div>';
-                markerStatus += existingMarkers;
+                  markerStatus = `
+                    <div class="marker-compact">
+                        <div class="marker-status">Slot ${currentSlot} - Marker ${currentMarkerIndex + 1}/${maxMarkers}</div>
+                        <div class="marker-list">${markerList}</div>                        <div class="marker-selector">
+                            <select id="markerSelect" onchange="switchToMarker(this.value)">
+                                ${Array.from({length: maxMarkers}, (_, i) => {
+                                    const marker = slotMarkers[i];
+                                    const status = marker && marker.set ? `(${marker.x},${marker.y})` : '(unset)';
+                                    const selected = i === currentMarkerIndex ? 'selected' : '';
+                                    return `<option value="${i}" ${selected}>${i + 1} ${status}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+                    </div>
+                `;
             } else {
                 markerStatus = `<div class="marker-info">Setting coordinates for Slot ${currentSlot}</div>`;
             }
@@ -1788,44 +2367,60 @@
                 ${markerStatus}
                 <div class="coord-display">X: <span id="mouseX">0</span></div>
                 <div class="coord-display">Y: <span id="mouseY">0</span></div>                <div class="form-group" style="margin-top: 15px;">
-                    <label for="overlayGameModeSelect" style="color: #fff; margin-bottom: 5px; display: block;">Game Mode:</label>                    <select id="overlayGameModeSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff; margin-bottom: 10px;" onchange="updateMapDropdown()">
+                    <label for="overlayGameModeSelect" style="color: #fff; margin-bottom: 5px; display: block;">Game Mode:</label>                    <select id="overlayGameModeSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff; margin-bottom: 10px;" onchange="handleGameModeChange()">
                         <option value="Raids">Raids</option>
                         <option value="Dungeon">Dungeon</option>
                         <option value="Survival">Survival</option>
-                        <option value="Legend Stages">Legend Stages</option>
+                        <option value="Legend/Story">Legend/Story</option>
                         <option value="Essences">Essences</option>
                         <option value="Portal">Portal</option>
-                    </select>
-                    <label for="overlayMapSelect" style="color: #fff; margin-bottom: 5px; display: block;">Map:</label>
-                    <select id="overlayMapSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff;">
-                        <!-- Maps will be populated based on selected game mode -->
-                    </select>
+                    </select>                    <label for="overlayMapSelect" style="color: #fff; margin-bottom: 5px; display: block;">Map:</label>                    <select id="overlayMapSelect" style="width: 100%; padding: 6px; background: #1a1a1a; border: 1px solid #3a3a3a; border-radius: 4px; color: #fff; position: relative; z-index: 10003; cursor: pointer;">
+                        <!-- Maps will be populated based on selected game mode --></select>
                 </div>
-                ${maxMarkers > 1 ? `
-                    <div class="marker-selector">
-                        <label for="markerSelect">Edit Marker:</label>
-                        <select id="markerSelect" onchange="switchToMarker(this.value)">
-                            ${Array.from({length: maxMarkers}, (_, i) => {
-                                const marker = slotMarkers[i];
-                                const status = marker && marker.set ? `(${marker.x}, ${marker.y})` : '(unset)';
-                                const selected = i === currentMarkerIndex ? 'selected' : '';
-                                return `<option value="${i}" ${selected}>Marker ${i + 1} ${status}</option>`;
-                            }).join('')}
-                        </select>
-                    </div>                ` : ''}
                 <!-- <button class="save-coords-btn" onclick="saveAndStayOpen()">Save Coordinates</button> Removed Save Coordinates Button -->
                 <button id="editModeBtn" class="edit-mode-btn" onclick="toggleEditMode()" style="margin-top: 10px; width: 100%; background: #4CAF50; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">⚙️ Edit Mode</button>
                 <div class="coord-instructions" style="margin-top: 10px;">
                     <div id="overlayInfo">Move mouse to see coordinates<br>Click to place marker ${currentMarkerIndex + 1} of ${maxMarkers}<br>Press ESC to close</div>
-                </div>
-            `;
-            overlay.appendChild(coordInfo);
+                </div>            `;
+            overlay.appendChild(coordInfo);            // Populate the map dropdown and set correct game mode
+            updateMapDropdown(true); // Just populate the dropdown without loading backgrounds
             
-            // Set the selected map in the overlay dropdown
+            // Set the correct game mode based on the last selected map
+            const overlayGameModeSelect = document.getElementById('overlayGameModeSelect');
+            let correctGameMode = 'Raids'; // default
+            
+            // Find which game mode contains the last selected map
+            for (const [gameMode, maps] of Object.entries(gameModes)) {
+                if (maps.includes(lastSelectedMap)) {
+                    correctGameMode = gameMode;
+                    break;
+                }
+            }
+              // Set the game mode and update the map dropdown
+            if (overlayGameModeSelect) {
+                overlayGameModeSelect.value = correctGameMode;
+                updateMapDropdown(true); // Just update dropdown, don't load background yet
+            }
+              // Set the selected map in the overlay dropdown
             const overlayMapSelect = document.getElementById('overlayMapSelect');
-            overlayMapSelect.value = selectedMap;            // Add event listener to map dropdown to reload background when changed
+            if (overlayMapSelect && gameModes[correctGameMode].includes(lastSelectedMap)) {
+                overlayMapSelect.value = lastSelectedMap;
+                selectedMap = lastSelectedMap;
+            }// Add event listener to map dropdown to reload background when changed
             overlayMapSelect.addEventListener('change', async function() {
                 selectedMap = this.value;
+                lastSelectedMap = this.value; // Save the selected map for next time
+                localStorage.setItem('unitManager_lastSelectedMap', this.value); // Persist to localStorage
+                
+                console.log('Map changed to:', selectedMap, '- clearing old background and loading new one');
+                
+                // Force clear all existing backgrounds before loading new one
+                const allBackgrounds = overlay.querySelectorAll('.map-background, .coord-grid, img');
+                allBackgrounds.forEach(bg => {
+                    console.log('Force removing background:', bg.className || bg.tagName);
+                    bg.remove();
+                });
+                
                 // Reload the map background
                 await loadMapBackground(overlay, selectedMap);
                 // Force refresh of all markers to ensure they're still visible
@@ -1900,20 +2495,28 @@
         }        // New function to load map background
         async function loadMapBackground(overlay, selectedMap) {
             console.log('Loading map background for:', selectedMap);
+              // Remove ALL existing map backgrounds and grids more thoroughly
+            const existingBackgrounds = overlay.querySelectorAll('.map-background, .coord-grid, img');
+            existingBackgrounds.forEach(bg => {
+                console.log('Removing existing background element:', bg.className || bg.tagName);
+                bg.remove();
+            });
+              // Double-check and remove any remaining images or background elements
+            const allImages = overlay.querySelectorAll('img');
+            allImages.forEach(img => {
+                console.log('Removing remaining image:', img.src);
+                img.remove();
+            });
             
-            // Remove existing map background or grid
-            const existingBg = overlay.querySelector('.map-background, .coord-grid');
-            if (existingBg) {
-                existingBg.remove();
-            }
+            // Force a longer delay to ensure DOM cleanup is complete
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             // Try to get map image
             try {
                 console.log('Requesting map image for:', selectedMap);
                 const mapResult = await pywebview.api.get_map_image(selectedMap);
                 console.log('Map result:', mapResult);
-                
-                if (mapResult.success && mapResult.exists) {
+                  if (mapResult.success && mapResult.exists) {
                     console.log('Map image found, displaying...');
                     // Show map image using data URL
                     const mapImage = document.createElement('img');
@@ -1930,6 +2533,7 @@
                         opacity: 0.7;
                     `;
                     overlay.appendChild(mapImage);
+                    console.log('New map background added for:', selectedMap);
                 } else {
                     console.log('Map image not found, trying default fallback...');
                     // Try to load default.png as fallback
@@ -2055,9 +2659,8 @@
                         
                         const slotColor = slotColors[marker.slot_number] || '#999999';
                         const isCurrentSlot = marker.slot_number === currentSlot;
-                        const size = isCurrentSlot ? '16px' : '14px';
-                          // Get upgrade level for this marker (handle both old and new formats)
-                        const upgradeData = globalMarkerUpgrades[marker.slot_number]?.[marker.marker_index];
+                        const size = isCurrentSlot ? '16px' : '14px';                          // Get upgrade level for this marker (handle both old and new formats)
+                        const upgradeData = markerUpgrades[marker.slot_number]?.[marker.marker_index];
                         let upgradeLevel = 0;
                         if (typeof upgradeData === 'object' && upgradeData !== null) {
                             upgradeLevel = upgradeData.level || 0;
@@ -2157,10 +2760,10 @@
                             console.log(`Skipping slot ${currentSlot} marker ${i} - already displayed globally`);
                             continue;
                         }
-                        
-                        const markerDiv = document.createElement('div');
+                          const markerDiv = document.createElement('div');
                         markerDiv.className = 'coord-marker';
                         markerDiv.dataset.markerIndex = i;
+                        markerDiv.dataset.slotNumber = currentSlot; // CRITICAL FIX: Set slot number for current slot markers
                         const isActive = i === currentMarkerIndex;
                         const color = isActive ? '#ff6b35' : '#4CAF50';
                         const size = isActive ? '16px' : '12px';
@@ -2200,15 +2803,14 @@
                         // Add upgrade level indicator inside marker
                         if (upgradeText) {
                             markerDiv.textContent = upgradeText;
-                        }
-
-                        // Add click handler for edit mode
+                        }                        // Add click handler for edit mode
                         if (isEditMode) {
                             markerDiv.addEventListener('click', function(e) {
-                                console.log('Marker clicked:', i, 'at coordinates:', marker.x, marker.y);
+                                console.log('Current slot marker clicked:', currentSlot, i, 'at coordinates:', marker.x, marker.y);
                                 e.stopPropagation();
                                 e.preventDefault();
-                                openMarkerUpgradeTooltip(i, marker.x, marker.y, this);
+                                // Use the global tooltip function for consistency across all markers
+                                openGlobalMarkerUpgradeTooltip(currentSlot, i, marker.x, marker.y, this);
                             });
                             
                             // Add hover glow effect without scaling
@@ -2282,6 +2884,14 @@
             }        }        function hideCoordOverlay() {
             const overlay = document.getElementById('coordOverlay');
             if (overlay) {
+                // Save the currently selected map before closing
+                const overlayMapSelect = document.getElementById('overlayMapSelect');
+                if (overlayMapSelect && overlayMapSelect.value) {
+                    lastSelectedMap = overlayMapSelect.value;
+                    localStorage.setItem('unitManager_lastSelectedMap', overlayMapSelect.value);
+                    console.log('Saved map selection before closing overlay:', overlayMapSelect.value);
+                }
+                
                 // Clean up all event listeners properly with matching options
                 overlay.removeEventListener('mousemove', updateCoordDisplay, { passive: true });
                 overlay.removeEventListener('click', selectCoordinates, { capture: true });
@@ -2450,8 +3060,7 @@
                 console.error('Error saving coordinates:', error);
                 showNotification('Error saving coordinates', 'error');
             }
-        }
-          function updateOverlayInfo() {
+        }          function updateOverlayInfo() {
             const overlayInfo = document.getElementById('overlayInfo');
             if (overlayInfo) {
                 if (isEditMode) {
@@ -2460,7 +3069,43 @@
                     overlayInfo.innerHTML = `Move mouse to see coordinates<br>Click to place marker ${currentMarkerIndex + 1} of ${maxMarkers}<br>Press ESC to close`;
                 }
             }
-        }        // Edit Mode Functions
+            
+            // Update compact marker display if it exists
+            updateCompactMarkerDisplay();
+        }
+
+        function updateCompactMarkerDisplay() {
+            if (maxMarkers <= 1) return;
+            
+            const markerStatusDiv = document.querySelector('.marker-status');
+            const markerListDiv = document.querySelector('.marker-list');
+            const markerSelect = document.getElementById('markerSelect');
+            
+            if (markerStatusDiv) {
+                markerStatusDiv.textContent = `Slot ${currentSlot} - Marker ${currentMarkerIndex + 1}/${maxMarkers}`;
+            }
+            
+            if (markerListDiv) {
+                let markerList = '';
+                for (let i = 0; i < maxMarkers; i++) {
+                    const marker = slotMarkers[i];
+                    const color = i === currentMarkerIndex ? '#ff6b35' : (marker && marker.set ? '#4CAF50' : '#999');
+                    const coords = marker && marker.set ? `${marker.x},${marker.y}` : 'unset';
+                    markerList += `<span style="color: ${color};">${i + 1}:${coords}</span>`;
+                }
+                markerListDiv.innerHTML = markerList;
+            }
+            
+            if (markerSelect) {
+                // Update the select options with current marker status
+                markerSelect.innerHTML = Array.from({length: maxMarkers}, (_, i) => {
+                    const marker = slotMarkers[i];
+                    const status = marker && marker.set ? `(${marker.x},${marker.y})` : '(unset)';
+                    const selected = i === currentMarkerIndex ? 'selected' : '';
+                    return `<option value="${i}" ${selected}>${i + 1} ${status}</option>`;
+                }).join('');
+            }
+        }// Edit Mode Functions
         function toggleEditMode() {
             isEditMode = !isEditMode;
             
@@ -2471,16 +3116,15 @@
                 editModeBtn.className = isEditMode ? 'edit-mode-btn active' : 'edit-mode-btn';
             }
             
-            // Update overlay info and markers - use existing cached data instead of reloading
-            updateOverlayInfo();
+            // Update overlay info and markers - use existing cached data instead of reloading            updateOverlayInfo();
             const overlay = document.getElementById('coordOverlay');
             if (overlay) {
                 // Only force reload if we don't have any cached global markers
                 const forceReload = !allSlotMarkers || allSlotMarkers.length === 0;
                 addMarkerIndicators(overlay, forceReload);
                 
-                // Ensure all marker upgrade levels are visible after toggling edit mode
-                setTimeout(() => updateAllMarkerUpgradeLevels(), 100);
+                // Don't call updateAllMarkerUpgradeLevels here - it causes upgrade labels to flicker/disappear
+                // The addMarkerIndicators function already displays upgrade levels correctly
             }
             
             // Update cursor style
@@ -2488,12 +3132,10 @@
                 overlay.style.cursor = isEditMode ? 'default' : 'crosshair';
             }
             
-            showNotification(isEditMode ? 'Edit Mode: Click markers to configure upgrades' : 'Placement Mode: Click to place markers', 'info');
-        }
+            showNotification(isEditMode ? 'Edit Mode: Click markers to configure upgrades' : 'Placement Mode: Click to place markers', 'info');        }
 
-        let currentEditMarkerIndex = 0;
         let currentEditMarkerX = 0;
-        let currentEditMarkerY = 0;        // Event listener for closing tooltip when clicking outside
+        let currentEditMarkerY = 0;// Event listener for closing tooltip when clicking outside
         function handleClickOutsideTooltip(event) {
             const tooltip = document.getElementById('upgradeTooltip');
             // Check if tooltip is visible, click is outside tooltip, and not on the opener element (marker)
@@ -2501,46 +3143,23 @@
                 closeUpgradeTooltip();
             }
         }        
-        
-        // New function to handle changes in upgrade dropdowns
+          // New function to handle changes in upgrade dropdowns
         async function handleUpgradeChange() {
             await saveMarkerUpgrade();
         }
         
         async function openMarkerUpgradeTooltip(markerIndex, markerX, markerY, openerDiv) {
-            console.log('Opening marker upgrade tooltip for marker:', markerIndex, 'at coordinates:', markerX, markerY);            // Load and apply vanguards_config.txt data
-            try {
-                console.log("Attempting to load vanguards_config.txt data...");
-                const vanguardResult = await pywebview.api.load_vanguards_config(); // Assumed new API
-                if (vanguardResult && vanguardResult.success && vanguardResult.data) {
-                    if (applyVanguardsConfigData(vanguardResult.data)) {
-                        // Don't force reload indicators here as it causes upgrade visuals to disappear
-                        // const overlay = document.getElementById('coordOverlay');
-                        // if (overlay) {
-                        //     addMarkerIndicators(overlay, true); // Force reload of indicators
-                        // }
-                        showNotification('Vanguards config loaded and applied.', 'success');
-                    } else {
-                        showNotification('Vanguards config data was empty or invalid.', 'warning');
-                    }
-                } else {
-                    showNotification('Could not load or apply Vanguards config.', 'warning');
-                    console.error('Failed to load vanguards_config:', vanguardResult ? vanguardResult.message : 'No result');
-                }
-            } catch (error) {
-                console.error('Error loading vanguards_config.txt:', error);
-                showNotification('Error loading Vanguards config.', 'error');
-            }
+            console.log('Opening marker upgrade tooltip for marker:', markerIndex, 'at coordinates:', markerX, markerY);
             
             currentEditMarkerIndex = markerIndex;
             currentEditSlot = currentSlot; // Set edit context to current slot being edited
-            // currentSlot is implicitly used by saveMarkerUpgrade, ensure it's correct if this tooltip can edit other slots.
-            // For this function, currentSlot is the one being worked on.
             tooltipOpener = openerDiv;
 
             const tooltip = document.getElementById('upgradeTooltip');
             const upgradeSelect = document.getElementById('markerUpgradeLevelTooltip');
-            const prioritySelect = document.getElementById('markerUpgradePriorityTooltip');            // Load current upgrade data from backend first to ensure we have the latest data
+            const prioritySelect = document.getElementById('markerUpgradePriorityTooltip');
+
+            // Load current upgrade data from backend first to ensure we have the latest data
             try {
                 const upgradeResult = await pywebview.api.get_marker_upgrades(currentSlot);
                 if (upgradeResult.success && upgradeResult.upgrades) {
@@ -2548,32 +3167,32 @@
                     if (!markerUpgrades[currentSlot]) {
                         markerUpgrades[currentSlot] = {};
                     }
-                    Object.assign(markerUpgrades[currentSlot], upgradeResult.upgrades);
-                    
-                    // Also update globalMarkerUpgrades
-                    if (!globalMarkerUpgrades[currentSlot]) {
-                        globalMarkerUpgrades[currentSlot] = {};
-                    }
-                    Object.assign(globalMarkerUpgrades[currentSlot], upgradeResult.upgrades);
-                    
-                    // Update all visible markers to ensure their upgrade levels remain visible
-                    setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
+                    // Convert old format to new format if needed
+                    Object.keys(upgradeResult.upgrades).forEach(key => {
+                        const upgrade = upgradeResult.upgrades[key];
+                        if (typeof upgrade === 'object' && upgrade !== null) {
+                            markerUpgrades[currentSlot][key] = upgrade;
+                        } else {
+                            // Convert old format (just level number) to new format
+                            markerUpgrades[currentSlot][key] = {
+                                level: String(upgrade || '0'),
+                                priority: 1
+                            };
+                        }
+                    });
                 }
             } catch (error) {
                 console.error('Error loading marker upgrades from backend:', error);
             }
 
             // Populate current upgrade level and priority from the updated data
-            const currentUpgradeData = (markerUpgrades[currentSlot] && markerUpgrades[currentSlot][markerIndex])
-                                   ? markerUpgrades[currentSlot][markerIndex]
-                                   : (globalMarkerUpgrades[currentSlot] ? globalMarkerUpgrades[currentSlot][markerIndex] : null);
-
+            const currentUpgradeData = markerUpgrades[currentSlot]?.[markerIndex];
             if (currentUpgradeData) {
                 upgradeSelect.value = currentUpgradeData.level || '0';
-                prioritySelect.value = currentUpgradeData.priority || '1';
+                prioritySelect.value = currentUpgradeData.priority || 1;
             } else {
                 upgradeSelect.value = '0'; // Default if no data
-                prioritySelect.value = '1'; // Default priority
+                prioritySelect.value = 1; // Default priority
             }
             
             // Position the tooltip
@@ -2612,56 +3231,45 @@
             // Use a timeout to prevent the click that opened the tooltip from immediately closing it.
             setTimeout(() => {
                 document.addEventListener('click', handleClickOutsideTooltip, true);
-            }, 0);
-        }        
-          async function saveMarkerUpgrade() { // Made async
-            const upgradeLevel = document.getElementById('markerUpgradeLevelTooltip').value;
+            }, 0);        }        async function saveMarkerUpgrade() {            const upgradeLevel = document.getElementById('markerUpgradeLevelTooltip').value;
             const upgradePriority = document.getElementById('markerUpgradePriorityTooltip').value;
             console.log(`Saving upgrade for slot ${currentEditSlot}, marker ${currentEditMarkerIndex}: level ${upgradeLevel}, priority ${upgradePriority}`);
+            console.log('Current markerUpgrades state before save:', JSON.stringify(markerUpgrades, null, 2));
 
-            // Update global marker upgrades (now includes both level and priority)
-            if (!globalMarkerUpgrades[currentEditSlot]) {
-                globalMarkerUpgrades[currentEditSlot] = {};
-            }
-            globalMarkerUpgrades[currentEditSlot][currentEditMarkerIndex] = {
-                level: upgradeLevel,
-                priority: parseInt(upgradePriority)
-            };
-
-            // Also update local markerUpgrades for compatibility
+            // Update local markerUpgrades (single source of truth)
             if (!markerUpgrades[currentEditSlot]) {
                 markerUpgrades[currentEditSlot] = {};
             }
             markerUpgrades[currentEditSlot][currentEditMarkerIndex] = {
                 level: upgradeLevel,
                 priority: parseInt(upgradePriority)
-            };              await saveMarkerUpgradesToBackend(); // This will save to the edit slot            // Don't redraw all markers while editing as it causes upgrade levels to disappear
-            // const overlay = document.getElementById('coordOverlay');
-            // if (overlay) {
-            //     addMarkerIndicators(overlay); // Redraw markers to show new upgrade level
-            // }
+            };
             
-            // Update all visible markers' upgrade levels to keep them visible
-            await updateAllMarkerUpgradeLevels();
-            
-            // Also update the specific marker's display directly
-            if (tooltipOpener) {
-                const upgradeLevel = document.getElementById('markerUpgradeLevelTooltip').value;
-                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
-                tooltipOpener.textContent = upgradeText;
-            }
-              // closeUpgradeTooltip(); // Don't close automatically after auto-save
-            showNotification(`Slot ${currentEditSlot} Marker ${currentEditMarkerIndex + 1} upgrade auto-saved: Level ${upgradeLevel}, Priority ${upgradePriority}.`, 'success');
-        }        async function saveMarkerUpgradesToBackend() {
+            // Save to backend
             try {
-                const result = await pywebview.api.save_marker_upgrades(currentEditSlot, markerUpgrades[currentEditSlot] || {});
+                const result = await pywebview.api.save_marker_upgrades(currentEditSlot, markerUpgrades[currentEditSlot]);
                 if (!result.success) {
                     console.error('Error saving marker upgrades:', result.message);
+                    showNotification('Error saving marker upgrade', 'error');
+                    return;
                 }
             } catch (error) {
                 console.error('Error saving marker upgrades:', error);
+                showNotification('Error saving marker upgrade', 'error');
+                return;
             }
-        }        function closeUpgradeTooltip() {
+              // Update the marker's display directly first
+            if (tooltipOpener) {
+                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                tooltipOpener.textContent = upgradeText;
+                console.log(`Directly updated tooltip opener marker with upgrade text: ${upgradeText}`);
+            }
+            
+            // Don't call updateAllMarkerUpgradeLevels here - it causes unnecessary refresh and flicker
+            // The direct update above is sufficient for the immediate visual feedback
+              
+            showNotification(`Slot ${currentEditSlot} Marker ${currentEditMarkerIndex + 1} upgrade saved: Level ${upgradeLevel}, Priority ${upgradePriority}.`, 'success');}
+          function closeUpgradeTooltip() {
             const tooltip = document.getElementById('upgradeTooltip');
             if (tooltip) {
                 tooltip.style.display = 'none';
@@ -2670,60 +3278,7 @@
             document.removeEventListener('click', handleClickOutsideTooltip, true);
             console.log('Upgrade tooltip closed.');
             
-            // Ensure all marker upgrade levels are still visible after closing tooltip
-            setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
-        }        // Function to update all visible markers' upgrade levels without full redraw
-        async function updateAllMarkerUpgradeLevels(forceRefresh = false) {
-            const overlay = document.getElementById('coordOverlay');
-            if (!overlay) return;
-            
-            // Refresh global marker upgrades to ensure we have the latest data for all slots
-            // Force refresh when switching between different slots during editing
-            if (forceRefresh) {
-                try {
-                    const result = await pywebview.api.get_all_marker_upgrades();
-                    if (result.success && result.upgrades) {
-                        globalMarkerUpgrades = result.upgrades;
-                        console.log('Force refreshed all marker upgrades for cross-slot editing');
-                    }
-                } catch (error) {
-                    console.error('Error force refreshing all marker upgrades:', error);
-                }
-            } else {
-                try {
-                    const result = await pywebview.api.get_all_marker_upgrades();
-                    if (result.success && result.upgrades) {
-                        globalMarkerUpgrades = result.upgrades;
-                    }
-                } catch (error) {
-                    console.error('Error refreshing all marker upgrades:', error);
-                }
-            }
-            
-            const allMarkers = overlay.querySelectorAll('.coord-marker');
-            allMarkers.forEach(markerDiv => {
-                const markerIndex = parseInt(markerDiv.dataset.markerIndex);
-                const slotNumber = parseInt(markerDiv.dataset.slotNumber) || currentSlot;
-                
-                // Get upgrade level for this marker from global upgrades first, then fall back to current slot upgrades
-                let upgradeData = globalMarkerUpgrades[slotNumber]?.[markerIndex];
-                if (!upgradeData && slotNumber === currentSlot) {
-                    upgradeData = markerUpgrades[currentSlot]?.[markerIndex];
-                }
-                
-                let upgradeLevel = 0;
-                if (typeof upgradeData === 'object' && upgradeData !== null) {
-                    upgradeLevel = upgradeData.level || 0;
-                } else {
-                    upgradeLevel = upgradeData || 0;
-                }
-                
-                // Update the marker's text content to show upgrade level
-                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
-                markerDiv.textContent = upgradeText;
-            });
-            
-            console.log('Updated all marker upgrade levels to keep them visible');
+            // No need to call updateAllMarkerUpgradeLevels - upgrade labels should remain visible
         }
         
         // Global marker tooltip function for cross-slot marker editing
@@ -2766,29 +3321,21 @@
             try {
                 const upgradeResult = await pywebview.api.get_marker_upgrades(slotNumber);
                 if (upgradeResult.success && upgradeResult.upgrades) {
-                    // Update globalMarkerUpgrades with backend data
-                    if (!globalMarkerUpgrades[slotNumber]) {
-                        globalMarkerUpgrades[slotNumber] = {};
+                    // Update unified markerUpgrades with backend data
+                    if (!markerUpgrades[slotNumber]) {
+                        markerUpgrades[slotNumber] = {};
                     }
-                    Object.assign(globalMarkerUpgrades[slotNumber], upgradeResult.upgrades);
+                    Object.assign(markerUpgrades[slotNumber], upgradeResult.upgrades);
                     
-                    // Also update local markerUpgrades if this is the current slot
-                    if (slotNumber === currentSlot) {
-                        if (!markerUpgrades[slotNumber]) {
-                            markerUpgrades[slotNumber] = {};
-                        }
-                        Object.assign(markerUpgrades[slotNumber], upgradeResult.upgrades);
-                    }
-                    
-                    // Update all visible markers to ensure their upgrade levels remain visible
-                    setTimeout(() => updateAllMarkerUpgradeLevels(), 50);
+                    // Don't call updateAllMarkerUpgradeLevels here - it causes visual flicker
+                    // The upgrade levels are already displayed correctly from the initial marker creation
                 }
             } catch (error) {
                 console.error('Error loading marker upgrades from backend:', error);
             }
 
-            // Populate current upgrade level and priority from the updated global upgrades
-            const currentUpgradeData = globalMarkerUpgrades[slotNumber]?.[markerIndex];
+            // Populate current upgrade level and priority from the updated upgrades
+            const currentUpgradeData = markerUpgrades[slotNumber]?.[markerIndex];
             if (currentUpgradeData) {
                 upgradeSelect.value = currentUpgradeData.level || '0';
                 prioritySelect.value = currentUpgradeData.priority || '1';
@@ -2827,9 +3374,7 @@
             }
 
             tooltip.style.left = tooltipX + 'px';
-            tooltip.style.top = tooltipY + 'px';
-            
-            // Add click outside listener (use capture phase to catch clicks early)
+            tooltip.style.top = tooltipY + 'px';            // Add click outside listener (use capture phase to catch clicks early)
             // Use a timeout to prevent the click that opened the tooltip from immediately closing it.
             setTimeout(() => {
                 document.addEventListener('click', handleClickOutsideTooltip, true);
@@ -2845,7 +3390,6 @@
 
             console.log("Applying vanguards_config data:", vanguardData);
             allSlotMarkers = []; // Clear existing global markers
-            globalMarkerUpgrades = {}; // Clear existing global upgrades
 
             // Iterate through slots 1 to 6
             for (let slotNum = 1; slotNum <= 6; slotNum++) {
@@ -2859,8 +3403,8 @@
                         currentConfig[slotKey].placement = String(slotDataFromConfig.placement);
                     }
 
-                    // Initialize upgrades for this slot in globalMarkerUpgrades
-                    if (!globalMarkerUpgrades[slotNum]) globalMarkerUpgrades[slotNum] = {};
+                    // Initialize upgrades for this slot in unified markerUpgrades
+                    if (!markerUpgrades[slotNum]) markerUpgrades[slotNum] = {};
 
                     if (slotDataFromConfig.markers && Array.isArray(slotDataFromConfig.markers)) {
                         slotDataFromConfig.markers.forEach((marker, index) => {
@@ -2872,7 +3416,7 @@
                                     marker_index: index,
                                     set: true
                                 });
-                                globalMarkerUpgrades[slotNum][index] = {
+                                markerUpgrades[slotNum][index] = {
                                     level: marker.upgradeLevel !== undefined ? String(marker.upgradeLevel) : '0',
                                     priority: marker.priority !== undefined ? parseInt(marker.priority) : 1
                                 };
@@ -2882,11 +3426,10 @@
                 }
             }
 
-            // Update current slot's specific data (slotMarkers, markerUpgrades, maxMarkers)
+            // Update current slot's specific data (slotMarkers, maxMarkers)
             const currentSlotKey = `slot${currentSlot}`;
             const currentSlotConfigFromVanguard = vanguardData[currentSlotKey];
             const currentSlotPlacementFromConfig = currentConfig[currentSlotKey]?.placement;
-
 
             maxMarkers = parseInt(currentSlotPlacementFromConfig || '1');
             slotMarkers = Array(maxMarkers).fill(null).map(() => ({ x: 0, y: 0, set: false }));
@@ -2894,7 +3437,6 @@
             if (!markerUpgrades[currentSlot]) markerUpgrades[currentSlot] = {}; // Ensure initialized
             // Clear current slot's markerUpgrades before repopulating from vanguard config or defaults
             Object.keys(markerUpgrades[currentSlot]).forEach(key => delete markerUpgrades[currentSlot][key]);
-
 
             if (currentSlotConfigFromVanguard && currentSlotConfigFromVanguard.markers && Array.isArray(currentSlotConfigFromVanguard.markers)) {
                 currentSlotConfigFromVanguard.markers.forEach((marker, index) => {
@@ -2912,87 +3454,54 @@
             // to populate the main UI form elements.
 
             console.log('Vanguards config applied. Updated allSlotMarkers:', allSlotMarkers.length);
-            console.log('Updated globalMarkerUpgrades:', globalMarkerUpgrades);
+            console.log('Updated unified markerUpgrades:', markerUpgrades);
             console.log(`Updated currentSlot (${currentSlot}) maxMarkers: ${maxMarkers}`);
             console.log('Updated slotMarkers for current slot:', slotMarkers);
             console.log('Updated markerUpgrades for current slot:', markerUpgrades[currentSlot]);
-            return true; // Indicate success
-        }
+            return true; // Indicate success        }
         
-        async function loadAllMarkersFromBackend() {
-            try {
-                const result = await pywebview.api.get_all_slot_markers();
-                if (result.success && result.markers) {
-                    allSlotMarkers = result.markers;
-                    console.log('Loaded global markers:', allSlotMarkers);
-                }
-            } catch (error) {
-                console.error('Error loading all markers:', error);
-                allSlotMarkers = [];
-            }
-        }        async function loadAllMarkerUpgradesFromBackend() {
-            try {
-                const result = await pywebview.api.get_all_marker_upgrades();
-                if (result.success && result.upgrades) {
-                    globalMarkerUpgrades = result.upgrades;
-                    console.log('Loaded global marker upgrades:', globalMarkerUpgrades);
-                    // Update all visible markers' upgrade levels after loading
-                    setTimeout(() => updateAllMarkerUpgradeLevels(), 100);
-                }
-            } catch (error) {
-                console.error('Error loading all marker upgrades:', error);
-                globalMarkerUpgrades = {};
-            }
-        }// Global marker upgrade save function for cross-slot marker editing
+        // Global marker upgrade save function for cross-slot marker editing
         async function saveGlobalMarkerUpgrade(slotNumber, markerIndex, upgradeLevel, upgradePriority) {
             console.log(`Saving global upgrade for slot ${slotNumber}, marker ${markerIndex}: level ${upgradeLevel}, priority ${upgradePriority}`);
             
             try {
-                // Update global marker upgrades (now includes both level and priority)
-                if (!globalMarkerUpgrades[slotNumber]) {
-                    globalMarkerUpgrades[slotNumber] = {};
-                }
-                globalMarkerUpgrades[slotNumber][markerIndex] = {
+                // Create upgrade data for this specific marker
+                const upgradeData = {};
+                upgradeData[markerIndex] = {
                     level: upgradeLevel,
                     priority: upgradePriority
                 };
-
-                // Also update local markerUpgrades if this is the current slot
-                if (slotNumber === currentSlot) {
-                    if (!markerUpgrades[currentSlot]) {
-                        markerUpgrades[currentSlot] = {};
-                    }
-                    markerUpgrades[currentSlot][markerIndex] = {
-                        level: upgradeLevel,
-                        priority: upgradePriority
-                    };
-                }
-
-                // Save to backend using the specific slot
-                const result = await pywebview.api.save_marker_upgrades(slotNumber, globalMarkerUpgrades[slotNumber] || {});
+                
+                // Save directly to backend - this is the single source of truth
+                const result = await pywebview.api.save_marker_upgrades(slotNumber, upgradeData);
                 if (!result.success) {
-                    console.error('Error saving global marker upgrades:', result.message);
+                    console.error('Backend save failed:', result.message);
                     showNotification('Error saving marker upgrade', 'error');
                     return false;
-                }                // Don't redraw all markers while editing as it causes upgrade levels to disappear  
-                // const overlay = document.getElementById('coordOverlay');
-                // if (overlay) {
-                //     addMarkerIndicators(overlay); // Redraw markers to show new upgrade level
-                // }
-                
-                // Update all visible markers' upgrade levels to keep them visible
-                await updateAllMarkerUpgradeLevels();
-                
-                // Also update the specific marker's display directly
-                if (tooltipOpener) {
-                    const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
-                    tooltipOpener.textContent = upgradeText;
                 }
                 
-                showNotification(`S${slotNumber} Marker ${markerIndex + 1} upgrade saved: Level ${upgradeLevel}, Priority ${upgradePriority}.`, 'success');
+                // Update local data to stay in sync
+                if (!markerUpgrades[slotNumber]) {
+                    markerUpgrades[slotNumber] = {};
+                }
+                markerUpgrades[slotNumber][markerIndex] = {
+                    level: upgradeLevel,
+                    priority: upgradePriority
+                };
+                  // Update the visual display immediately
+                const upgradeText = upgradeLevel === 'max' ? 'M' : (upgradeLevel > 0 ? upgradeLevel : '');
+                if (tooltipOpener) {
+                    tooltipOpener.textContent = upgradeText;
+                    console.log(`Directly updated global tooltip opener marker with upgrade text: ${upgradeText}`);
+                }
+                
+                // Don't call updateAllMarkerUpgradeLevels here - it causes unnecessary refresh and flicker
+                // The direct update above is sufficient for the immediate visual feedback
+                
+                showNotification(`S${slotNumber} Marker ${markerIndex + 1} upgrade saved: Level ${upgradeLevel}, Priority ${upgradePriority}`, 'success');
                 return true;
             } catch (error) {
-                console.error('Error saving global marker upgrades:', error);
+                console.error('Error saving global marker upgrade:', error);
                 showNotification('Error saving marker upgrade', 'error');
                 return false;
             }
@@ -3169,9 +3678,7 @@
                 configList.innerHTML = '<p style="text-align: center; color: #ff6b6b; padding: 20px;">Error loading configurations</p>';
                 showNotification('Error loading configurations', 'error');
             }
-        }
-
-        async function loadConfigFromFile(configFileName) {
+        }        async function loadConfigFromFile(configFileName) {
             try {
                 showNotification('Loading configuration...', 'info');
                 
@@ -3183,298 +3690,17 @@
                     showNotification(result.message, 'success');
                 } else {
                     showNotification(result.message || 'Error loading configuration', 'error');
-                }            } catch (error) {
+                }
+            } catch (error) {
                 console.error('Error loading config file:', error);
                 showNotification('Error loading configuration file', 'error');
             }
-        }
-
-        // Notification function
-        function showNotification(message, type = 'info') {
-            const notification = document.getElementById('notification');
-            if (!notification) {
-                console.warn('Notification element not found');
-                return;
-            }
-            
-            notification.textContent = message;
-            notification.className = `notification ${type}`;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 4000);
-        }
-
-        // Window positioning function for manual use
+        }        // Window positioning function for manual use
         async function manualPositioning() {
             return alignWithRoblox();
         }
-
-        // Hierarchical map system - maps organized by game mode
-        const gameModes = {
-            "Raids": [
-                "Marines Fort",
-                "Hell City", 
-                "Snowy Capital",
-                "Leaf Village",
-                "Wanderneich",
-                "Central City",
-                "Giants District (Town)",
-                "Flying Island",
-                "U-18",
-                "Flower Garden",
-                "Ancient Dungeon",
-                "Shinjuku Crater",
-                "Valhalla Arena",
-                "Frozen Planet"
-            ],
-            "Dungeon": [
-                "Monarch Dungeon",
-                "Devil Dungeon"
-            ],            "Survival": [
-                "Hell Invasion",
-                "Holy Invasion",
-                "Villain Invasion"
-            ],            "Legend Stages": [
-                "Shibuya",
-                "Ruined Morioh", 
-                "Thriller Bark",
-                "Ryuudou Temple",
-                "Snowy Village",
-                "Rain Village",
-                "Oni Island",
-                "Unknown Planet",
-                "Oasis",
-                "Harge Forest",
-                "Babylon",
-                "Destroyed Shinjuku",
-                "Train Station"            ],
-            "Essences": [
-                "EssenceMap"
-            ],
-            "Portal": [
-                "Summer Laguna"
-            ]
-        };
-
-        // Update map dropdown based on selected game mode
-        function updateMapDropdown() {
-            const gameModeSelect = document.getElementById('overlayGameModeSelect');
-            const mapSelect = document.getElementById('overlayMapSelect');
-            
-            if (!gameModeSelect || !mapSelect) {
-                console.warn('Game mode or map select elements not found');
-                return;
-            }
-            
-            const selectedMode = gameModeSelect.value;
-            const maps = gameModes[selectedMode] || [];
-            
-            // Clear existing options
-            mapSelect.innerHTML = '';
-            
-            // Add new options based on selected game mode
-            maps.forEach(map => {
-                const option = document.createElement('option');
-                option.value = map;
-                option.textContent = map;
-                mapSelect.appendChild(option);
-            });
-            
-            // Set default selection to first map if available
-            if (maps.length > 0) {
-                mapSelect.value = maps[0];
-                // Trigger map background loading if this function exists
-                if (typeof loadMapBackground === 'function') {
-                    loadMapBackground(document.getElementById('coordOverlay'), maps[0]);
-                }
-            }            console.log(`Updated map dropdown for ${selectedMode} with ${maps.length} maps`);
-        }
-
-        // Tutorial functions
-        let currentTutorialStep = 0;        async function checkTutorial() {
-            try {
-                console.log('checkTutorial() called');
-                if (typeof pywebview !== 'undefined' && pywebview.api) {
-                    console.log('pywebview API is available, calling check_tutorial...');
-                    const tutorialCompleted = await pywebview.api.check_tutorial();
-                    console.log('Tutorial completed status:', tutorialCompleted);
-                    if (!tutorialCompleted) {
-                        console.log('Tutorial not completed, showing tutorial...');
-                        showTutorial();
-                    } else {
-                        console.log('Tutorial already completed, not showing');
-                    }
-                } else {
-                    console.log('pywebview API not available, showing tutorial anyway for testing');
-                    // For testing - show tutorial even without API
-                    showTutorial();
-                }
-            } catch (error) {
-                console.error('Error in checkTutorial:', error);
-                console.log('Error occurred, showing tutorial anyway for testing');
-                showTutorial();
-            }
-        }        function showTutorial() {
-            console.log('showTutorial() called');
-            const overlay = document.getElementById('tutorialOverlay');
-            console.log('Tutorial overlay element:', overlay);
-            if (overlay) {
-                console.log('Setting overlay display to flex');
-                overlay.style.display = 'flex';
-                currentTutorialStep = 0;
-                console.log('Calling updateTutorialContent()');
-                updateTutorialContent();
-                console.log('Tutorial should now be visible');
-            } else {
-                console.error('Tutorial overlay element not found!');
-            }
-        }
-
-        function hideTutorial() {
-            const overlay = document.getElementById('tutorialOverlay');
-            if (overlay) {
-                overlay.style.display = 'none';
-            }
-        }
-
-        function nextTutorialStep() {
-            if (currentTutorialStep < tutorialSteps.length - 1) {
-                currentTutorialStep++;
-                updateTutorialContent();
-            } else {
-                completeTutorial();
-            }
-        }
-
-        function previousTutorialStep() {
-            if (currentTutorialStep > 0) {
-                currentTutorialStep--;
-                updateTutorialContent();
-            }
-        }        function skipTutorial() {
-            // Clear all highlights before completing tutorial
-            highlightTutorialTarget(null);
-            completeTutorial();
-        }async function completeTutorial() {
-            try {
-                if (typeof pywebview !== 'undefined' && pywebview.api) {
-                    await pywebview.api.complete_tutorial();
-                }
-            } catch (error) {
-                console.warn('Could not mark tutorial as completed:', error);
-            }
-            // Clear all highlights before hiding tutorial
-            highlightTutorialTarget(null);
-            hideTutorial();
-        }function updateTutorialContent() {
-            console.log('updateTutorialContent() called, step:', currentTutorialStep);
-            console.log('tutorialSteps array:', tutorialSteps);
-            const step = tutorialSteps[currentTutorialStep];
-            console.log('Current step data:', step);
-            
-            const titleElement = document.getElementById('tutorialTitle');
-            const textElement = document.getElementById('tutorialText');
-            const stepElement = document.getElementById('tutorialStep');
-            const totalElement = document.getElementById('tutorialTotal');
-            const prevBtn = document.getElementById('tutorialPrev');
-            const nextBtn = document.getElementById('tutorialNext');
-            
-            console.log('Title element:', titleElement);
-            console.log('Text element:', textElement);
-            console.log('Step element:', stepElement);
-            console.log('Total element:', totalElement);
-            console.log('Prev button:', prevBtn);
-            console.log('Next button:', nextBtn);
-            
-            if (step) {
-                if (titleElement) titleElement.textContent = step.title;
-                if (textElement) textElement.textContent = step.text || step.content;
-                if (stepElement) stepElement.textContent = currentTutorialStep + 1;
-                if (totalElement) totalElement.textContent = tutorialSteps.length;
-                
-                console.log('Updated tutorial content with step:', step.title);
-            } else {
-                console.error('Missing step data for step:', currentTutorialStep);
-            }
-            
-            // Update button visibility
-            if (prevBtn) {
-                prevBtn.style.display = currentTutorialStep > 0 ? 'inline-block' : 'none';
-            }
-              if (nextBtn) {
-                nextBtn.textContent = currentTutorialStep === tutorialSteps.length - 1 ? 'Finish' : 'Next';
-            }
-            
-            // Position tutorial content based on step position data
-            positionTutorialContent(step);
-            
-            // Highlight target element if specified
-            if (step && step.target) {
-                highlightTutorialTarget(step.target);
-            }
-        }        function positionTutorialContent(step) {
-            const tutorialContent = document.getElementById('tutorialContent');
-            if (!tutorialContent || !step || !step.position) {
-                // Reset to center if no position data
-                if (tutorialContent) {
-                    tutorialContent.style.position = 'absolute';
-                    tutorialContent.style.top = '50%';
-                    tutorialContent.style.left = '50%';
-                    tutorialContent.style.transform = 'translate(-50%, -50%)';
-                }
-                return;
-            }
-            
-            // Scroll to target element if it exists
-            if (step.target) {
-                const target = document.getElementById(step.target) || document.querySelector(step.target);
-                if (target) {
-                    // Smooth scroll to bring the target element into view
-                    target.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center',
-                        inline: 'center' 
-                    });
-                    
-                    // Wait a bit for scroll to complete before positioning tutorial
-                    setTimeout(() => {
-                        applyTutorialPosition(tutorialContent, step.position);
-                    }, 300);
-                    return;
-                }
-            }
-            
-            // Apply position immediately if no target to scroll to
-            applyTutorialPosition(tutorialContent, step.position);
-        }
-
-        function applyTutorialPosition(tutorialContent, position) {
-            tutorialContent.style.position = 'absolute';
-            
-            // Apply position styles
-            if (position.top) tutorialContent.style.top = position.top;
-            if (position.left) tutorialContent.style.left = position.left;
-            if (position.right) tutorialContent.style.right = position.right;
-            if (position.bottom) tutorialContent.style.bottom = position.bottom;
-            if (position.transform) tutorialContent.style.transform = position.transform;
-            
-            console.log('Positioned tutorial content:', position);
-        }function highlightTutorialTarget(selector) {
-            // Remove previous highlights
-            document.querySelectorAll('.tutorial-highlight').forEach(el => {
-                el.classList.remove('tutorial-highlight');
-            });
-            
-            // Add highlight to current target if selector is provided
-            if (selector) {
-                const target = document.getElementById(selector) || document.querySelector(selector);
-                if (target) {
-                    target.classList.add('tutorial-highlight');
-                }
-            }
-        }
+        
+        } // Closing brace to fix syntax structure
     </script>
 </body>
 </html>

@@ -53,7 +53,7 @@ EssenceLoadSettings() {
                     }
                 }
             }        } catch {
-            LogMessage("Error loading essence settings", "warning")
+                return
         }
     }
 }
@@ -89,19 +89,13 @@ EssenceStartMacro(selectedMap, selectedDifficulty := "Normal") {
     BetterClick(642, 127)  ; Close teleport menu
     
     ; Move to essence area (different movement pattern)
-    LogMessage("Sending W key down...", "debug")
     SendInput("{w down}")
     Sleep(1000)  ; Extended W movement duration to make it very visible
-    LogMessage("Sending W key up...", "debug") 
     SendInput("{w up}")
-    LogMessage("W movement completed, starting A movement (left)...", "info")
     Sleep(1000)
-    LogMessage("Sending A key down...", "debug")
     SendInput("{a down}")
     Sleep(2938)
-    LogMessage("Sending A key up...", "debug")
     SendInput("{a up}")
-    LogMessage("A movement completed.", "info")
 
     loop {
         if (ok := FindText(&X, &Y, X1, Y1, X2, Y2, 0, 0, Inessence)) {
@@ -112,33 +106,14 @@ EssenceStartMacro(selectedMap, selectedDifficulty := "Normal") {
 
             break
         } else {
-            LogMessage("Essence selection not found, retrying navigation...", "warning")
-            Sleep(2000)
+            LogMessage("Failed to enter Essence Caverns selection. Retrying...", "warning")
             
-            ; Retry the same sequence using Inessence
-            BetterClick(810, 165) ;closes ui from other stuff
+        
             Sleep(500)
-            BetterClick(793, 165) ;closes ui from other stuff
-            Sleep(500)
-            BetterClick(837, 507) ;closes ui from other stuf
-            Sleep(1000)
-            BetterClick(40, 394)
-            Sleep(300)
-            MouseMove(407, 297)
-            BetterClick(495, 383)  ; Click on essence section (placeholder coordinates)
-            Sleep(500)
-            BetterClick(642, 127)
-            ; Retry walking movement
-            MoveCamera()
-
-            Sleep(1000)
-            Send("{w down}")
-            Sleep(1000)  ; Extended retry W movement duration to make it very visible
-            Send("{w up}")
-            Sleep(1000)
-            Send("{a down}")
-            Sleep(2938)
-            Send("{a up}")
+            
+            Sleep(2000)
+            ; Retry the same sequence with improved scrolling
+            closeUI("Elemental Caverns")
             
             ; Continue loop to check Inessence again
         }
@@ -159,7 +134,6 @@ SelectEssence(essence){
     global Y2 := 700
 
     LogMessage("SelectEssence called for: " . essence, "info")
-    LogMessage("Using essence coordinates: " . X1 . "," . Y1 . " to " . X2 . "," . Y2, "info")
 
     switch (essence)
     {        case "Water":
