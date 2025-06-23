@@ -27,48 +27,46 @@ global foundY := 0
 ; Global curse variables
 global SelectedCurses := []
 global BaseCurses := ["Dull", "Nullify", "Blitz", "Regeneration", "Bankrupt", "Sluggish", "Endurance", "Weakened", "Equilibrium", "godless"]
-global Survival
-Curses := ["Powerless", "Bankrupt", "Sluggish", "Weakness", "True Boss Fight", "No one leaves alive"]
+global SurvivalCurses := ["Powerless", "Bankrupt", "Sluggish", "Weakness", "True Boss Fight", "No one leaves alive"]
 
-
-
+; Global coordinates for Roblox window detection (set by FixPositions function)
 global X1 := 0
 global Y1 := 0  
-global X2 := 1920  
-global Y2 := 1080 
+global X2 := 1920  ; Default screen width fallback
+global Y2 := 1080  ; Default screen height fallback
 
-
-
-global REPO_OWNER := "injuriez"  
-global REPO_NAME := "Mangoguards-ALS-AIO"        
-global CURRENT_VERSION := "v1.0.5"       
-
+; Global variables for auto-updater
+global REPO_OWNER := "injuriez"  ; Replace with actual GitHub username
+global REPO_NAME := "Mangoguards-ALS-AIO"         ; Replace with actual repository name  
+global CURRENT_VERSION := "v0.0.5"        ; Current version - update this when releasing new versions
 
 ; Global mango maps structure
 global MangoMaps := Map()
 global MangoDropDown
 global DropDownList2
 
+; Note: Individual macro UI elements (DifficultyDropDown, CurseDropDown, etc.) 
+; are now managed by their respective macro classes
 
-myGui := Gui("+AlwaysOnTop -Caption", "Mango")
+myGui := Gui("+AlwaysOnTop -Caption", "Mango") ; Remove caption and keep on top
 myGui.BackColor := "0x111111"
 
 ; Initialize the modular mango system
 MangoManagerInitialize(myGui)
 
-
+; Updated GUI layout - expanded design for better Roblox fit
 ui := myGui.Add("Progress", "c0x7e4141 x0 y30 h700 w1000", 100)
 WinSetTransColor("0x7e4141 255", myGui)
 myGui.SetFont("s10", "Segoe UI")
 
 
-
+; Move Activity Log to fit in expanded layout
 ActivityLogGroupBox := myGui.Add("GroupBox", "x1010 y570 w450 h160 cFFFFFF", "📜 Activity Log")
 ActivityLogGroupBox.SetFont("s10 Bold", "Segoe UI")
 ActivityLogText := myGui.Add("Edit", "x1020 y590 w270 h120 +Multi +ReadOnly -E0x200 -Border -VScroll", "Macro Launched")
 ActivityLogText.SetFont("s9", "Segoe UI")
 ActivityLogText.Opt("+Background" . "0x111113" . " c" . "FFFFFF")
-
+; Keybinds section (left side)
 KeybindsGroupBox := myGui.Add("GroupBox", "x1010 y30 w220 h150 cFFFFFF", "⌨️ Keybinds")
 KeybindsGroupBox.SetFont("s10 Bold", "Segoe UI")
 KeybindsText := myGui.Add("Text", "x1020 y45 w200 h90 cFFFFFF", " F1 - Fix Roblox Position `n F2 - Start Macro `n F3 - Stop Macro `n F4 - Pause/Unpause `n F5 - Get Coordinates `n F6 - Test Movement")
@@ -90,7 +88,7 @@ ButtonUtilSettings.OnEvent("Click", OpenSettings)
 ; Check for Updates Button  
 ButtonUpdates := myGui.Add("Text", "x1250 y85 w200 h25 +Center +0x200 cFFFFFF Background0x4CAF50", "🔄 Check for Updates")
 ButtonUpdates.SetFont("s9 Bold", "Segoe UI")
-ButtonUpdates.OnEvent("Click", CheckForUpdates)
+; ButtonUpdates.OnEvent("Click", CheckForUpdates)  ; Auto-updater disabled
 
 ; Guide Button
 ButtonGuide := myGui.Add("Text", "x1250 y120 w200 h25 +Center +0x200 cFFFFFF Background0x2196F3", "📚 Guide")
@@ -237,7 +235,7 @@ myGui.Title := "Mango"
 myGui.Show("w1470 h735") 
 
 ; Automatically check for updates on startup
-CheckForUpdatesOnStartup()
+; CheckForUpdatesOnStartup()  ; Auto-updater disabled
 
 
 UpdateWLDisplay(result := "") {
@@ -741,6 +739,7 @@ LoadMapSelection() {
     }
 }
 
+/*
 CheckForUpdates(*) {
     try {
         ; Get latest release from GitHub API
@@ -758,35 +757,22 @@ CheckForUpdates(*) {
             
             ; Extract version tag (simple regex approach)
             if (RegExMatch(responseText, '"tag_name":\s*"([^"]+)"', &match)) {
-                latestVersion := match[1]
-                  ; Extract download URL - only look for ZIP files (complete package)
+                latestVersion := match[1]                ; Extract download URL - use direct GitHub archive download format
                 downloadUrl := ""
                 
-                ; Look for a .zip file (complete package)
-                if (RegExMatch(responseText, '"browser_download_url":\s*"([^"]*\.zip[^"]*)"', &downloadMatch)) {
-                    downloadUrl := downloadMatch[1]
-                }
+                ; Primary method: Use direct GitHub archive download URL
+                downloadUrl := "https://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/archive/refs/tags/" . latestVersion . ".zip"
+                LogMessage("Using direct GitHub archive download: " . downloadUrl, "info")
                 
-                ; Compare versions
+                ; Fallback: look for manually uploaded ZIP files if needed
+                if (!downloadUrl && RegExMatch(responseText, '"browser_download_url":\s*"([^"]*\.zip)"', &downloadMatch)) {
+                    downloadUrl := downloadMatch[1]
+                    LogMessage("Found uploaded ZIP file: " . downloadUrl, "info")
+                }                ; Compare versions
                 if (CompareVersions(CURRENT_VERSION, latestVersion) < 0) {
-                    ; New version available
-                    if (downloadUrl != "") {
-                        updateMessage := "A new version (" . latestVersion . ") is available!`n`nCurrent version: " . CURRENT_VERSION . "`nLatest version: " . latestVersion . "`n`n"
-                        updateMessage .= "This will download and replace all files in the current directory.`n`nWould you like to download and install it now?"
-                        
-                        result := MsgBox(updateMessage, "Update Available", "YesNo Iconi")
-                        
-                        if (result = "Yes") {
-                            DownloadAndInstallUpdate(downloadUrl, latestVersion, "zip")
-                        }
-                    } else {
-                        ; No ZIP file found, direct to releases page
-                        result := MsgBox("A new version (" . latestVersion . ") is available!`n`nCurrent version: " . CURRENT_VERSION . "`nLatest version: " . latestVersion . "`n`nNo automatic download available. Would you like to open the releases page to download manually?", "Update Available", "YesNo Iconi")
-                        
-                        if (result = "Yes") {
-                            Run("https://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/releases/latest")
-                        }
-                    }
+                    ; New version available - automatically download and install
+                    LogMessage("New version " . latestVersion . " found! Automatically downloading and installing...", "info")
+                    DownloadAndInstallUpdate(downloadUrl, latestVersion, "zip")
                 } else {
                     ; Already up to date
                     MsgBox("You are running the latest version (" . CURRENT_VERSION . ")", "Up to Date", "Iconi")
@@ -801,7 +787,9 @@ CheckForUpdates(*) {
         MsgBox("Error checking for updates: " . err.Message . "`n`nPlease check manually at:`nhttps://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/releases", "Update Error", "Iconx")
     }
 }
+*/  ; Auto-updater disabled
 
+/*
 ; Compare two version strings (returns -1 if v1 < v2, 0 if equal, 1 if v1 > v2)
 CompareVersions(v1, v2) {
     ; Remove 'v' prefix if present
@@ -828,16 +816,17 @@ CompareVersions(v1, v2) {
     
     return 0  ; Versions are equal
 }
+*/  ; CompareVersions function disabled
 
+/*
 ; Download and install update
 DownloadAndInstallUpdate(downloadUrl, version, downloadType := "zip") {
     try {
         ; Create temporary download path
         tempDir := A_Temp . "\MangoGuards_Update"
         DirCreate(tempDir)
-        
-        ; Generate filename for ZIP
-        fileName := "MangoGuards_" . version . ".zip"
+          ; Generate filename for ZIP
+        fileName := REPO_NAME . "-" . version . ".zip"
         if (RegExMatch(downloadUrl, "[^/]+\.zip$", &match)) {
             fileName := match[0]
         }
@@ -859,17 +848,11 @@ DownloadAndInstallUpdate(downloadUrl, version, downloadType := "zip") {
         result := DllCall("urlmon\URLDownloadToFile", "Ptr", 0, "Str", downloadUrl, "Str", downloadPath, "UInt", 0, "Ptr", 0)
         
         progressGui.Destroy()
-        
-        if (result = 0 && FileExist(downloadPath)) {
-            ; Ask user to install now or later
-            installResult := MsgBox("Download completed!`n`nThe update will extract all files and replace the current installation.`nThis will close the current application and restart with the new version.`n`nInstall now?", "Install Update", "YesNo Iconi")
-            
-            if (installResult = "Yes") {
-                InstallZipUpdate(downloadPath, tempDir, version)
-            } else {
-                MsgBox("Update downloaded to:`n" . downloadPath . "`n`nExtract this file to your MangoGuards directory when you're ready to update.", "Download Complete", "Iconi")
-            }
+          if (result = 0 && FileExist(downloadPath)) {            ; Automatically install the update
+            LogMessage("Download completed! Automatically installing update...", "info")
+            InstallZipUpdate(downloadPath, tempDir, version)
         } else {
+            LogMessage("Failed to download the update.", "error")
             MsgBox("Failed to download the update.`nPlease download manually from:`nhttps://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/releases", "Download Failed", "Iconx")
         }
     } catch as err {
@@ -925,48 +908,72 @@ InstallZipUpdate(zipPath, tempDir, version) {
             } catch {
                 ; COM method also failed
             }
-        }
-        
-        ; Method 3: Try to find any subdirectory in extracted folder (some zips have a root folder)
+        }        ; Method 3: Try to find any subdirectory in extracted folder (some zips have a root folder)
         if (extractSuccess) {
-            ; Check if there's a subdirectory that contains the actual files
-            loop Files, extractDir . "\*", "D" {
-                if (FileExist(A_LoopFileFullPath . "\ALS.ahk") || FileExist(A_LoopFileFullPath . "\*.exe")) {
-                    extractDir := A_LoopFileFullPath
-                    break
+            ; Check if there's a subdirectory that contains files
+            actualExtractDir := extractDir
+            
+            ; First, check if there are files directly in extractDir
+            hasDirectFiles := false
+            loop Files, extractDir . "\*", "F" {
+                hasDirectFiles := true
+                break
+            }
+            
+            ; If no direct files, look for a subdirectory with files
+            if (!hasDirectFiles) {
+                loop Files, extractDir . "\*", "D" {
+                    ; Check if this subdirectory has files
+                    loop Files, A_LoopFileFullPath . "\*", "F" {
+                        actualExtractDir := A_LoopFileFullPath
+                        LogMessage("Found files in subdirectory: " . actualExtractDir, "info")
+                        break 2  ; Break out of both loops
+                    }
                 }
             }
+            
+            extractDir := actualExtractDir
         }
-        
-        if (!extractSuccess) {
+          if (!extractSuccess) {
+            LogMessage("Failed to extract ZIP file using all methods", "error")
             MsgBox("Failed to extract ZIP file. Please extract manually and copy files to:`n" . A_ScriptDir, "Extraction Failed", "Iconx")
             return
-        }
-        
-        ; Create update script
+        }        LogMessage("ZIP extraction successful. Extract directory: " . extractDir, "info")
+          ; Create update script
         updateScript := tempDir . "\update_full.bat"
         currentDir := A_ScriptDir
-        currentExe := A_IsCompiled ? A_ScriptFullPath : A_ScriptDir . "\ALS.exe"
+        currentScript := A_ScriptFullPath
+        currentScriptName := StrReplace(currentScript, currentDir . "\", "")
         
-        ; Create comprehensive batch script for full update
+        ; Target ALS.ahk file
+        targetAhk := currentDir . "\ALS.ahk"
+        
+        ; Create comprehensive batch script for update
         batContent := "@echo off`n"
-        batContent .= "echo Updating MangoGuards (Full Update)...`n"
+        batContent .= "echo Updating MangoGuards...`n"
         batContent .= "timeout /t 2 /nobreak > nul`n"
-        batContent .= "taskkill /f /im `"" . StrReplace(currentExe, currentDir . "\", "") . "`" 2>nul`n"
+        
+        ; Kill current process by name and also try to close gracefully
+        if (A_ScriptName != "") {
+            batContent .= "taskkill /f /im `"" . A_ScriptName . "`" 2>nul`n"
+        }
+        ; Also try to kill AutoHotkey processes running our script
+        batContent .= "taskkill /f /im AutoHotkey*.exe /fi `"WINDOWTITLE eq " . A_ScriptName . "*`" 2>nul`n"
         batContent .= "timeout /t 2 /nobreak > nul`n"
         
         ; Copy all files from extracted directory to current directory
         batContent .= "echo Copying new files...`n"
         batContent .= "xcopy /s /e /y `"" . extractDir . "\*`" `"" . currentDir . "\`"`n"
+        batContent .= "timeout /t 1 /nobreak > nul`n"
         
-        ; Verify main executable exists and restart
-        batContent .= "if exist `"" . currentExe . "`" (`n"
-        batContent .= "    echo Update successful!`n"
+        ; Try to launch ALS.ahk if it exists after update
+        batContent .= "if exist `"" . targetAhk . "`" (`n"
+        batContent .= "    echo Update complete! Launching ALS.ahk...`n"
         batContent .= "    timeout /t 1 /nobreak > nul`n"
-        batContent .= "    start `"`" `"" . currentExe . "`"`n"
+        batContent .= "    start `"`" `"" . targetAhk . "`"`n"
         batContent .= ") else (`n"
-        batContent .= "    echo Update failed - executable not found!`n"
-        batContent .= "    echo Please check the update files manually.`n"
+        batContent .= "    echo Update complete! Files copied successfully.`n"
+        batContent .= "    echo Please manually launch the updated application.`n"
         batContent .= "    pause`n"
         batContent .= ")`n"
         
@@ -976,14 +983,17 @@ InstallZipUpdate(zipPath, tempDir, version) {
         
         FileOpen(updateScript, "w").Write(batContent)
         
+        ; Log the update process
+        LogMessage("Starting update process. Current script: " . currentScript, "info")
+        
         ; Run update script and exit
         Run(updateScript, , "Hide")
         ExitApp()
-        
-    } catch as err {
+          } catch as err {
         MsgBox("Error installing ZIP update: " . err.Message . "`n`nPlease download and extract manually from:`nhttps://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/releases", "Installation Error", "Iconx")
     }
 }
+*/  ; Auto-updater functions disabled
 
 OpenGuide(*) {
     try {
@@ -1196,6 +1206,7 @@ FormatWebhookJSON(obj) {
     return json
 }
 
+/*
 ; Automatic update check on startup (less intrusive than manual check)
 CheckForUpdatesOnStartup() {
     ; Prevent multiple runs and disable timer immediately
@@ -1245,41 +1256,30 @@ CheckForUpdatesOnStartup() {
         } catch {
             return
         }
-        
-        if (status = 200) {
+          if (status = 200) {
             ; Parse JSON response
-            responseText := whr.ResponseText                ; Extract version tag (simple regex approach)
-                if (RegExMatch(responseText, '"tag_name":\s*"([^"]+)"', &match)) {
-                    latestVersion := match[1]
-                      ; Extract download URL - only look for ZIP files (complete package)
+            responseText := whr.ResponseText
+            
+            ; Extract version tag (simple regex approach)
+            if (RegExMatch(responseText, '"tag_name":\s*"([^"]+)"', &match)) {
+                latestVersion := match[1]                ; Extract download URL - use direct GitHub archive download format
                     downloadUrl := ""
                     
-                    ; Look for a .zip file (complete package)
-                    if (RegExMatch(responseText, '"browser_download_url":\s*"([^"]*\.zip[^"]*)"', &downloadMatch)) {
-                        downloadUrl := downloadMatch[1]
-                    }
+                    ; Primary method: Use direct GitHub archive download URL
+                    downloadUrl := "https://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/archive/refs/tags/" . latestVersion . ".zip"
+                    LogMessage("Using direct GitHub archive download on startup: " . downloadUrl, "info")
                     
-                    ; Compare versions (only show dialog if update is available)
-                    if (CompareVersions(CURRENT_VERSION, latestVersion) < 0) {
-                        ; New version available - show update dialog
-                        if (downloadUrl != "") {
-                            updateMessage := "A new version (" . latestVersion . ") is available!`n`nCurrent version: " . CURRENT_VERSION . "`nLatest version: " . latestVersion . "`n`n"
-                            updateMessage .= "This will download and replace all files in the current directory.`n`nWould you like to download and install it now?"
-                            
-                            result := MsgBox(updateMessage, "Update Available", "YesNo Iconi 4096")
-                            
-                            if (result = "Yes") {
-                                DownloadAndInstallUpdate(downloadUrl, latestVersion, "zip")
-                            }
-                        } else {
-                            ; No ZIP file found, direct to releases page
-                            result := MsgBox("A new version (" . latestVersion . ") is available!`n`nCurrent version: " . CURRENT_VERSION . "`nLatest version: " . latestVersion . "`n`nNo automatic download available. Would you like to open the releases page to download manually?", "Update Available", "YesNo Iconi 4096")
-                            
-                            if (result = "Yes") {
-                                Run("https://github.com/" . REPO_OWNER . "/" . REPO_NAME . "/releases/latest")
-                            }
-                        }
+                    ; Fallback: look for manually uploaded ZIP files if needed
+                    if (!downloadUrl && RegExMatch(responseText, '"browser_download_url":\s*"([^"]*\.zip)"', &downloadMatch)) {
+                        downloadUrl := downloadMatch[1]
+                        LogMessage("Found uploaded ZIP file on startup: " . downloadUrl, "info")
                     }
+                  ; Compare versions (only show dialog if update is available)
+                if (CompareVersions(CURRENT_VERSION, latestVersion) < 0) {
+                    ; New version available - automatically download and install
+                    LogMessage("New version " . latestVersion . " found on startup! Automatically downloading and installing...", "info")
+                    DownloadAndInstallUpdate(downloadUrl, latestVersion, "zip")
+                }
             }
         }
     } catch {
@@ -1309,3 +1309,4 @@ ResetUpdateCheckFlag() {
     SetTimer(CheckForUpdatesOnStartup, 0)  ; Clear any pending timers
     MsgBox("Update check flag has been reset", "Debug", "Iconi")
 }
+*/  ; Auto-updater related functions disabled

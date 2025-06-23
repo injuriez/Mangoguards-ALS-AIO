@@ -1807,56 +1807,44 @@
             
             // Auto-position inside ALS window on startup with retry logic
             console.log('DOM loaded, starting auto-alignment sequence...');
+              // AUTO-ALIGNMENT DISABLED TO PREVENT SLIDING WHEN ALS CLOSES
+            // The Python monitoring thread handles all positioning now
+            console.log('Auto-alignment disabled - Python thread handles positioning');
             
-            // Wait for pywebview API to be ready and then try alignment
-            setTimeout(async () => {
-                console.log('Checking if pywebview API is available...');
-                if (typeof pywebview === 'undefined' || !pywebview.api) {
-                    console.log('pywebview API not ready yet, waiting...');
-                    // Try again after more time
-                    setTimeout(async () => {
-                        await attemptAutoAlignment();
-                    }, 2000);
-                } else {
-                    console.log('pywebview API is ready, attempting alignment...');
-                    await attemptAutoAlignment();
-                }
-            }, 1000); // Wait 1 second for pywebview to be fully ready
+            // OLD CODE (commented out to prevent sliding issues):
+            // setTimeout(async () => {
+            //     console.log('Checking if pywebview API is available...');
+            //     if (typeof pywebview === 'undefined' || !pywebview.api) {
+            //         console.log('pywebview API not ready yet, waiting...');
+            //         setTimeout(async () => {
+            //             await attemptAutoAlignment();
+            //         }, 2000);
+            //     } else {
+            //         console.log('pywebview API is ready, attempting alignment...');
+            //         await attemptAutoAlignment();
+            //     }
+            // }, 1000);
             
             checkTutorial();
         });
-        
-        // Helper function for auto-alignment attempts
+          // Helper function for manual alignment only (auto-alignment disabled)
         async function attemptAutoAlignment() {
             try {
-                console.log('Attempting to auto-position UI inside ALS progress area...');
+                console.log('Manual alignment attempt...');
                 const result = await pywebview.api.align_with_roblox();
                 if (result && result.success) {
-                    console.log('UI automatically positioned inside ALS progress area:', result.message);
+                    console.log('Manual positioning successful:', result.message);
                     showNotification('Positioned inside ALS window', 'success');
                 } else {
-                    console.log('Auto-positioning failed:', result ? result.message : 'No result returned');
-                    // Retry once after another delay
-                    setTimeout(async () => {
-                        try {
-                            console.log('Retrying auto-positioning...');
-                            const retryResult = await pywebview.api.align_with_roblox();
-                            if (retryResult && retryResult.success) {
-                                console.log('Auto-positioning succeeded on retry:', retryResult.message);
-                                showNotification('Positioned inside ALS window', 'success');
-                            } else {
-                                console.log('Auto-positioning retry failed:', retryResult ? retryResult.message : 'No result returned');
-                                showNotification('Could not auto-position - ALS window not found', 'warning');
-                            }
-                        } catch (retryError) {
-                            console.log('Auto-positioning retry error:', retryError);
-                            showNotification('Auto-positioning failed', 'error');
-                        }
-                    }, 2000);
+                    console.log('Manual positioning failed:', result ? result.message : 'No result returned');
+                    showNotification('Could not position - ALS window not found', 'warning');
+                    
+                    // RETRY LOGIC DISABLED TO PREVENT SLIDING WHEN ALS CLOSES
+                    // setTimeout(async () => { ... }, 2000);
                 }
             } catch (error) {
-                console.log('Auto-positioning on startup failed:', error);
-                showNotification('Auto-positioning error: ' + error.message, 'error');
+                console.log('Manual positioning error:', error);
+                showNotification('Positioning error: ' + error.message, 'error');
             }
         }// Generate slot HTML dynamically
         function generateSlots() {

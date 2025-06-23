@@ -9,4 +9,5 @@ Flask-CORS==4.0.0
 Werkzeug==2.3.6
 pyautogui
 requests
+psutil
 
