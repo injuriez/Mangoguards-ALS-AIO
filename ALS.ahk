@@ -40,7 +40,7 @@ global Y2 := 1080
 
 global REPO_OWNER := "injuriez"  
 global REPO_NAME := "Mangoguards-ALS-AIO"        
-global CURRENT_VERSION := "v0.0.5"       
+global CURRENT_VERSION := "v1.0.5"       
 
 
 ; Global mango maps structure
