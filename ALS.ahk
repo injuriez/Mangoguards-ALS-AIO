@@ -31,6 +31,7 @@ global Survival
 Curses := ["Powerless", "Bankrupt", "Sluggish", "Weakness", "True Boss Fight", "No one leaves alive"]
 
 
+
 global X1 := 0
 global Y1 := 0  
 global X2 := 1920  
@@ -40,7 +41,7 @@ global Y2 := 1080
 
 global REPO_OWNER := "injuriez"  
 global REPO_NAME := "Mangoguards-ALS-AIO"        
-global CURRENT_VERSION := "v0.0.5"       
+global CURRENT_VERSION := "v1.0.5"       
 
 
 ; Global mango maps structure
