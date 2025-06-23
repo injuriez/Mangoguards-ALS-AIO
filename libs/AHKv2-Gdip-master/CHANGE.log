@@ -1,0 +1,14 @@
+2023-07-01 v1.57-60 - bug fixes
+2023-04-19 v1.56 - compatible with AHK v2.0.2, Gdip_DrawLines fixed, gdip_toolbox improved, separated changelog
+2021-12-19 v1.55 - compatibility with AHK v1 dropped, fixed compatibility with v2.0beta3 by buliasz
+2017-11-15 v1.54 - compatibility with both AHK v2 and v1, restored by nnnik
+2017-06-19 v1.53 - fixed few bugs from old syntax by buliasz
+2017-06-11 v1.52 - made code compatible with new AHK v2.0-a079-be5df98 by buliasz
+2017-01-27 v1.51 - fixed some bugs and made #Warn All compatible by buliasz
+2016-11-20 v1.50 - fixed Gdip_BitmapFromBRA() by 'just me'
+2016-11-18 - backward compatible support for both AHK v1.1 and AHK v2
+2016-11-15 - initial AHK v2 support by guest3456
+2014-02-20 - fixed Gdip_CreateRegion() and Gdip_GetClipRegion() on AHK Unicode x86
+2013-05-13 - fixed Gdip_SetBitmapToClipboard() on AHK Unicode x64
+2013-05-01 - modifed by Rseding91 using fincs 64 bit compatible Gdip library
+2011-07-09 v1.45 by tic (Tariq Porter) 
