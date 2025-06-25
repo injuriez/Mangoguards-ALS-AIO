@@ -40,7 +40,6 @@ ShowDungeonUI() {
     DungeonClearCursesBtn.Visible := true
     UpdateDungeonCurseDropdownDisplay()
     LoadDungeonCurseSelection()
-    LogMessage("Dungeon UI elements shown", "info")
 }
 
 ; Hide Dungeon UI
@@ -131,7 +130,6 @@ UpdateDungeonCurseDropdownDisplay() {
         DungeonCurseDropDown.Choose(currentIndex)
     }
     
-    LogMessage("Dungeon curse dropdown updated with " . newOptions.Length . " options", "info")
 }
 
 ; Load dungeon curse selection

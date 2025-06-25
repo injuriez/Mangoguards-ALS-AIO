@@ -40,7 +40,6 @@ ShowSurvivalUI() {
     SurvivalClearCursesBtn.Visible := true
     UpdateSurvivalCurseDropdownDisplay()
     LoadSurvivalCurseSelection()
-    LogMessage("Survival UI elements shown", "info")
 }
 
 ; Hide Survival UI

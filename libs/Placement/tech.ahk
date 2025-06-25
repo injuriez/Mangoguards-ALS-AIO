@@ -8,6 +8,7 @@ BetterClick(x, y, LR := "Left") {
     Sleep(50)
 }
 
+
 ZoomTech(start := true) {
     ; Store current mouse position
     MouseGetPos(&currentX, &currentY)

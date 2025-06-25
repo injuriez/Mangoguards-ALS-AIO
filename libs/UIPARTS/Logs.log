@@ -39077,3 +39077,348 @@ KeyError: 0
 2025-06-22 16:37:30,275 - INFO - Forced repositioning successful - maintaining perfect alignment
 2025-06-22 16:37:34,279 - INFO - ALS window not found - closing Unit Manager immediately
 2025-06-22 16:37:34,382 - INFO - Monitoring thread cleanup requested
+2025-06-25 07:33:34,567 - INFO - Starting MangoGuards Unit Manager Desktop App...
+2025-06-25 07:33:34,568 - INFO - Parsing config line: SLOT3:1:3::3:none:0,0|1:1|0
+2025-06-25 07:33:34,568 - INFO - Main line: SLOT3:1:3::3:none:0,0|1:1, Status set: False
+2025-06-25 07:33:34,568 - INFO - Split parts: ['SLOT3', '1', '3', '', '3', 'none', '0,0|1', '1']
+2025-06-25 07:33:34,568 - INFO - Parsed - slot: SLOT3, placement: 1, unit: 
+2025-06-25 07:33:34,568 - INFO - Priority: 3, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:33:34,569 - INFO - Successfully parsed slot slot3: {'placement': '1', 'priority': '3', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:33:34,569 - INFO - Parsing config line: SLOT4:1:4::4:none:0,0|1:1|0
+2025-06-25 07:33:34,569 - INFO - Main line: SLOT4:1:4::4:none:0,0|1:1, Status set: False
+2025-06-25 07:33:34,569 - INFO - Split parts: ['SLOT4', '1', '4', '', '4', 'none', '0,0|1', '1']
+2025-06-25 07:33:34,569 - INFO - Parsed - slot: SLOT4, placement: 1, unit: 
+2025-06-25 07:33:34,569 - INFO - Priority: 4, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:33:34,569 - INFO - Successfully parsed slot slot4: {'placement': '1', 'priority': '4', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:33:34,570 - INFO - Parsing config line: SLOT5:1:5::1:none:0,0|1:1|0
+2025-06-25 07:33:34,570 - INFO - Main line: SLOT5:1:5::1:none:0,0|1:1, Status set: False
+2025-06-25 07:33:34,570 - INFO - Split parts: ['SLOT5', '1', '5', '', '1', 'none', '0,0|1', '1']
+2025-06-25 07:33:34,570 - INFO - Parsed - slot: SLOT5, placement: 1, unit: 
+2025-06-25 07:33:34,570 - INFO - Priority: 1, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:33:34,682 - INFO - Successfully parsed slot slot5: {'placement': '1', 'priority': '1', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:33:34,682 - INFO - Parsing config line: SLOT6:1:6::6:none:0,0|1:1|0
+2025-06-25 07:33:34,682 - INFO - Main line: SLOT6:1:6::6:none:0,0|1:1, Status set: False
+2025-06-25 07:33:34,682 - INFO - Split parts: ['SLOT6', '1', '6', '', '6', 'none', '0,0|1', '1']
+2025-06-25 07:33:34,683 - INFO - Parsed - slot: SLOT6, placement: 1, unit: 
+2025-06-25 07:33:34,683 - INFO - Priority: 6, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:33:34,683 - INFO - Successfully parsed slot slot6: {'placement': '1', 'priority': '6', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:33:34,684 - INFO - Position monitoring thread started (monitors for movement)
+2025-06-25 07:33:35,807 - DEBUG - Using WinForms / Chromium
+2025-06-25 07:33:36,699 - INFO - Performing initial positioning...
+2025-06-25 07:33:36,715 - INFO - Found ALS window: Mango
+2025-06-25 07:33:36,716 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:33:36,718 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:33:36,718 - INFO - Attempting to position using webview API...
+2025-06-25 07:33:36,809 - INFO - Successfully positioned using webview API
+2025-06-25 07:33:36,811 - INFO - Initial positioning successful
+2025-06-25 07:33:43,430 - INFO - Getting map image for: Marines Fort
+2025-06-25 07:33:43,430 - INFO - Using default name cleaning: Marines Fort -> Marines_Fort
+2025-06-25 07:33:43,431 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:33:43,431 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Marines_Fort.png
+2025-06-25 07:33:43,432 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Marines_Fort.png
+2025-06-25 07:33:46,827 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:33:46,829 - INFO - Found ALS window: Mango
+2025-06-25 07:33:46,829 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:33:46,829 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:33:46,829 - INFO - Attempting to position using webview API...
+2025-06-25 07:33:46,831 - INFO - Successfully positioned using webview API
+2025-06-25 07:33:46,832 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:33:54,159 - INFO - Getting map image for: Shibuya
+2025-06-25 07:33:54,160 - INFO - Using default name cleaning: Shibuya -> Shibuya
+2025-06-25 07:33:54,161 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:33:54,161 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Shibuya.png
+2025-06-25 07:33:54,162 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Shibuya.png
+2025-06-25 07:33:56,840 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:33:56,842 - INFO - Found ALS window: Mango
+2025-06-25 07:33:56,842 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:33:56,842 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:33:56,843 - INFO - Attempting to position using webview API...
+2025-06-25 07:33:56,845 - INFO - Successfully positioned using webview API
+2025-06-25 07:33:56,846 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:33:57,878 - INFO - Getting map image for: Hog Town
+2025-06-25 07:33:57,879 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:33:57,879 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:33:57,879 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:33:57,971 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:34:06,855 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:06,856 - INFO - Found ALS window: Mango
+2025-06-25 07:34:06,856 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:06,857 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:06,857 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:06,858 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:06,858 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:34:16,867 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:16,869 - INFO - Found ALS window: Mango
+2025-06-25 07:34:16,869 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:16,869 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:16,869 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:16,872 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:16,872 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:34:18,422 - INFO - Getting map image for: Hog Town
+2025-06-25 07:34:18,422 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:34:18,423 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:34:18,423 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:34:18,423 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:34:26,879 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:26,881 - INFO - Found ALS window: Mango
+2025-06-25 07:34:26,881 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:26,881 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:26,881 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:26,883 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:26,883 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:34:36,890 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:36,892 - INFO - Found ALS window: Mango
+2025-06-25 07:34:36,892 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:36,892 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:36,893 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:36,895 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:36,895 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:34:46,905 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:46,908 - INFO - Found ALS window: Mango
+2025-06-25 07:34:46,908 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:46,909 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:46,909 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:46,912 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:46,913 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:34:56,922 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:34:56,925 - INFO - Found ALS window: Mango
+2025-06-25 07:34:56,925 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:34:56,926 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:34:56,926 - INFO - Attempting to position using webview API...
+2025-06-25 07:34:56,927 - INFO - Successfully positioned using webview API
+2025-06-25 07:34:56,928 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:06,935 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:06,937 - INFO - Found ALS window: Mango
+2025-06-25 07:35:06,937 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:06,937 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:06,937 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:06,939 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:06,939 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:12,944 - INFO - Window moved significantly from target position. Current: (50, 80, 1000, 700), Target: (225, 178, 1000, 700)
+2025-06-25 07:35:12,946 - INFO - Found ALS window: Mango
+2025-06-25 07:35:12,947 - INFO - ALS window: position=(225, 148), size=(1470x735)
+2025-06-25 07:35:12,947 - INFO - Target position for Unit Manager: (225, 178), size=(1000x700)
+2025-06-25 07:35:12,947 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:12,952 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:12,953 - INFO - Auto-repositioned window back to target location
+2025-06-25 07:35:14,957 - INFO - Window moved significantly from target position. Current: (225, 178, 1000, 700), Target: (50, 80, 1000, 700)
+2025-06-25 07:35:14,957 - INFO - Repositioning skipped due to cooldown (preventing bounce effect)
+2025-06-25 07:35:16,959 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:16,960 - INFO - Found ALS window: Mango
+2025-06-25 07:35:16,961 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:16,961 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:16,961 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:16,964 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:16,964 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:26,971 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:26,973 - INFO - Found ALS window: Mango
+2025-06-25 07:35:26,973 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:26,973 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:26,973 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:26,974 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:26,975 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:36,981 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:36,983 - INFO - Found ALS window: Mango
+2025-06-25 07:35:36,983 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:36,984 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:36,984 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:36,986 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:36,986 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:46,995 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:46,997 - INFO - Found ALS window: Mango
+2025-06-25 07:35:46,998 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:46,998 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:46,999 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:47,001 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:47,002 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:35:57,009 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:35:57,109 - INFO - Found ALS window: Mango
+2025-06-25 07:35:57,109 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:35:57,110 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:35:57,110 - INFO - Attempting to position using webview API...
+2025-06-25 07:35:57,111 - INFO - Successfully positioned using webview API
+2025-06-25 07:35:57,111 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:36:07,117 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:36:07,118 - INFO - Found ALS window: Mango
+2025-06-25 07:36:07,118 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:36:07,119 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:36:07,119 - INFO - Attempting to position using webview API...
+2025-06-25 07:36:07,120 - INFO - Successfully positioned using webview API
+2025-06-25 07:36:07,120 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:36:17,127 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:36:17,129 - INFO - Found ALS window: Mango
+2025-06-25 07:36:17,130 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:36:17,130 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:36:17,131 - INFO - Attempting to position using webview API...
+2025-06-25 07:36:17,132 - INFO - Successfully positioned using webview API
+2025-06-25 07:36:17,132 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:36:27,140 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:36:27,142 - INFO - Found ALS window: Mango
+2025-06-25 07:36:27,142 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:36:27,143 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:36:27,145 - INFO - Attempting to position using webview API...
+2025-06-25 07:36:27,146 - INFO - Successfully positioned using webview API
+2025-06-25 07:36:27,146 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:36:27,562 - INFO - Getting map image for: Hog Town
+2025-06-25 07:36:27,562 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:36:27,563 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:36:27,563 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:36:27,564 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:36:32,959 - INFO - Getting map image for: Hog Town
+2025-06-25 07:36:32,959 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:36:32,959 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:36:32,959 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:36:32,960 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:36:35,877 - INFO - Monitoring thread cleanup requested
+2025-06-25 07:36:38,331 - INFO - Starting MangoGuards Unit Manager Desktop App...
+2025-06-25 07:36:38,333 - INFO - Parsing config line: SLOT1:1:1::2:none:0,0|1:1|0
+2025-06-25 07:36:38,333 - INFO - Main line: SLOT1:1:1::2:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,333 - INFO - Split parts: ['SLOT1', '1', '1', '', '2', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,333 - INFO - Parsed - slot: SLOT1, placement: 1, unit: 
+2025-06-25 07:36:38,333 - INFO - Priority: 2, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,333 - INFO - Successfully parsed slot slot1: {'placement': '1', 'priority': '2', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,334 - INFO - Parsing config line: SLOT2:1:2::2:none:0,0|1:1|0
+2025-06-25 07:36:38,334 - INFO - Main line: SLOT2:1:2::2:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,334 - INFO - Split parts: ['SLOT2', '1', '2', '', '2', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,334 - INFO - Parsed - slot: SLOT2, placement: 1, unit: 
+2025-06-25 07:36:38,334 - INFO - Priority: 2, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,335 - INFO - Successfully parsed slot slot2: {'placement': '1', 'priority': '2', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,335 - INFO - Parsing config line: SLOT3:1:3::3:none:0,0|1:1|0
+2025-06-25 07:36:38,335 - INFO - Main line: SLOT3:1:3::3:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,335 - INFO - Split parts: ['SLOT3', '1', '3', '', '3', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,335 - INFO - Parsed - slot: SLOT3, placement: 1, unit: 
+2025-06-25 07:36:38,335 - INFO - Priority: 3, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,336 - INFO - Successfully parsed slot slot3: {'placement': '1', 'priority': '3', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,336 - INFO - Parsing config line: SLOT4:1:4::4:none:0,0|1:1|0
+2025-06-25 07:36:38,336 - INFO - Main line: SLOT4:1:4::4:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,336 - INFO - Split parts: ['SLOT4', '1', '4', '', '4', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,336 - INFO - Parsed - slot: SLOT4, placement: 1, unit: 
+2025-06-25 07:36:38,337 - INFO - Priority: 4, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,337 - INFO - Successfully parsed slot slot4: {'placement': '1', 'priority': '4', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,338 - INFO - Parsing config line: SLOT5:1:5::1:none:0,0|1:1|0
+2025-06-25 07:36:38,339 - INFO - Main line: SLOT5:1:5::1:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,339 - INFO - Split parts: ['SLOT5', '1', '5', '', '1', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,339 - INFO - Parsed - slot: SLOT5, placement: 1, unit: 
+2025-06-25 07:36:38,339 - INFO - Priority: 1, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,340 - INFO - Successfully parsed slot slot5: {'placement': '1', 'priority': '1', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,340 - INFO - Parsing config line: SLOT6:1:6::6:none:0,0|1:1|0
+2025-06-25 07:36:38,340 - INFO - Main line: SLOT6:1:6::6:none:0,0|1:1, Status set: False
+2025-06-25 07:36:38,340 - INFO - Split parts: ['SLOT6', '1', '6', '', '6', 'none', '0,0|1', '1']
+2025-06-25 07:36:38,341 - INFO - Parsed - slot: SLOT6, placement: 1, unit: 
+2025-06-25 07:36:38,341 - INFO - Priority: 6, auto_skill: none, coords_and_upgrades: 0,0|1:1
+2025-06-25 07:36:38,341 - INFO - Successfully parsed slot slot6: {'placement': '1', 'priority': '6', 'skill': 'none', 'upgrade': '0', 'unit_name': '', 'coords': [{'x': 0, 'y': 0, 'set': False}], 'marker_upgrades': {0: {'level': '1', 'priority': '1'}}}
+2025-06-25 07:36:38,343 - INFO - Position monitoring thread started (monitors for movement)
+2025-06-25 07:36:38,920 - DEBUG - Using WinForms / Chromium
+2025-06-25 07:36:40,344 - INFO - Performing initial positioning...
+2025-06-25 07:36:40,352 - INFO - Found ALS window: Mango
+2025-06-25 07:36:40,353 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:36:40,353 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:36:40,354 - INFO - Attempting to position using webview API...
+2025-06-25 07:36:40,361 - INFO - Successfully positioned using webview API
+2025-06-25 07:36:40,362 - INFO - Initial positioning successful
+2025-06-25 07:36:48,482 - INFO - Getting map image for: Marines Fort
+2025-06-25 07:36:48,482 - INFO - Using default name cleaning: Marines Fort -> Marines_Fort
+2025-06-25 07:36:48,483 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:36:48,483 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Marines_Fort.png
+2025-06-25 07:36:48,484 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Marines_Fort.png
+2025-06-25 07:36:50,375 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:36:50,376 - INFO - Found ALS window: Mango
+2025-06-25 07:36:50,376 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:36:50,376 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:36:50,376 - INFO - Attempting to position using webview API...
+2025-06-25 07:36:50,378 - INFO - Successfully positioned using webview API
+2025-06-25 07:36:50,378 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:36:51,514 - INFO - Getting map image for: Shibuya
+2025-06-25 07:36:51,515 - INFO - Using default name cleaning: Shibuya -> Shibuya
+2025-06-25 07:36:51,515 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:36:51,516 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Shibuya.png
+2025-06-25 07:36:51,517 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Shibuya.png
+2025-06-25 07:36:53,530 - INFO - Getting map image for: Hog Town
+2025-06-25 07:36:53,530 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:36:53,531 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:36:53,531 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:36:53,532 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:37:00,386 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:00,387 - INFO - Found ALS window: Mango
+2025-06-25 07:37:00,387 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:00,387 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:00,387 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:00,389 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:00,389 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:37:09,299 - INFO - Getting map image for: Hog Town
+2025-06-25 07:37:09,299 - INFO - Using special case mapping: Hog Town -> Hog Town
+2025-06-25 07:37:09,300 - INFO - Looking for images in: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps
+2025-06-25 07:37:09,300 - INFO - Checking path: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:37:09,301 - INFO - Found map image at: D:\WinterPortal-main\WinterPortal-main\libs\UIPARTS\Images\Maps\Hog Town.png
+2025-06-25 07:37:10,398 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:10,400 - INFO - Found ALS window: Mango
+2025-06-25 07:37:10,401 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:10,401 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:10,401 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:10,403 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:10,403 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:37:20,415 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:20,421 - INFO - Found ALS window: Mango
+2025-06-25 07:37:20,422 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:20,423 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:20,423 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:20,432 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:20,433 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:37:30,441 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:30,444 - INFO - Found ALS window: Mango
+2025-06-25 07:37:30,444 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:30,445 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:30,445 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:30,446 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:30,446 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:37:40,456 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:40,458 - INFO - Found ALS window: Mango
+2025-06-25 07:37:40,459 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:40,459 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:40,459 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:40,460 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:40,460 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:37:50,468 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:37:50,469 - INFO - Found ALS window: Mango
+2025-06-25 07:37:50,470 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:37:50,470 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:37:50,470 - INFO - Attempting to position using webview API...
+2025-06-25 07:37:50,471 - INFO - Successfully positioned using webview API
+2025-06-25 07:37:50,471 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:00,479 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:38:00,480 - INFO - Found ALS window: Mango
+2025-06-25 07:38:00,480 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:38:00,481 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:38:00,481 - INFO - Attempting to position using webview API...
+2025-06-25 07:38:00,482 - INFO - Successfully positioned using webview API
+2025-06-25 07:38:00,482 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:10,493 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:38:10,495 - INFO - Found ALS window: Mango
+2025-06-25 07:38:10,495 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:38:10,495 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:38:10,495 - INFO - Attempting to position using webview API...
+2025-06-25 07:38:10,496 - INFO - Successfully positioned using webview API
+2025-06-25 07:38:10,497 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:20,503 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:38:20,504 - INFO - Found ALS window: Mango
+2025-06-25 07:38:20,505 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:38:20,505 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:38:20,505 - INFO - Attempting to position using webview API...
+2025-06-25 07:38:20,506 - INFO - Successfully positioned using webview API
+2025-06-25 07:38:20,507 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:30,515 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:38:30,517 - INFO - Found ALS window: Mango
+2025-06-25 07:38:30,517 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:38:30,517 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:38:30,517 - INFO - Attempting to position using webview API...
+2025-06-25 07:38:30,519 - INFO - Successfully positioned using webview API
+2025-06-25 07:38:30,519 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:40,526 - INFO - Forcing repositioning after 10 seconds to ensure perfect alignment
+2025-06-25 07:38:40,527 - INFO - Found ALS window: Mango
+2025-06-25 07:38:40,527 - INFO - ALS window: position=(50, 50), size=(1470x735)
+2025-06-25 07:38:40,527 - INFO - Target position for Unit Manager: (50, 80), size=(1000x700)
+2025-06-25 07:38:40,528 - INFO - Attempting to position using webview API...
+2025-06-25 07:38:40,529 - INFO - Successfully positioned using webview API
+2025-06-25 07:38:40,529 - INFO - Forced repositioning successful - maintaining perfect alignment
+2025-06-25 07:38:50,536 - INFO - ALS window not found - closing Unit Manager immediately
+2025-06-25 07:38:50,600 - INFO - Monitoring thread cleanup requested

@@ -11,6 +11,7 @@ global unitSlots := Map()
 global robloxX1 := 0, robloxY1 := 0, robloxX2 := 0, robloxY2 := 0
 global robloxWidth := 0, robloxHeight := 0
 global SkipStartButton := "false"
+global Moved := "false"
 
 ; Initialize Roblox window coordinates on script start
 InitializeRobloxWindow()
@@ -373,7 +374,7 @@ GetUpgradePattern(level) {
 
 
 GameStatus() {
-    won := "|<>*104$44.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzszzzsyDWDzzwD3s3zzzVkQDzzzsQ73zzzy61kX4DzkU8Mk1zw82640Dz081V01zs20sEsTy0UC4C7zUQ7V3Vzw71sEsTz3kS4C7zsyDX7VzyTXslwzzzzzzzzzzzzzzzzzzzzzzy"
+    won := "|<>*128$57.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzy7zzzzznzzUDzzzzyTzwNzzzzznzzX89YUEUEzw11UY042TzU040434Ezw01U8UMX7zX8CFU3U0zytVnS2y27zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzU"
     Disconnected := "|<>*125$75.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzbzzzzzzlz7zzsTzzzzzyDkzzz3zyDzzzly7zzsTzlzzzyDkzzz3zyDzzzly7zz8TzUDzzyDkWDU3V81kDzly40w0M00A0zyDkU30204107zly48MsEUlsszy7kXX72C6D07zkyAQMsFkls0zz31V3224C77zzs0Q0Q0k1kM1zzU7U7U70D1U7zz1wPzAyNwS1zzzzXzzzzzzzzzzzwTzzzzzzzzzzzXzzzzzzzzzzzwTzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzw"
     RetryText := "|<>*124$37.0000000000000000000T00000Ts7U0086GM0043zDzw28l12v14E009UUF9XUkE84nkE9W29gM4t1am83zzzvA0F76FY00000q00000C1"
     Defeat := "|<>*61$75.zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzkzzzzzzy0Dzzw3zzzznzk0TzzUzzzzwDy01zzsTzzzzVzksDzz3zzzzwDy7Uw3k3UTl70Dky7040M0s0E1y7kk0U206020Dkz6760ksk0M3y7kkssS7673Vzky6073k0lsQDy7Vk1sS0C73Vzk0C7z3kzk0Q7y03k0sS0703kTk0z073s0s0S3y0Tw1wTUDl7sTzzzzzzzzzzzzzzzzzzzzzzzzzU"
@@ -689,6 +690,7 @@ UpgradeUnits() {
 
 MainTerminal() {
     global SkipStartButton
+    global Moved
 
     Story := FileRead(A_ScriptDir . "\libs\settings\story\Story.txt")
     ; First Step LETS check if we got disconnected from the game (little safety measure)
@@ -755,15 +757,16 @@ MainTerminal() {
                 gameCategory := ""
                 gameCategory := FileRead(categoryFile)
                 if gameCategory == "Dungeon" {
+                    SkipStartButton := "false"
                       ZoomTech(false)
                 } else if gameCategory == "Raids" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if gameCategory == "Essence" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if gameCategory == "Survival" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\survival\Survival.txt")
                     SurvivalMap := Trim(SurvivalMap)
                     if (SurvivalMap == "Hell Invasion") {
@@ -785,18 +788,23 @@ MainTerminal() {
                         ChangeMovement("false") ; changes back to WASD movement                    } else if (SurvivalMap == "Holy Invasion") {
                         ZoomTech(false)
                     }                } else if gameCategory == "Legend Stages" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if (gameCategory == "Portals") {
                     SkipStartButton := "false"
                     ZoomTech(false)
                 } else if (gameCategory == "Story") {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ; Read the map setting for Story
                     Maps := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
                     ; Pass Maps variable directly to StoryMovement without trimming
-                    StoryMovement(Maps)
-                    ZoomTech(false)
+        
+    
+                    if Moved == "false" {
+                        StoryMovement(Maps)
+                        ZoomTech(false)
+                        Moved := "true"
+                    } 
                 }                BetterClick(449, 594) ; Clicks start
                 break
             } else if (FindText(&X, &Y, 494-150000, 674-150000, 494+150000, 674+150000, 0, 0, Loaded2)) {
@@ -811,13 +819,13 @@ MainTerminal() {
                 if gameCategory == "Dungeon" {
                       ZoomTech(false)
                 } else if gameCategory == "Raids" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if gameCategory == "Essence" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if gameCategory == "Survival" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     SurvivalMap := FileRead(A_ScriptDir . "\libs\settings\survival\Survival.txt")
                     SurvivalMap := Trim(SurvivalMap)
                     if (SurvivalMap == "Hell Invasion") {
@@ -841,17 +849,21 @@ MainTerminal() {
                         ZoomTech(false)
 
                     }                } else if gameCategory == "Legend Stages" {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ZoomTech(false)
                 } else if (gameCategory == "Portals") {
                     SkipStartButton := "false"
                     ZoomTech(false)
                 } else if (gameCategory == "Story") {
-                    SkipStartButton := "true"
+                    SkipStartButton := "false"
                     ; Read the map setting for Story
                     Maps := FileRead(A_ScriptDir . "\libs\settings\Map.txt")
                     ; Pass Maps variable directly to StoryMovement without trimming
-                    StoryMovement(Maps)
+                    if Moved == "false" {
+                        StoryMovement(Maps)
+                        Moved := "true"
+                    } 
+
                     ZoomTech(false)
                 }
                 BetterClick(449, 594) ; Clicks start
